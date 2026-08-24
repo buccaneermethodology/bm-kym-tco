@@ -3,11 +3,11 @@
   "skill_id": "build-kym",
   "distribution_version": "v0.4.1",
   "release_status": "released",
-  "source_revision": "public-release-source-pending",
+  "source_revision": "git:d4d03b0f01aae4d821e55000306660b76c95e76c",
   "source_snapshot_status": "clean_release_source_pending",
   "artifact_id": "build-kym-v0.4.1",
   "skill_ref": ".codex/skills/build-kym/SKILL.md",
   "skill_byte_digest": "sha256:138c3dc3e9cb6e266cb62d92858a4e08a1bdcc003fdbaddbe014d6675988877a",
-  "archive_manifest_digest": "sha256:b1f2f995fd757ff485d716a75ff141503ad62cb357331a5c6a4884662dccec11",
-  "manifest_digest": "sha256:cc069a8812f6392f659af057c9a5ba36e005e1d1218c92c87cac37f4f4171331"
+  "archive_manifest_digest": "sha256:50d264ee1c556fa6fca79538dfca6c72f349da22c5d678e0f3ca973dc9ae31dc",
+  "manifest_digest": "sha256:0f5847481414fb491a4cca7d3ae8237b2d4866834b94c9ba8f159ace0ead811a"
 }
