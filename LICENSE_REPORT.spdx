@@ -1,0 +1,25 @@
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: bm-kym-tco-0.4.1-license-report
+DocumentNamespace: https://github.com/buccaneermethodology/bm-kym-tco/releases/tag/v0.4.1
+Creator: Tool: bm-kym-tco release validation
+
+PackageName: bm-kym-tco
+SPDXID: SPDXRef-Package-bm-kym-tco
+PackageVersion: 0.4.1
+PackageLicenseDeclared: Apache-2.0
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+
+FileName: LICENSE
+SPDXID: SPDXRef-File-LICENSE
+LicenseConcluded: Apache-2.0
+LicenseInfoInFile: Apache-2.0
+
+FileName: NOTICE
+SPDXID: SPDXRef-File-NOTICE
+LicenseConcluded: Apache-2.0
+LicenseInfoInFile: Apache-2.0
+
+Comment: The exact public file scope and outbound redistribution disposition were confirmed by the repository owner on 2026-08-24. Other repository Skills, internal governance records, private history and protected fixtures are excluded.

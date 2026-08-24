@@ -1,0 +1,32 @@
+{
+  "schema": "bm_kym_tco.public_release_manifest.v1",
+  "repository": "buccaneermethodology/bm-kym-tco",
+  "project_name": "bm-kym-tco",
+  "version": "0.4.1",
+  "tag": "v0.4.1",
+  "release_commit_ref": "tag:v0.4.1",
+  "source_revision": "git:d4d03b0f01aae4d821e55000306660b76c95e76c",
+  "license": "Apache-2.0",
+  "public_tree": {
+    "file_count_excluding_release_evidence": 82,
+    "digest_algorithm": "sha256(sorted relative path NUL file-sha256 newline)",
+    "digest": "sha256:9b705748a7be99aebb763e39829f87b4cd2228ab110e45811fc45825dddbf829"
+  },
+  "identity": {
+    "import_package": "kym_tco",
+    "executables": ["kym", "tco"],
+    "skills": ["build-kym", "build-tco-coverage"]
+  },
+  "assets": [
+    {"name": "bm_kym_tco-0.4.1-py3-none-any.whl", "sha256": "62ecb15cfaaec05324edcd21149ad0120f4ffc3df731ae9b8dd2336811c5bf23", "kind": "wheel"},
+    {"name": "bm_kym_tco-0.4.1.tar.gz", "sha256": "693b69fad02a2b790f78793a71cd5185451197af1dd51c1386024c4dd8d5dea7", "kind": "sdist"}
+  ],
+  "claims": {
+    "candidate_only": true,
+    "pypi_published": false,
+    "other_repo_skills_published": false,
+    "semantic_approval": false,
+    "production_readiness": false
+  },
+  "maintenance": "Internal kym-tco remains the source of truth; future public updates are explicit allowlist projections with review, digest comparison and remote read-back. No automatic reverse merge."
+}
