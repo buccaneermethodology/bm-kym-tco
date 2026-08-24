@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.executable_package_contract.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "contract_id", "revision", "mission", "state_axes",
+    "environment_status_priority", "terminal_predicates", "invariants",
+    "counterexamples", "command_allowlist", "forbidden_commands",
+    "write_policy", "doctor_contract", "case_policy", "claim_ceiling", "non_goals"
+  ],
+  "properties": {
+    "schema": {"const": "kym_tco.executable_package_contract.v1"},
+    "contract_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "mission": {"type": "string", "minLength": 1},
+    "state_axes": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "owner", "values"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "owner": {"type": "string", "minLength": 1},
+          "values": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}}
+        }
+      }
+    },
+    "environment_status_priority": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string"}},
+    "terminal_predicates": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "expression", "claim_boundary"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "expression": {"type": "string", "minLength": 1},
+          "claim_boundary": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "invariants": {"$ref": "#/$defs/rules"},
+    "counterexamples": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "premise", "forbidden_inference", "finding_code"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "premise": {"type": "string", "minLength": 1},
+          "forbidden_inference": {"type": "string", "minLength": 1},
+          "finding_code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}
+        }
+      }
+    },
+    "command_allowlist": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "program", "subcommand", "argv_only", "stage"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "program": {"enum": ["kym", "tco", "python3"]},
+          "subcommand": {"type": "string", "minLength": 1},
+          "argv_only": {"const": true},
+          "stage": {"enum": ["doctor", "kym-package", "tco-package"]}
+        }
+      }
+    },
+    "forbidden_commands": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}}
+    },
+    "write_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["doctor_allowed", "package_allowed_patterns", "excluded_patterns"],
+      "properties": {
+        "doctor_allowed": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "package_allowed_patterns": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "excluded_patterns": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "doctor_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entrypoints", "cli_missing_owner", "runnable_checks_owner", "report_schema", "stdout_fallback", "remediation_language"],
+      "properties": {
+        "entrypoints": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "cli_missing_owner": {"const": "Skill preflight fallback"},
+        "runnable_checks_owner": {"const": "shared deterministic CLI doctor engine"},
+        "report_schema": {"const": "kym_tco.doctor_report.v1"},
+        "stdout_fallback": {"const": true},
+        "remediation_language": {"const": "zh-CN"}
+      }
+    },
+    "case_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint_algorithm", "expected_failure_outcome", "harness_error_outcome", "negative_pass_excludes_errors"],
+      "properties": {
+        "fingerprint_algorithm": {"const": "sha256(canonical_json(case_id,domain,input,expected_without_fingerprint))"},
+        "expected_failure_outcome": {"const": "expected_failure"},
+        "harness_error_outcome": {"const": "error"},
+        "negative_pass_excludes_errors": {"const": true}
+      }
+    },
+    "claim_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "forbidden"],
+      "properties": {
+        "allowed": {"type": "string", "minLength": 1},
+        "forbidden": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "non_goals": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "statement": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

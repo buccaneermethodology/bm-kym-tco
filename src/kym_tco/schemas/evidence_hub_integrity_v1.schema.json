@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.evidence_hub_integrity.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "claim_ceiling", "state_axes", "finding_owner", "html_href", "artifacts", "authority_note"],
+  "properties": {
+    "schema": {"const": "kym_tco.evidence_hub_integrity.v1"},
+    "status": {"enum": ["passed", "blocked"]},
+    "claim_ceiling": {"type": "string", "minLength": 1},
+    "state_axes": {"type": "object", "additionalProperties": {"type": "string"}},
+    "finding_owner": {"type": "string", "minLength": 1},
+    "html_href": {"type": "string", "minLength": 1},
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "href", "path", "status", "digest", "expected_digest", "reason"],
+        "properties": {
+          "label": {"type": "string"},
+          "href": {"type": "string"},
+          "path": {"type": ["string", "null"]},
+          "status": {"enum": ["passed", "blocked"]},
+          "digest": {"type": ["string", "null"]},
+          "expected_digest": {"type": ["string", "null"]},
+          "reason": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "authority_note": {"type": "string", "minLength": 1}
+  }
+}

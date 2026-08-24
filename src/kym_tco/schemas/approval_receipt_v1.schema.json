@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receipt_id", "product_id", "approval_scope", "artifact_type", "artifact_id", "revision", "artifact_digest", "approved_by", "approval_source", "approval_reference", "approved_at"],
+  "properties": {
+    "schema": {"const": "kym_tco.approval_receipt.v1"},
+    "receipt_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "approval_scope": {"enum": ["kym_baseline", "target_profile", "coverage_delta"]},
+    "artifact_type": {"enum": ["kym_revision", "target_fragment", "coverage_model"]},
+    "artifact_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "string", "minLength": 1},
+    "artifact_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "approved_by": {"type": "string", "minLength": 1},
+    "approval_source": {"enum": ["human", "authorized_system"]},
+    "approval_reference": {"type": "string", "minLength": 1},
+    "approved_at": {"type": "string", "minLength": 1},
+    "authorization_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "authorization_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "source_closure_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "notes": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"approval_source": {"const": "authorized_system"}}},
+      "then": {"required": ["authorization_id", "authorization_digest"]}
+    },
+    {
+      "if": {
+        "properties": {
+          "approval_scope": {"enum": ["kym_baseline", "target_profile"]}
+        }
+      },
+      "then": {"required": ["source_closure_digest"]}
+    }
+  ]
+}

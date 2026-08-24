@@ -1,0 +1,13 @@
+{
+  "schema": "kym_tco.skill_distribution.v1",
+  "skill_id": "build-kym",
+  "distribution_version": "v0.4.1",
+  "release_status": "released",
+  "source_revision": "public-release-source-pending",
+  "source_snapshot_status": "clean_release_source_pending",
+  "artifact_id": "build-kym-v0.4.1",
+  "skill_ref": ".codex/skills/build-kym/SKILL.md",
+  "skill_byte_digest": "sha256:138c3dc3e9cb6e266cb62d92858a4e08a1bdcc003fdbaddbe014d6675988877a",
+  "archive_manifest_digest": "sha256:b1f2f995fd757ff485d716a75ff141503ad62cb357331a5c6a4884662dccec11",
+  "manifest_digest": "sha256:cc069a8812f6392f659af057c9a5ba36e005e1d1218c92c87cac37f4f4171331"
+}

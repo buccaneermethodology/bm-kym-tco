@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "package_id", "product_id", "created_at", "candidate_status", "input_manifest_digest", "inputs", "unified_model", "unified_coverage", "self_validation", "verification", "audit", "preview", "input_manifest", "config_snapshot", "execution", "state_axes", "approval_boundary", "claim_ceiling", "artifact_index", "artifact_index_digest"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_multi_input_package_manifest.v1"},
+    "package_id": {"type": "string", "minLength": 1},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "created_at": {"type": "string", "minLength": 1},
+    "candidate_status": {"const": "candidate_not_approved"},
+    "input_manifest_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "inputs": {"type": "array", "minItems": 2, "items": {"type": "object"}},
+    "unified_model": {"type": ["object", "null"]},
+    "unified_coverage": {"type": ["object", "null"]},
+    "self_validation": {"type": "object"},
+    "verification": {"type": "object"},
+    "audit": {"type": "object"},
+    "preview": {"type": "object"},
+    "input_manifest": {"const": "input-manifest.json"},
+    "config_snapshot": {"const": "config-snapshot.json"},
+    "execution": {
+      "type": "object",
+      "required": ["schema", "run_id", "runner_identity", "argv", "cwd", "exit_code", "terminal_outcome", "stdout_path", "stdout_digest", "stderr_path", "stderr_digest", "config_digest", "verification_command_count", "candidate_boundary"],
+      "properties": {
+        "schema": {"const": "kym_tco.tco_multi_input_execution_record.v1"},
+        "run_id": {"type": "string", "minLength": 1},
+        "runner_identity": {"type": "object"},
+        "argv": {"type": "array", "minItems": 2, "items": {"type": "string"}},
+        "cwd": {"const": "workspace"},
+        "exit_code": {"type": "integer"},
+        "terminal_outcome": {"enum": ["candidate_package_created", "candidate_package_blocked"]},
+        "stdout_path": {"const": "runner-output.json"},
+        "stdout_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "stderr_path": {"const": "runner-stderr.txt"},
+        "stderr_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "config_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "verification_command_count": {"type": "integer", "minimum": 0},
+        "candidate_boundary": {"const": "candidate_not_approved"}
+      },
+      "additionalProperties": false
+    },
+    "state_axes": {
+      "type": "object",
+      "required": ["environment_status", "package_execution_status", "candidate_status", "verification_status", "audit_status", "approval_status"],
+      "properties": {
+        "environment_status": {"type": "string"},
+        "package_execution_status": {"enum": ["completed", "blocked", "failed"]},
+        "candidate_status": {"const": "candidate_not_approved"},
+        "verification_status": {"type": "string"},
+        "audit_status": {"type": "string"},
+        "approval_status": {"const": "not_requested"}
+      },
+      "additionalProperties": false
+    },
+    "approval_boundary": {"type": "string", "minLength": 1},
+    "claim_ceiling": {"type": "string", "minLength": 1},
+    "artifact_index": {"const": "artifact-index.json"},
+    "artifact_index_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

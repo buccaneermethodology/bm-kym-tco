@@ -1,0 +1,2 @@
+"""Bundled JSON schemas."""
+

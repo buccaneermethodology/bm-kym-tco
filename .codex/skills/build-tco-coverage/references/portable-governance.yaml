@@ -1,0 +1,8 @@
+# 可移植治理规则 / Portable Governance
+
+- 保持 `candidate_not_approved`；Skill 编排语义候选，CLI 只做确定性检查/打包。
+- verification、audit、candidate、approval 分轴保存；任何 pass 不创建 approval、receipt 或 semantic correctness。
+- artifact 绑定 source/path、digest、producer、candidate boundary；stale/missing/protected/broken link 必须 fail closed。
+- portable projection 绑定 source mapping、source/destination digest、size；checker 只 validate/diff，不安装、覆盖或发布。
+- 排除 Dashboard、Agent Logs、私有历史、绝对路径、项目-specific facts 与 authority surface。
+- claim ceiling：candidate-only、source-traceable、authority-safe；不声明跨 repo、安装、release 或 production readiness。

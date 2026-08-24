@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "product_id", "source_tco_model", "source_tco_model_digest", "coverage_mode", "coverage_vocabulary_digest", "proposal_id", "records"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_coverage_model.v1"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "source_tco_model": {"type": "string", "minLength": 1},
+    "source_tco_model_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "coverage_mode": {"enum": ["repo", "not_evaluated"]},
+    "coverage_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "proposal_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tco_node_id", "coverage_state", "claim_ceiling", "evidence", "scope_coverage", "missing_scope_items"],
+        "properties": {
+          "tco_node_id": {"type": "string", "minLength": 1},
+          "coverage_state": {"type": "string", "minLength": 1},
+          "claim_ceiling": {"type": "string"},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "ref"],
+              "properties": {
+                "kind": {"enum": ["code", "schema", "test", "bdd", "document", "command", "candidate_evidence"]},
+                "ref": {"type": "string", "minLength": 1},
+                "verification_command_id": {"type": "string"}
+              }
+            }
+          },
+          "scope_coverage": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["scope", "coverage_state", "notes"],
+              "properties": {
+                "scope": {"type": "string", "minLength": 1},
+                "coverage_state": {"type": "string", "minLength": 1},
+                "notes": {"type": "string"}
+              }
+            }
+          },
+          "missing_scope_items": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

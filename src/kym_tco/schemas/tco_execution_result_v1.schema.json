@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "execution_result_id", "product_id", "source_tco_model_digest", "m1_id", "run_id", "execution_id", "effect_status", "witness_refs", "evaluated_at", "evaluator", "authority_boundary"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_execution_result.v1"},
+    "execution_result_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "source_tco_model_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "m1_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "execution_id": {"type": "string", "minLength": 1},
+    "effect_status": {"enum": ["not_executed", "incomplete", "attempted_failed", "achieved"]},
+    "witness_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "evaluated_at": {"type": "string", "minLength": 1},
+    "evaluator": {"type": "string", "minLength": 1},
+    "authority_boundary": {"type": "string", "minLength": 1},
+    "notes": {"type": "string"}
+  }
+}

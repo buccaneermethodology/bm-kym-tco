@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.kym_package_manifest.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "package_id", "product_id", "state_axes", "result", "finding_code", "case_fingerprint", "command_evidence", "artifact_index", "self_integrity", "claim_ceiling"],
+  "properties": {
+    "schema": {"const": "kym_tco.kym_package_manifest.v1"},
+    "package_id": {"type": "string", "pattern": "^kym-package-[0-9a-f]{12}$"},
+    "product_id": {"type": "string"},
+    "state_axes": {"type": "object", "additionalProperties": false, "required": ["environment_status", "package_execution_status", "candidate_status", "verification_status", "audit_status", "approval_status"], "properties": {"environment_status": {"const": "ready"}, "package_execution_status": {"enum": ["completed", "blocked", "failed"]}, "candidate_status": {"enum": ["candidate_not_approved", "invalid_candidate", "not_generated"]}, "verification_status": {"const": "not_run"}, "audit_status": {"enum": ["not_run", "passed", "blocker"]}, "approval_status": {"const": "not_requested"}}},
+    "result": {"enum": ["candidate_package_ready", "candidate_schema_invalid", "candidate_audit_blocked", "policy_blocked", "publish_failed"]},
+    "finding_code": {"type": ["string", "null"]},
+    "case_fingerprint": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "command_evidence": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["step", "argv", "cwd", "exit_code", "stdout_summary", "stderr_summary", "evidence_path", "engine_identity", "shell"], "properties": {"step": {"type": "string"}, "argv": {"type": "array", "minItems": 2, "prefixItems": [{"const": "kym"}, {"const": "package-candidate"}], "items": {"type": "string", "not": {"pattern": "[Aa][Pp][Pp][Rr][Oo][Vv][Ee]"}}}, "cwd": {"const": "workspace"}, "exit_code": {"type": "integer"}, "stdout_summary": {"type": "string"}, "stderr_summary": {"type": "string"}, "evidence_path": {"type": ["string", "null"]}, "engine_identity": {"const": "in_process_shared_function"}, "shell": {"const": false}}}},
+    "artifact_index": {"type": ["object", "null"], "additionalProperties": false, "required": ["path", "path_scope", "digest", "producer", "candidate_boundary"], "properties": {"path": {"const": "artifact-index.json"}, "path_scope": {"const": "package_dir"}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "producer": {"const": "artifact-index"}, "candidate_boundary": {"const": "candidate_not_approved"}}},
+    "self_integrity": {"type": "object", "additionalProperties": false, "required": ["path", "path_scope", "digest", "digest_algorithm", "checksum_ref", "producer", "candidate_boundary"], "properties": {"path": {"const": "package-manifest.json"}, "path_scope": {"const": "package_dir"}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "digest_algorithm": {"const": "sha256_canonical_json_without_self_integrity_digest"}, "checksum_ref": {"const": "package-manifest.sha256"}, "producer": {"const": "package-manifest"}, "candidate_boundary": {"const": "candidate_not_approved"}}},
+    "claim_ceiling": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {"if": {"properties": {"result": {"const": "candidate_package_ready"}}, "required": ["result"]}, "then": {"properties": {"finding_code": {"const": null}, "case_fingerprint": {"const": null}, "state_axes": {"properties": {"package_execution_status": {"const": "completed"}, "candidate_status": {"const": "candidate_not_approved"}, "audit_status": {"const": "passed"}}}}}},
+    {"if": {"properties": {"result": {"const": "candidate_schema_invalid"}}, "required": ["result"]}, "then": {"properties": {"finding_code": {"const": "PACKAGE_CANDIDATE_SCHEMA_INVALID"}, "case_fingerprint": {"const": "e852134b904f2489f2e71758082acfd8c1762b3d650cbf3d3f79412b89d1cffb"}, "state_axes": {"properties": {"package_execution_status": {"const": "failed"}, "candidate_status": {"const": "invalid_candidate"}, "audit_status": {"const": "not_run"}}}}}},
+    {"if": {"properties": {"result": {"const": "candidate_audit_blocked"}}, "required": ["result"]}, "then": {"properties": {"finding_code": {"const": "PACKAGE_AUDIT_BLOCKER"}, "case_fingerprint": {"const": "735ffebc97c2a684ea176131094ae528549d88d170463f7da872b3ccc74aa6cf"}, "state_axes": {"properties": {"package_execution_status": {"const": "blocked"}, "candidate_status": {"const": "candidate_not_approved"}, "audit_status": {"const": "blocker"}}}}}},
+    {"if": {"properties": {"result": {"const": "policy_blocked"}}, "required": ["result"]}, "then": {"properties": {"finding_code": {"const": "PACKAGE_PROTECTED_READ_FORBIDDEN"}, "case_fingerprint": {"const": null}, "state_axes": {"properties": {"package_execution_status": {"const": "blocked"}, "candidate_status": {"const": "not_generated"}, "audit_status": {"const": "not_run"}}}}}},
+    {"if": {"properties": {"result": {"const": "publish_failed"}}, "required": ["result"]}, "then": {"properties": {"finding_code": {"const": "PACKAGE_PUBLISH_FAILED"}, "case_fingerprint": {"const": null}, "state_axes": {"properties": {"package_execution_status": {"const": "failed"}, "candidate_status": {"const": "candidate_not_approved"}, "audit_status": {"const": "passed"}}}}}}
+  ]
+}

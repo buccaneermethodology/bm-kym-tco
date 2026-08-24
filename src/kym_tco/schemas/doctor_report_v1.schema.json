@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.doctor_report.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "tool", "skill_name", "cli_version", "expected_cli_version",
+    "workspace", "product_id", "environment_status", "package_execution_status",
+    "candidate_status", "verification_status", "audit_status", "approval_status",
+    "findings", "remediation", "checked_paths", "output_posture", "output_path", "claim_ceiling"
+  ],
+  "properties": {
+    "schema": {"const": "kym_tco.doctor_report.v1"},
+    "tool": {"enum": ["kym", "tco"]},
+    "skill_name": {"enum": ["build-kym", "build-tco-coverage"]},
+    "cli_version": {"type": ["string", "null"]},
+    "expected_cli_version": {"type": "string", "minLength": 1},
+    "workspace": {"type": "string", "minLength": 1},
+    "product_id": {"type": "string", "minLength": 1},
+    "environment_status": {"enum": ["ready", "cli_missing", "skill_missing", "version_mismatch", "workspace_invalid", "permission_blocked"]},
+    "package_execution_status": {"const": "not_started"},
+    "candidate_status": {"const": "not_generated"},
+    "verification_status": {"const": "not_run"},
+    "audit_status": {"const": "not_run"},
+    "approval_status": {"const": "not_requested"},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "status", "message"],
+        "properties": {
+          "code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+          "status": {"enum": ["cli_missing", "skill_missing", "version_mismatch", "workspace_invalid", "permission_blocked"]},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "remediation": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "checked_paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "output_posture": {"enum": ["stdout_only", "file_and_stdout", "stdout_fallback"]},
+    "output_path": {"type": ["string", "null"]},
+    "claim_ceiling": {"type": "string", "minLength": 1}
+  }
+}

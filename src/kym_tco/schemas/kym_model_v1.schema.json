@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "product_id", "revision", "base_revision", "created_at", "source_manifest_refs", "statements", "tree", "target_profiles", "conflicts", "unresolved_questions"],
+  "properties": {
+    "schema": {"const": "kym_tco.kym_model.v1"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "base_revision": {"type": ["string", "null"], "pattern": "^r[0-9]{3,}$"},
+    "created_at": {"type": "string", "minLength": 1},
+    "source_manifest_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "statements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text", "statement_type", "temporal_status", "support_status", "authority", "source_refs", "tree_node_ids"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "text": {"type": "string", "minLength": 1},
+          "statement_type": {"enum": ["fact", "decision", "assumption", "requirement", "rule", "proposal", "question", "example"]},
+          "temporal_status": {"enum": ["past", "current", "future", "timeless"]},
+          "support_status": {"enum": ["source_supported", "inferred", "externally_enriched", "disputed", "unresolved", "superseded"]},
+          "authority": {"type": "string", "minLength": 1},
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source_id", "turn_ids", "start_line", "end_line"],
+              "properties": {
+                "source_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+                "turn_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^t[0-9]{4,}$"}},
+                "start_line": {"type": "integer", "minimum": 1},
+                "end_line": {"type": "integer", "minimum": 1},
+                "note": {"type": "string"}
+              }
+            }
+          },
+          "tree_node_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}},
+          "supersedes": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "tree": {"$ref": "#/$defs/treeNode"},
+    "target_profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "objective", "requirement_refs", "claim_ceiling", "exclusions"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "label": {"type": "string", "minLength": 1},
+          "objective": {"type": "string", "minLength": 1},
+          "requirement_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "claim_ceiling": {"type": "string", "minLength": 1},
+          "exclusions": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        }
+      }
+    },
+    "conflicts": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "unresolved_questions": {"type": "array", "items": {"$ref": "#/$defs/finding"}}
+  },
+  "$defs": {
+    "treeNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "kind", "statement_refs", "children"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "title": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["root", "section", "branch", "leaf"]},
+        "statement_refs": {"type": "array", "items": {"type": "string"}},
+        "children": {"type": "array", "items": {"$ref": "#/$defs/treeNode"}}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement_refs", "summary", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "statement_refs": {"type": "array", "items": {"type": "string"}},
+        "summary": {"type": "string", "minLength": 1},
+        "status": {"enum": ["open", "resolved", "superseded"]}
+      }
+    }
+  }
+}

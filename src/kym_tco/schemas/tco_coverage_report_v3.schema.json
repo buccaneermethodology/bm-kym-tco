@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "product_id", "report_mode", "coverage_mode", "source_tco_model_schema", "source_tco_model_digest", "source_coverage_digest", "nodes", "target_profiles", "authority_note"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_coverage_report.v3"},
+    "product_id": {"type": "string", "minLength": 1},
+    "report_mode": {"const": "candidate_not_approved"},
+    "coverage_mode": {"enum": ["repo", "not_evaluated"]},
+    "source_tco_model_schema": {"const": "kym_tco.tco_model.v4"},
+    "source_tco_model_digest": {"type": "string", "minLength": 1},
+    "source_coverage_digest": {"type": "string", "minLength": 1},
+    "nodes": {"type": "array"},
+    "target_profiles": {"type": "array"},
+    "authority_note": {"type": "string", "minLength": 1}
+  }
+}

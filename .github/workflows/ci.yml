@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+  release:
+    types: [published]
+
+jobs:
+  public-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build and install public package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip wheel --no-deps --no-build-isolation --wheel-dir dist .
+          python -m pip install --no-deps dist/*.whl
+      - name: Check CLI entrypoints
+        run: |
+          kym --help
+          tco --help
+      - name: Check public Skill inventory
+        run: |
+          test "$(find .codex/skills -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')" = "2"
+          test -f .codex/skills/build-kym/SKILL.md
+          test -f .codex/skills/build-tco-coverage/SKILL.md

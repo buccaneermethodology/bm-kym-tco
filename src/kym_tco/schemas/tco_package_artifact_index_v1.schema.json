@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.tco_package_artifact_index.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "package_id", "package_result", "artifacts"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_package_artifact_index.v1"},
+    "package_id": {"type": "string", "pattern": "^tco-package-[0-9a-f]{12}$"},
+    "package_result": {"enum": ["candidate_package_ready", "candidate_schema_invalid", "verification_empty", "verification_failed", "source_mutated", "candidate_audit_blocked", "policy_blocked", "publish_failed"]},
+    "artifacts": {"type": "array", "minItems": 0, "items": {"type": "object", "additionalProperties": false, "required": ["path", "digest", "producer", "candidate_boundary"], "properties": {
+      "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"},
+      "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+      "producer": {"type": "string", "minLength": 1},
+      "candidate_boundary": {"const": "candidate_not_approved"}
+    }}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"package_result": {"const": "candidate_package_ready"}}, "required": ["package_result"]},
+      "then": {"properties": {"artifacts": {"minItems": 7}}}
+    }
+  ]
+}

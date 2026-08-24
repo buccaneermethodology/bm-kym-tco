@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "product_id", "source_kym_revision", "coverage_vocabulary_digest", "root", "nodes", "target_profiles"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_model.v1"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "source_kym_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "source_kym_receipt": {"type": "string", "minLength": 1},
+    "coverage_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "root": {"type": "string", "minLength": 1},
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "node_kind", "title", "topic", "scope", "purpose", "source_statement_refs", "children"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "node_kind": {"enum": ["group", "capability", "policy"]},
+          "title": {"type": "string", "minLength": 1},
+          "topic": {"type": "string", "minLength": 1},
+          "scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "purpose": {"type": "string", "minLength": 1},
+          "source_statement_refs": {"type": "array", "items": {"type": "string"}},
+          "children": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "target_profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "source_target_id", "description", "claim_ceiling", "requirements"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "label": {"type": "string", "minLength": 1},
+          "source_target_id": {"type": "string", "minLength": 1},
+          "target_receipt": {"type": "string", "minLength": 1},
+          "description": {"type": "string", "minLength": 1},
+          "claim_ceiling": {"type": "string", "minLength": 1},
+          "requirements": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "source_requirement_ref", "title", "node_ids", "target_coverage_state"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "source_requirement_ref": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+                "title": {"type": "string", "minLength": 1},
+                "node_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                "target_coverage_state": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

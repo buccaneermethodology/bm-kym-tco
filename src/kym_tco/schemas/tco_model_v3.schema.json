@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "candidate_status", "model_revision", "base_model_digest", "product_id", "source_kym_revision", "coverage_vocabulary_digest", "decision_outcome_vocabulary_digest", "effect_status_vocabulary_ref", "root", "nodes", "target_profiles", "traceability_catalog", "lifecycle_contract", "authority_boundary", "verdict", "functional_acceptance", "safety_acceptance", "claim_ceiling"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_model.v3"},
+    "candidate_status": {"const": "candidate_not_approved"},
+    "model_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "base_model_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "source_kym_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "coverage_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "decision_outcome_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "effect_status_vocabulary_ref": {"const": "goal_effect_status_v1"},
+    "root": {"type": "string", "minLength": 1},
+    "nodes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/node"}},
+    "target_profiles": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/profile"}},
+    "traceability_catalog": {"type": "object", "additionalProperties": false, "required": ["requirements", "acceptance_criteria", "non_functionals", "witness_artifacts", "required_outputs"], "properties": {"requirements": {"type": "array"}, "acceptance_criteria": {"type": "array"}, "non_functionals": {"type": "array"}, "witness_artifacts": {"type": "array"}, "required_outputs": {"type": "array"}}},
+    "lifecycle_contract": {"type": "object", "additionalProperties": false, "required": ["capability_lifecycle_vocabulary"], "properties": {"capability_lifecycle_vocabulary": {"type": "array", "minItems": 1, "items": {"type": "string"}}}},
+    "authority_boundary": {"type": "string", "minLength": 1},
+    "verdict": {"enum": ["PASS", "PARTIAL", "FAIL", "NOT_EVALUATED"]},
+    "functional_acceptance": {"enum": ["not_evaluated", "met", "gap"]},
+    "safety_acceptance": {"enum": ["not_evaluated", "met", "gap"]},
+    "claim_ceiling": {"type": "string", "minLength": 1},
+    "lineage": {"type": "array", "items": {"type": "object"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "refArray": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+    "node": {"type": "object", "additionalProperties": false, "required": ["id", "node_kind", "title", "topic", "scope", "scope_types", "purpose", "source_statement_refs", "children"], "properties": {"id": {"$ref": "#/$defs/id"}, "node_kind": {"enum": ["mc", "m1", "policy"]}, "title": {"type": "string", "minLength": 1}, "topic": {"type": "string", "minLength": 1}, "scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "scope_types": {"type": "object", "additionalProperties": {"enum": ["input", "outcome", "failure", "metadata"]}}, "mandatory_scope_items": {"type": "array", "items": {"type": "string", "minLength": 1}}, "candidate_gap": {"type": "boolean"}, "excluded_outputs": {"type": "array", "items": {"type": "string", "minLength": 1}}, "purpose": {"type": "string", "minLength": 1}, "source_statement_refs": {"$ref": "#/$defs/refArray"}, "children": {"$ref": "#/$defs/refArray"}, "capability_type": {"type": "string", "minLength": 1}, "inputs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "outputs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "decision_semantics": {"$ref": "#/$defs/decision"}, "invariants": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "witness_artifact_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/id"}}, "negative_fixture_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/id"}}, "traceability_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/id"}}}},
+    "decision": {"type": "object", "additionalProperties": false, "required": ["type", "decision_input", "decision_output", "terminal_decision_outputs", "decision_rules", "failure_modes", "authority_owner"], "properties": {"type": {"type": "string", "minLength": 1}, "decision_input": {"type": "array", "items": {"type": "string"}}, "decision_output": {"type": "array", "items": {"type": "string"}}, "terminal_decision_outputs": {"type": "array", "items": {"type": "string"}}, "decision_rules": {"type": "array", "items": {"type": "string"}}, "failure_modes": {"type": "array", "items": {"type": "string"}}, "authority_owner": {"type": "string", "minLength": 1}}},
+    "profile": {"type": "object", "additionalProperties": false, "required": ["id", "label", "source_target_id", "description", "claim_ceiling", "coverage_goals", "requirements"], "properties": {"id": {"$ref": "#/$defs/id"}, "label": {"type": "string", "minLength": 1}, "source_target_id": {"$ref": "#/$defs/id"}, "description": {"type": "string"}, "claim_ceiling": {"type": "string", "minLength": 1}, "coverage_goals": {"type": "array", "minItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["id", "minimum_coverage_state", "minimum_lifecycle_state"], "properties": {"id": {"enum": ["contract", "implementation"]}, "minimum_coverage_state": {"type": "string"}, "minimum_lifecycle_state": {"type": "string"}}}}, "requirements": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "source_requirement_ref", "title", "node_ids", "coverage_type", "validation_owner", "witness_evidence_mapping", "nf_evidence_mapping", "claim_ceiling", "missing_items"], "properties": {"id": {"$ref": "#/$defs/id"}, "source_requirement_ref": {"$ref": "#/$defs/id"}, "title": {"type": "string"}, "node_ids": {"$ref": "#/$defs/refArray"}, "coverage_type": {"enum": ["direct", "supporting", "boundary"]}, "validation_owner": {"type": "string", "minLength": 1}, "witness_evidence_mapping": {"type": "array"}, "nf_evidence_mapping": {"type": "array"}, "claim_ceiling": {"type": "string"}, "missing_items": {"type": "array", "items": {"type": "string"}}, "required_scope": {"type": "array", "items": {"type": "string", "minLength": 1}}, "minimum_effective_state": {"type": "string"}, "required_breadth": {"enum": ["single_trial", "single_repo", "known_family", "multi_repo", "cross_language", "arbitrary_attempt"]}, "acceptance_predicates": {"type": "array", "items": {"type": "string", "minLength": 1}}, "gap_policy": {"enum": ["mandatory_gap_blocks_met"]}}}}}}
+  }
+}

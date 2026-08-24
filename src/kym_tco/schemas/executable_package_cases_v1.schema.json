@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.executable_package_cases.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "contract_id", "contract_revision", "scenario_matrix", "cases"],
+  "properties": {
+    "schema": {"const": "kym_tco.executable_package_cases.v1"},
+    "contract_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "contract_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "scenario_matrix": {
+      "type": "array",
+      "minItems": 15,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scenario_id", "description", "owner_session", "evidence_posture", "linked_case_id", "expected_axes", "expected_finding_code"],
+        "properties": {
+          "scenario_id": {"type": "string", "pattern": "^SP027-SC-[0-9]{2}$"},
+          "description": {"type": "string", "minLength": 1},
+          "owner_session": {"enum": ["S-071", "S-072", "S-073", "S-074", "S-075", "S-076"]},
+          "evidence_posture": {"enum": ["executable", "contract_only"]},
+          "linked_case_id": {"type": ["string", "null"], "pattern": "^[A-Z0-9][A-Z0-9_-]*$"},
+          "expected_axes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["environment_status", "package_execution_status", "candidate_status", "verification_status", "audit_status", "approval_status"],
+            "properties": {
+              "environment_status": {"enum": ["ready", "cli_missing", "skill_missing", "version_mismatch", "workspace_invalid", "permission_blocked"]},
+              "package_execution_status": {"enum": ["not_started", "running", "completed", "completed_with_findings", "blocked", "failed"]},
+              "candidate_status": {"enum": ["candidate_not_approved", "invalid_candidate", "not_generated"]},
+              "verification_status": {"enum": ["not_run", "passed", "failed", "blocked"]},
+              "audit_status": {"enum": ["not_run", "passed", "findings", "blocker"]},
+              "approval_status": {"enum": ["not_requested", "pending_explicit_action", "approved", "rejected", "invalid"]}
+            }
+          },
+          "expected_finding_code": {"type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]*$"}
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "domain", "description", "input", "expected"],
+        "properties": {
+          "case_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9_-]*$"},
+          "domain": {"enum": ["doctor", "command_policy", "write_policy", "package", "harness"]},
+          "description": {"type": "string", "minLength": 1},
+          "input": {"type": "object"},
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["outcome", "environment_status", "finding_code", "fingerprint"],
+            "properties": {
+              "outcome": {"enum": ["pass", "expected_failure", "error"]},
+              "environment_status": {"enum": ["ready", "cli_missing", "skill_missing", "version_mismatch", "workspace_invalid", "permission_blocked"]},
+              "finding_code": {"type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]*$"},
+              "fingerprint": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+              "state_axes": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["environment_status", "package_execution_status", "candidate_status", "verification_status", "audit_status", "approval_status"],
+                "properties": {
+                  "environment_status": {"enum": ["ready", "cli_missing", "skill_missing", "version_mismatch", "workspace_invalid", "permission_blocked"]},
+                  "package_execution_status": {"enum": ["not_started", "running", "completed", "completed_with_findings", "blocked", "failed"]},
+                  "candidate_status": {"enum": ["candidate_not_approved", "invalid_candidate", "not_generated"]},
+                  "verification_status": {"enum": ["not_run", "passed", "failed", "blocked"]},
+                  "audit_status": {"enum": ["not_run", "passed", "findings", "blocker"]},
+                  "approval_status": {"enum": ["not_requested", "pending_explicit_action", "approved", "rejected", "invalid"]}
+                }
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"domain": {"const": "package"}}, "required": ["domain"]},
+            "then": {"properties": {"expected": {"required": ["state_axes"]}}}
+          }
+        ]
+      }
+    }
+  }
+}

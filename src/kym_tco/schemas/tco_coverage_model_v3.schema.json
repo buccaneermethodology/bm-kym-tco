@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "product_id", "source_tco_model", "source_tco_model_digest", "coverage_mode", "coverage_vocabulary_digest", "proposal_id", "candidate_status", "records"],
+  "properties": {
+    "schema": {"const": "kym_tco.tco_coverage_model.v3"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "source_tco_model": {"type": "string", "minLength": 1},
+    "source_tco_model_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "coverage_mode": {"enum": ["repo", "not_evaluated"]},
+    "coverage_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "proposal_id": {"type": "string", "minLength": 1},
+    "candidate_status": {"const": "candidate_not_approved"},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}}
+  },
+  "$defs": {
+    "state": {"type": "string", "minLength": 1},
+    "record": {"type": "object", "additionalProperties": false, "required": ["tco_node_id", "coverage_state", "evidence_peak_state", "effective_state", "claim_state", "capability_lifecycle_state", "validation_posture", "resolution_status", "claim_ceiling", "evidence", "requirement_coverage", "missing_coverage_requirement_ids"], "properties": {"tco_node_id": {"type": "string", "minLength": 1}, "coverage_state": {"$ref": "#/$defs/state"}, "evidence_peak_state": {"$ref": "#/$defs/state"}, "effective_state": {"$ref": "#/$defs/state"}, "claim_state": {"$ref": "#/$defs/state"}, "capability_lifecycle_state": {"enum": ["draft", "contract_defined", "implemented", "maintained", "deprecated"]}, "validation_posture": {"enum": ["not_validated", "producer_checked", "independently_validated"]}, "resolution_status": {"enum": ["resolved", "unresolved", "disputed"]}, "maintained_registration_ref": {"type": "string", "minLength": 1}, "lifecycle_owner": {"type": "string", "minLength": 1}, "continuous_gate_ref": {"type": "string", "minLength": 1}, "replacement_ref": {"type": "string", "minLength": 1}, "sunset_ref": {"type": "string", "minLength": 1}, "claim_ceiling": {"type": "string"}, "evidence": {"type": "array", "items": {"type": "object"}}, "candidate_evidence": {"type": "array", "items": {"type": "object"}}, "requirement_coverage": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["requirement_id", "coverage_state", "evidence_refs", "notes"], "properties": {"requirement_id": {"type": "string", "minLength": 1}, "coverage_state": {"$ref": "#/$defs/state"}, "evidence_refs": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}}}, "missing_coverage_requirement_ids": {"type": "array", "items": {"type": "string", "minLength": 1}}, "breadth_coverage": {"type": "object", "additionalProperties": {"$ref": "#/$defs/state"}}, "breadth_evidence": {"type": "array", "items": {"type": "object"}}}}
+  }
+}

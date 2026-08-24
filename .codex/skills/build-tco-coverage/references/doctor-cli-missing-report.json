@@ -1,0 +1,21 @@
+{
+  "schema": "kym_tco.doctor_report.v1",
+  "tool": "tco",
+  "skill_name": "build-tco-coverage",
+  "cli_version": null,
+  "expected_cli_version": "0.4.0",
+  "workspace": "<workspace>",
+  "product_id": "<product-id>",
+  "environment_status": "cli_missing",
+  "package_execution_status": "not_started",
+  "candidate_status": "not_generated",
+  "verification_status": "not_run",
+  "audit_status": "not_run",
+  "approval_status": "not_requested",
+  "findings": [{"code": "ENV_CLI_MISSING", "status": "cli_missing", "message": "CLI 不可用；Skill 不能执行本机确定性检查。"}],
+  "remediation": ["安装与 Skill 版本匹配的 kym-tco CLI，然后重新运行 kym --help、tco --help 和 doctor。"],
+  "checked_paths": ["<resolved-build-tco-coverage-skill-dir>/SKILL.md", "<workspace>/.kym-tco/<product-id>/config.json"],
+  "output_posture": "stdout_only",
+  "output_path": null,
+  "claim_ceiling": "本报告只说明 CLI 缺失；不证明语义正确、candidate 已生成、verification/audit 已运行、approval 已请求或生产就绪。"
+}

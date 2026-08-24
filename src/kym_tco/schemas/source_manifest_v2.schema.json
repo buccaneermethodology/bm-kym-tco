@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "source_id", "original_name", "snapshot_ref", "digest", "line_count", "ingested_at", "turns", "chunks", "repo_evidence"],
+  "properties": {
+    "schema": {"const": "kym_tco.source_manifest.v2"}, "source_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "original_name": {"type": "string"}, "snapshot_ref": {"type": "string"}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "line_count": {"type": "integer", "minimum": 1}, "ingested_at": {"type": "string"},
+    "turns": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "speaker", "start_line", "end_line"], "properties": {"id": {"type": "string", "pattern": "^t[0-9]{4,}$"}, "speaker": {"enum": ["user", "assistant", "chatgpt", "system", "developer", "unknown"]}, "start_line": {"type": "integer"}, "end_line": {"type": "integer"}}}},
+    "chunks": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "start_line", "end_line", "char_count", "ref", "digest"], "properties": {"id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*-c[0-9]{4,}$"}, "start_line": {"type": "integer"}, "end_line": {"type": "integer"}, "char_count": {"type": "integer"}, "ref": {"type": "string"}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}},
+    "repo_evidence": {"type": "object", "additionalProperties": false, "required": ["root_alias", "root_ref", "git_head", "dirty_status", "snapshot_kind", "files"], "properties": {"root_alias": {"type": "string"}, "root_ref": {"type": "string"}, "git_head": {"type": ["string", "null"]}, "dirty_status": {"type": "boolean"}, "snapshot_kind": {"enum": ["git_head", "git_head_plus_worktree"]}, "files": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["relative_path", "file_type", "digest"], "properties": {"relative_path": {"type": "string"}, "file_type": {"type": "string"}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}}}}
+  }
+}

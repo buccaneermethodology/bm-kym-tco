@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "product_id", "base_revision", "candidate_revision", "base_digest", "candidate_digest", "added", "modified", "moved", "conflicted", "superseded", "unresolved"],
+  "properties": {
+    "schema": {"const": "kym_tco.kym_delta.v1"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "base_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "candidate_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"},
+    "base_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "candidate_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "added": {"$ref": "#/$defs/ids"},
+    "modified": {"$ref": "#/$defs/ids"},
+    "moved": {"$ref": "#/$defs/ids"},
+    "conflicted": {"$ref": "#/$defs/ids"},
+    "superseded": {"$ref": "#/$defs/ids"},
+    "unresolved": {"$ref": "#/$defs/ids"}
+  },
+  "$defs": {
+    "ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}}
+  }
+}

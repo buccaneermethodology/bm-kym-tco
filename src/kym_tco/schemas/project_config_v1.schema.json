@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "product_id", "coverage_mode", "source_chunk_max_chars", "coverage_vocabulary", "coverage_vocabulary_digest", "evidence_roots", "verification_commands"],
+  "properties": {
+    "schema": {"const": "kym_tco.project_config.v1"},
+    "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "coverage_mode": {"enum": ["repo", "not_evaluated"]},
+    "source_chunk_max_chars": {"type": "integer", "minimum": 1000},
+    "coverage_vocabulary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["states"],
+      "properties": {
+        "states": {
+          "type": "array",
+          "minItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "rank", "label", "definition"],
+            "properties": {
+              "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+              "rank": {"type": "integer", "minimum": 0},
+              "label": {"type": "string", "minLength": 1},
+              "definition": {"type": "string", "minLength": 1},
+              "reserved": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "coverage_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "decision_outcome_vocabulary": {"type": "object", "additionalProperties": false, "required": ["id", "outcomes", "forbidden_aliases"], "properties": {"id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}, "outcomes": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}}, "forbidden_aliases": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}}}},
+    "decision_outcome_vocabulary_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "evidence_roots": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "verification_commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "argv", "cwd", "timeout_seconds", "node_ids"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "cwd": {"type": "string"},
+          "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 3600},
+          "node_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "allowed_env": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z_][A-Z0-9_]*$"}}
+        }
+      }
+    }
+  }
+}

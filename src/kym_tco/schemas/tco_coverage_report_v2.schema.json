@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "product_id", "report_mode", "coverage_mode", "source_tco_model_digest", "source_coverage_digest", "nodes", "target_profiles", "authority_note"],
+  "properties": {"schema": {"const": "kym_tco.tco_coverage_report.v2"}, "product_id": {"type": "string"}, "report_mode": {"const": "candidate_not_approved"}, "coverage_mode": {"enum": ["repo", "not_evaluated"]}, "source_tco_model_schema": {"type": "string"}, "source_tco_model_digest": {"type": "string"}, "source_coverage_digest": {"type": "string"}, "effect_status_vocabulary_ref": {"type": ["string", "null"]}, "execution_results": {"type": "array"}, "nodes": {"type": "array"}, "target_profiles": {"type": "array"}, "target_to_m1_traceability": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["profile_id", "requirement_id", "node_ids"], "properties": {"profile_id": {"type": "string"}, "requirement_id": {"type": "string"}, "node_ids": {"type": "array", "items": {"type": "string"}}}}}, "verification_results": {"type": "object"}, "authority_note": {"type": "string"}}
+}

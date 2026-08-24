@@ -1,0 +1,13 @@
+include README.md
+include README.zh-CN.md
+include LICENSE
+include NOTICE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include SECURITY.md
+include pyproject.toml
+recursive-include docs *.md
+recursive-include .codex/skills/build-kym *.md *.json *.py *.yaml
+recursive-include .codex/skills/build-tco-coverage *.md *.json *.py *.yaml
+recursive-include src/kym_tco/schemas *.json
+global-exclude __pycache__ *.py[cod] .DS_Store

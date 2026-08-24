@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kym_tco.kym_package_lineage.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "lineage_kind", "base_revision", "base_digest", "candidate_digest", "source_closure_digest", "delta_status", "delta_ref", "delta_digest"],
+  "properties": {
+    "schema": {"const": "kym_tco.kym_package_lineage.v1"},
+    "lineage_kind": {"enum": ["initial", "revision"]},
+    "base_revision": {"type": ["string", "null"], "pattern": "^r[0-9]{3,}$"},
+    "base_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "candidate_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "source_closure_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "delta_status": {"enum": ["not_applicable_initial_revision", "present"]},
+    "delta_ref": {"type": ["string", "null"], "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"},
+    "delta_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {"if": {"properties": {"lineage_kind": {"const": "initial"}}, "required": ["lineage_kind"]}, "then": {"properties": {"base_revision": {"const": null}, "base_digest": {"const": null}, "delta_status": {"const": "not_applicable_initial_revision"}, "delta_ref": {"const": null}, "delta_digest": {"const": null}}}},
+    {"if": {"properties": {"lineage_kind": {"const": "revision"}}, "required": ["lineage_kind"]}, "then": {"properties": {"base_revision": {"type": "string", "pattern": "^r[0-9]{3,}$"}, "base_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "delta_status": {"const": "present"}, "delta_ref": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"}, "delta_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}}
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "label", "objective", "requirement_refs", "claim_ceiling", "exclusions"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "label": {"type": "string", "minLength": 1},
+    "objective": {"type": "string", "minLength": 1},
+    "requirement_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"}},
+    "claim_ceiling": {"type": "string", "minLength": 1},
+    "exclusions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}
