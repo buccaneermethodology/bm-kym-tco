@@ -32,3 +32,8 @@ Use `build-kym` to create source-traceable KYM drafts and `build-tco-coverage` t
 `bm-kym-tco` is a one-way public projection of the internal `kym-tco` source. The internal repository remains the maintenance source of truth. Public changes are produced from an explicit allowlist, reviewed for license and leakage, and read back by digest; the public repository is not automatically merged back into the internal repository.
 
 See [the Chinese installation guide](docs/INSTALLATION_AND_USAGE.zh-CN.md), [the KYM-to-TCO workflow](docs/KYM_TO_TCO_WORKFLOW.zh-CN.md), [the release checklist](docs/OPEN_SOURCE_CHECKLIST.zh-CN.md), [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+
+## Maintenance
+
+- Maintainer: Tai Xiaomei <buccaneermethodology@gmail.com>
+- GitHub: [@buccaneermethodology](https://github.com/buccaneermethodology)
