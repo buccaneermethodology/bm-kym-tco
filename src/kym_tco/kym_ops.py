@@ -21,6 +21,7 @@ from .common import (
     write_json,
 )
 from .validation import validate_document
+from .reader_markdown import validate_reader_markdown
 from .workspace import load_config
 
 
@@ -684,7 +685,9 @@ def render_kym(document: dict[str, Any], root: Path) -> str:
             lines.append("")
             lines.append(f"Claim ceiling：{target['claim_ceiling']}")
             lines.append("")
-    return "\n".join(lines).rstrip() + "\n"
+    rendered = "\n".join(lines).rstrip() + "\n"
+    validate_reader_markdown(rendered)
+    return rendered
 
 
 def render_kym_file(workspace: Path, product_id: str, input_path: Path, output_path: Path | None) -> Path:
@@ -692,7 +695,9 @@ def render_kym_file(workspace: Path, product_id: str, input_path: Path, output_p
     document = validate_kym_file(workspace, product_id, input_path)
     target = output_path or root / "kym" / "views" / f"kym-{document['revision']}.md"
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(render_kym(document, root), encoding="utf-8")
+    rendered = render_kym(document, root)
+    target.write_text(rendered, encoding="utf-8")
+    validate_reader_markdown(target.read_text(encoding="utf-8"), expected=rendered)
     return target
 
 

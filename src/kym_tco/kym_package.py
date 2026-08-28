@@ -11,6 +11,7 @@ from typing import Any
 from .common import ContractError, digest_bytes, digest_value, load_json, next_revision, project_root, utc_now
 from .kym_ops import build_delta, reader_manifest_digest, render_kym, semantic_validate_kym, source_closure_digest
 from .semantic_risk import audit_kym_candidate
+from .reader_markdown import audit_reader_markdown
 from .validation import validate_document
 
 
@@ -223,6 +224,21 @@ def build_kym_candidate_package(workspace: Path, product_id: str, candidate_path
     if base is not None:
         delta = build_delta(base, normalized)
     reader = render_kym(normalized, root).encode("utf-8")
+    reader_audit = audit_reader_markdown(reader.decode("utf-8"), expected=render_kym(normalized, root))
+    if reader_audit["error_count"]:
+        manifest = _failure_manifest(
+            package_id,
+            product_id,
+            "candidate_audit_blocked",
+            "PACKAGE_AUDIT_BLOCKER",
+            _axes("blocked", "candidate_not_approved", "blocker"),
+            _command("reader-markdown", argv, 1, "noncanonical reader Markdown", "reader-audit.json"),
+        )
+        try:
+            _publish_failure(target, manifest, {"reader-audit.json": _json_bytes(reader_audit)})
+            return {**manifest, "package_dir": str(target)}
+        except (ContractError, OSError):
+            return {**manifest, "package_dir": None}
     closure = source_closure_digest(normalized, root)
     revision_rel = f"kym/revisions/kym-{revision}.json"
     reader_rel = f"kym/views/kym-{revision}.md"
@@ -242,7 +258,7 @@ def build_kym_candidate_package(workspace: Path, product_id: str, candidate_path
     payloads: dict[str, tuple[bytes, str]] = {
         revision_rel: (_json_bytes(normalized), "store-revision"), reader_rel: (reader, "render-reader"),
         "source-manifest.json": (_json_bytes(source_inventory), "source-closure"), "validation.json": (_json_bytes(validation_report), "validate"),
-        "audit.json": (_json_bytes(audit), "lint-audit"), "lineage.json": (_json_bytes(lineage), "lineage"),
+        "audit.json": (_json_bytes(audit), "lint-audit"), "reader-audit.json": (_json_bytes(reader_audit), "reader-markdown"), "lineage.json": (_json_bytes(lineage), "lineage"),
     }
     if delta is not None and delta_rel is not None:
         payloads[delta_rel] = (_json_bytes(delta), "build-delta")
@@ -251,7 +267,7 @@ def build_kym_candidate_package(workspace: Path, product_id: str, candidate_path
     index = {"schema": "kym_tco.kym_package_artifact_index.v1", "package_id": package_id, "artifacts": artifacts}
     validate_document("kym_package_artifact_index", index)
     index_raw = _json_bytes(index)
-    commands = [_command("validate", argv, 0, "schema and semantics passed", "validation.json"), _command("lint-audit", argv, 0, "shared audit engine passed", "audit.json"), _command("publish", argv, 0, "staged payload ready", "artifact-index.json")]
+    commands = [_command("validate", argv, 0, "schema and semantics passed", "validation.json"), _command("lint-audit", argv, 0, "shared audit engine passed", "audit.json"), _command("reader-markdown", argv, 0, "canonical grammar and rerender bytes passed", "reader-audit.json"), _command("publish", argv, 0, "staged payload ready", "artifact-index.json")]
     manifest = {"schema": "kym_tco.kym_package_manifest.v1", "package_id": package_id, "product_id": product_id, "state_axes": _axes("completed", "candidate_not_approved", "passed"), "result": "candidate_package_ready", "finding_code": None, "case_fingerprint": None, "command_evidence": commands, "artifact_index": {"path": "artifact-index.json", "path_scope": "package_dir", "digest": digest_bytes(index_raw), "producer": "artifact-index", "candidate_boundary": "candidate_not_approved"}, "self_integrity": {"path": "package-manifest.json", "path_scope": "package_dir", "digest": "sha256:" + "0" * 64, "digest_algorithm": "sha256_canonical_json_without_self_integrity_digest", "checksum_ref": "package-manifest.sha256", "producer": "package-manifest", "candidate_boundary": "candidate_not_approved"}, "claim_ceiling": CLAIM_CEILING}
     _seal_manifest(manifest)
     validate_document("kym_package_manifest", manifest)
@@ -281,6 +297,8 @@ def build_kym_candidate_package(workspace: Path, product_id: str, candidate_path
             destination = root / rel
             destination.parent.mkdir(parents=True, exist_ok=True)
             os.replace(stage / "payload" / rel, destination)
+            if destination.read_bytes() != payloads[rel][0]:
+                raise ContractError(f"canonical readback byte mismatch: {rel}")
             published.append(destination)
         for rel in set(payloads) - canonical_paths:
             destination = stage / rel

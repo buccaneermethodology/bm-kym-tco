@@ -1,10 +1,10 @@
 # KYM Semantic Placement
 
-Reachable placement gate. In a host repository, use its documented semantic-placement contract; this portable reference does not depend on a private KB path.
+Reachable placement gate. In kym-tco, `kb/data/kym_semantic_placement.json` is canonical truth and `kb/docs/KYM_Semantic_Placement.md` is generated.
 
 ## Two-Pass Gate
 
-1. Ledger source units: speaker/source authority, Product actor, evidence, semantic purpose, time/support status, candidate node, excluded neighbors, conflict/uncertainty, inference boundary.
+1. Classify source units as product-domain, source-identity, or host-execution-metadata; exclude coding-host/session/worktree/global-instruction/child-agent details. Then ledger speaker/source authority, Product actor, evidence, semantic purpose, time/support status, candidate node, excluded neighbors, conflict/uncertainty, inference boundary.
 2. Reverse-walk fixed nodes against admission questions. Empty nodes are valid. Speaker/authority is provenance, not Product actor role.
 3. For Goal/plan input, classify status as source snapshot, verified current fact, or candidate/proposal.
 4. Split mixed text: if one sentence defines a term and states a rule, create separate statements.
@@ -36,7 +36,7 @@ Business Rules may use a semantic parent and topic groups for shared leaves. Par
 
 Keep `target_profiles=[]` unless Target is explicit or preserved. A Goal, Session, trial, plan, or execution DAG is not a Target unless the source identifies enduring user/product value or says the Goal is a Target.
 
-`Target-B Mainline` plus `Target-A Calibration/Promotion Side-lane` requires two complete candidate Profiles with id, label, objective, refs, claim ceiling, and exclusions. Keep effect-status axes distinct from final verdicts.
+Every generated Target Profile must have a current-source-supported label, objective, refs, claim ceiling, and exclusions. Never import labels or a paired Target shape from a shipped example. Keep effect-status axes distinct from final verdicts.
 
 ## Pre-Validation Checklist
 

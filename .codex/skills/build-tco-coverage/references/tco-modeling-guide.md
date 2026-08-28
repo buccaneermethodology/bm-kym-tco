@@ -41,7 +41,7 @@ Counted path evidence stays in trusted roots/kinds; command evidence names a reg
 
 The weakest direct state or mandatory coverage requirement state determines v4 effective Coverage. Direct state cannot hide a weaker branch. Coverage IDs align to declared inputs/outputs/outcomes/failures/metadata. Any state above `not_started` needs counted evidence.
 
-A Gap is a Target requirement whose mapped M set misses the threshold. Report denominator, Met, Gap, node gaps and claim ceiling. In `not_evaluated`, report N/A, not 0/N. TCO never auto-writes a host Dashboard or Goal record.
+A Gap is a Target requirement whose mapped M set misses the threshold. Report denominator, Met, Gap, node gaps and claim ceiling. In `not_evaluated`, report N/A, not 0/N. TCO never auto-writes Dashboard/Goal.
 
 ## Candidate Review
 

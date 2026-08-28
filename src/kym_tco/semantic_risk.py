@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .common import ContractError, digest_value, load_json, project_root
+from .common import ContractError, digest_bytes, digest_value, load_json, project_root, resolved_within
 from .validation import validate_document
 from .workspace import load_config, state_rank
 
@@ -192,13 +192,27 @@ ACTOR_RE = re.compile(
 # 这些正则只用于 candidate lint 的可解释提示，不把关键词命中当成
 # 产品事实或批准依据。Target 触发必须同时出现 A/B 两条明确标签，避免
 # 普通文档中的 ``Target A`` profile 或 calibration 文字造成误报。
-EXPLICIT_TARGET_B_RE = re.compile(
-    r"\btarget\s*[-_ ]?b\s+mainline\b|\btarget[-_ ]?b\s+mainline\b",
+EXPLICIT_TARGET_AUTHORITY_RE = re.compile(
+    r"\btarget(?:\s+profiles?)?\b|目标画像|目标档案|目标配置",
     re.IGNORECASE,
 )
-EXPLICIT_TARGET_A_RE = re.compile(
-    r"\btarget\s*[-_ ]?a\s+(?:calibration\s*(?:and|/)\s*promotion|calibration)"
-    r"(?:\s+side[-_ ]?lane)?\b",
+NEGATED_TARGET_AUTHORITY_RE = re.compile(
+    r"\b(?:not|never)\s+(?:an?\s+)?target(?:\s+profiles?)?\b|"
+    r"\b(?:no|do\s+not|don't|must\s+not|shall\s+not|should\s+not|never)\b[^\n]{0,40}\btarget(?:\s+profiles?)?\b|"
+    r"\btarget(?:\s+profiles?)?\b[^\n]*(?:is|are)\s+not\b|"
+    r"(?:不是|并非|不得作为|不构成|不属于|非)(?:[^\n]{0,12})(?:Target|目标画像|目标档案|目标配置)|"
+    r"(?:不要|不得|禁止|无需|不应|不可)[^\n]{0,24}(?:Target|目标画像|目标档案|目标配置)",
+    re.IGNORECASE,
+)
+PRODUCT_INSTRUCTION_CAPABILITY_RE = re.compile(
+    r"(?:产品|系统|服务|product|system|service)"
+    r"[^\n]{0,48}(?:parse|read|display|show|解析|读取|展示)"
+    r"[^\n]{0,48}(?:global\s+|全局)?(?:CLAUDE|AGENTS)\.md",
+    re.IGNORECASE,
+)
+HOST_POLICY_CONTEXT_RE = re.compile(
+    r"coding\s+(?:host|session)|host\s+instructions?|"
+    r"(?:controls?|forbids?|disabled?|policy)|编码(?:宿主|会话)|宿主指令|(?:控制|禁止|禁用)宿主",
     re.IGNORECASE,
 )
 PRODUCT_DIRECTION_RE = re.compile(
@@ -214,6 +228,133 @@ PSEUDO_TCO_RE = re.compile(
     r"(?:^|[-_\s])(m\d{1,3}|tsp|tco|coverage(?:[-_\s]?(?:tree|model|state|proposal))?)(?:$|[-_\s])",
     re.IGNORECASE,
 )
+HOST_EXECUTION_PATTERNS = {
+    "global_instruction_file": re.compile(
+        r"(?:global|全局)[^\n]*(?:CLAUDE|AGENTS)\.md|"
+        r"(?:CLAUDE|AGENTS)\.md[^\n]*(?:coding\s+host|coding\s+session|host\s+instructions?|编码宿主|编码会话)",
+        re.IGNORECASE,
+    ),
+    "enter_worktree": re.compile(r"EnterWorktree", re.IGNORECASE),
+    "child_agent_session": re.compile(r"spawn\s+child\s+agents?|child[-_ ]agents?.*main\s+session|main\s+session.*child[-_ ]agents?", re.IGNORECASE),
+    "worktree_host_policy": re.compile(r"worktree.*(?:禁用|禁止|forbid|disabled|isolation|隔离|漂移)|(?:禁用|禁止|forbid|disabled).*worktree", re.IGNORECASE),
+    "coding_host_branch": re.compile(
+        r"(?:coding\s+host|coding\s+session|编码宿主|编码会话).*(?:feature\s+)?branch|"
+        r"(?:feature\s+)?branch.*(?:coding\s+host|coding\s+session|编码宿主|编码会话)",
+        re.IGNORECASE,
+    ),
+    "host_model_tool_budget": re.compile(
+        r"(?:coding\s+host|coding\s+session|编码宿主|编码会话).*"
+        r"(?:model[-_ ]?(?:use|budget)|tool[-_ ]?(?:use|budget)|token[-_ ]?budget)",
+        re.IGNORECASE,
+    ),
+}
+SHIPPED_EXAMPLE_MARKERS = (
+    "P05 Target-B Candidate Governance",
+    "Target-B Mainline",
+    "Target-A Calibration and Promotion Side-lane",
+    "Target-A Calibration/Promotion Side-lane",
+)
+
+
+def _source_corpus(document: dict[str, Any], root: Path) -> str:
+    """读取当前 candidate 已登记 source snapshot；不把候选自身当成来源。"""
+
+    texts: list[str] = []
+    for manifest_ref in document.get("source_manifest_refs", []):
+        if not isinstance(manifest_ref, str):
+            continue
+        try:
+            manifest_path = resolved_within(root, manifest_ref, "source_manifest_ref")
+            manifest = load_json(manifest_path)
+            snapshot_ref = manifest.get("snapshot_ref")
+            if isinstance(snapshot_ref, str):
+                snapshot_path = resolved_within(root, snapshot_ref, "source snapshot")
+                snapshot_bytes = snapshot_path.read_bytes()
+                if manifest.get("digest") != digest_bytes(snapshot_bytes):
+                    continue
+                texts.append(snapshot_bytes.decode("utf-8"))
+        except (ContractError, OSError, ValueError):
+            continue
+    return "\n".join(texts)
+
+
+def _audit_kym_cross_project_isolation(document: dict[str, Any], root: Path) -> list[Finding]:
+    findings: list[Finding] = []
+    corpus = _normalize_text(_source_corpus(document, root))
+
+    surfaces: list[tuple[str, str, str]] = []
+    for statement in document.get("statements", []):
+        surfaces.append((f"/statements/{statement['id']}", statement["id"], str(statement.get("text", ""))))
+    for node in _walk_kym_tree(document["tree"]):
+        surfaces.append((f"/tree/{node['id']}/title", node["id"], str(node.get("title", ""))))
+
+    for path, subject_id, text in surfaces:
+        matched = sorted(name for name, pattern in HOST_EXECUTION_PATTERNS.items() if pattern.search(text))
+        if PRODUCT_INSTRUCTION_CAPABILITY_RE.search(text) and not HOST_POLICY_CONTEXT_RE.search(text):
+            matched = [name for name in matched if name != "global_instruction_file"]
+        if not matched:
+            continue
+        findings.append(
+            _finding(
+                "KYM_HOST_EXECUTION_METADATA_LEAK",
+                "error",
+                "kym",
+                path,
+                [subject_id],
+                "KYM tree 含 coding-host、worktree 或会话调度元数据；这类信息属于生成宿主，不属于被分析产品。",
+                {"matched_patterns": matched, "text": text},
+                confidence="high",
+                current_node_ids=[subject_id] if path.startswith("/tree/") else [],
+                suggested_node_ids=[],
+            )
+        )
+
+    for node in _walk_kym_tree(document["tree"]):
+        title = str(node.get("title", ""))
+        marker = next((item for item in SHIPPED_EXAMPLE_MARKERS if _normalize_text(item) == _normalize_text(title)), None)
+        if marker is None or _normalize_text(marker) in corpus:
+            continue
+        findings.append(
+            _finding(
+                "KYM_EXAMPLE_TEMPLATE_LEAK",
+                "error",
+                "kym",
+                f"/tree/{node['id']}/title",
+                [node["id"]],
+                "KYM 使用了随历史示例出现的专用标题，但当前 source snapshot 没有逐字支持。",
+                {"title": title, "required_source_marker": marker},
+                confidence="high",
+                current_node_ids=[node["id"]],
+                suggested_node_ids=["source-derived-topic-parent"],
+            )
+        )
+
+    for profile in document.get("target_profiles", []):
+        profile_id = str(profile.get("id", "target-profile"))
+        label = str(profile.get("label", ""))
+        marker = next(
+            (item for item in SHIPPED_EXAMPLE_MARKERS if _normalize_text(item) == _normalize_text(label)),
+            None,
+        )
+        # 普通 source-derived label 通过 requirement_refs 绑定当前 statements；
+        # 这里仅对历史已分发示例的精确标签要求 source snapshot 逐字支持。
+        if marker is None or _normalize_text(marker) in corpus:
+            continue
+        findings.append(
+            _finding(
+                "KYM_EXAMPLE_TEMPLATE_LEAK",
+                "error",
+                "kym",
+                f"/target_profiles/{profile_id}/label",
+                [profile_id],
+                "Target Profile label 必须由当前 source snapshot 显式支持，不能从历史示例或通用模板注入。",
+                {"label": label, "required_source_marker": marker, "source_support": "not_found"},
+                confidence="high",
+                current_node_ids=[profile_id],
+                suggested_node_ids=["target_profiles"],
+            )
+        )
+    return findings
 
 
 FIXED_SECOND_LEVEL = {
@@ -271,23 +412,73 @@ def _document_texts(document: dict[str, Any]) -> list[str]:
     return texts
 
 
-def _has_explicit_target_pair(document: dict[str, Any]) -> tuple[bool, dict[str, list[str]]]:
-    """Only explicit Target-B Mainline + Target-A calibration labels trigger completeness."""
-
-    b_hits = [text for text in _document_texts(document) if EXPLICIT_TARGET_B_RE.search(text)]
-    a_hits = [text for text in _document_texts(document) if EXPLICIT_TARGET_A_RE.search(text)]
-    return bool(b_hits and a_hits), {"target_b": sorted(set(b_hits)), "target_a": sorted(set(a_hits))}
-
-
-def _audit_kym_target_profiles(document: dict[str, Any]) -> list[Finding]:
+def _audit_kym_target_profiles(
+    document: dict[str, Any],
+    root: Path,
+    base: dict[str, Any] | None = None,
+) -> list[Finding]:
     findings: list[Finding] = []
-    explicit, context = _has_explicit_target_pair(document)
-    if not explicit:
-        return findings
-
+    source_corpus = _source_corpus(document, root)
+    normalized_source = _normalize_text(source_corpus)
     statement_ids = {item["id"] for item in document.get("statements", [])}
     statements = _statement_by_id(document)
     profiles = document.get("target_profiles", [])
+    base_profiles = {
+        str(profile.get("id", "")): profile
+        for profile in (base or {}).get("target_profiles", [])
+        if profile.get("id")
+    }
+
+    # Candidate output cannot create its own Target authority. A byte-for-value
+    # preserved base Profile is accepted as revision preservation; every new or
+    # changed Profile must be explicitly and field-by-field supported by the
+    # registered current source snapshots.
+    for profile in profiles:
+        profile_id = str(profile.get("id", "target-profile"))
+        if profile_id in base_profiles and profile == base_profiles[profile_id]:
+            continue
+        unsupported_fields: list[str] = []
+        target_authority_lines = [
+            line
+            for line in source_corpus.splitlines()
+            if EXPLICIT_TARGET_AUTHORITY_RE.search(line)
+            and not NEGATED_TARGET_AUTHORITY_RE.search(line)
+        ]
+        if not target_authority_lines:
+            unsupported_fields.append("target_authority")
+        for field in ("label", "objective"):
+            value = str(profile.get(field, "")).strip()
+            if not value or _normalize_text(value) not in normalized_source:
+                unsupported_fields.append(field)
+        unsupported_requirement_refs = sorted(
+            ref_id
+            for ref_id in profile.get("requirement_refs", [])
+            if ref_id not in statements
+            or not str(statements[ref_id].get("text", "")).strip()
+            or _normalize_text(str(statements[ref_id].get("text", ""))) not in normalized_source
+        )
+        if unsupported_requirement_refs:
+            unsupported_fields.append("requirement_refs")
+        if not unsupported_fields:
+            continue
+        findings.append(
+            _finding(
+                "KYM_TARGET_PROFILE_SOURCE_NOT_EXPLICIT",
+                "error",
+                "kym",
+                f"/target_profiles/{profile_id}",
+                [profile_id],
+                "新增或变更的 Target Profile 只能由当前登记 source snapshot 显式授权并支持，不能由候选自身自证。",
+                {
+                    "unsupported_fields": sorted(set(unsupported_fields)),
+                    "unsupported_requirement_refs": unsupported_requirement_refs,
+                    "base_profile_preserved": False,
+                },
+                confidence="high",
+                current_node_ids=[profile_id],
+                suggested_node_ids=["target_profiles"],
+            )
+        )
 
     profile_ids = [str(profile.get("id", "")) for profile in profiles]
     duplicate_profile_ids = sorted({item for item in profile_ids if profile_ids.count(item) > 1 and item})
@@ -307,70 +498,66 @@ def _audit_kym_target_profiles(document: dict[str, Any]) -> list[Finding]:
             )
         )
 
-    def matches(profile: dict[str, Any], target: str) -> bool:
-        haystack = f"{profile.get('id', '')} {profile.get('label', '')}".casefold()
-        return bool(re.search(rf"target\s*[-_ ]?{target}\b", haystack))
-
-    expected = {target: [profile for profile in profiles if matches(profile, target)] for target in ("a", "b")}
-    for target in ("a", "b"):
-        if expected[target]:
+    for profile in profiles:
+        profile_id = str(profile.get("id", "target-profile"))
+        path = f"/target_profiles/{profile_id}"
+        missing_fields = [
+            field
+            for field in ("objective", "requirement_refs", "claim_ceiling", "exclusions")
+            if not profile.get(field)
+        ]
+        invalid_refs = sorted(set(profile.get("requirement_refs", [])) - statement_ids)
+        blocked_refs = sorted(
+            ref_id
+            for ref_id in profile.get("requirement_refs", [])
+            if ref_id in statements
+            and (
+                statements[ref_id].get("support_status") in {"disputed", "unresolved", "superseded"}
+                or "naming_conventions" in statements[ref_id].get("tree_node_ids", [])
+            )
+        )
+        if not missing_fields and not invalid_refs and not blocked_refs:
             continue
         findings.append(
             _finding(
-                "KYM_TARGET_PROFILE_MISSING",
-                "warning",
+                "KYM_TARGET_PROFILE_INCOMPLETE",
+                "error",
                 "kym",
-                "/target_profiles",
-                ["target_profiles"],
-                f"输入明确要求 Target-{target.upper()}，但候选未提供对应 Target Profile。",
-                {"target": f"target-{target}", "explicit_context": context},
+                path,
+                [profile_id, "target_profiles"],
+                "Target Profile 合同不完整，必须有 objective、requirement_refs、claim ceiling 和 exclusions。",
+                {
+                    "missing_fields": missing_fields,
+                    "invalid_requirement_refs": invalid_refs,
+                    "blocked_requirement_refs": blocked_refs,
+                },
                 confidence="high",
-                current_node_ids=["target_profiles"],
-                suggested_node_ids=[f"target-{target}"],
+                current_node_ids=[profile_id],
+                suggested_node_ids=["target_profiles"],
             )
         )
-
-    for target, target_profiles in expected.items():
-        for profile in target_profiles:
-            profile_id = str(profile.get("id", f"target-{target}"))
-            path = f"/target_profiles/{profile_id}"
-            missing_fields = [
-                field
-                for field in ("objective", "requirement_refs", "claim_ceiling", "exclusions")
-                if not profile.get(field)
-            ]
-            invalid_refs = sorted(set(profile.get("requirement_refs", [])) - statement_ids)
-            blocked_refs = sorted(
-                ref_id
-                for ref_id in profile.get("requirement_refs", [])
-                if ref_id in statements
-                and (
-                    statements[ref_id].get("support_status") in {"disputed", "unresolved", "superseded"}
-                    or "naming_conventions" in statements[ref_id].get("tree_node_ids", [])
-                )
-            )
-            if not missing_fields and not invalid_refs and not blocked_refs:
-                continue
-            findings.append(
-                _finding(
-                    "KYM_TARGET_PROFILE_INCOMPLETE",
-                    "error",
-                    "kym",
-                    path,
-                    [profile_id, "target_profiles"],
-                    f"明确 Target-{target.upper()} 的 Profile 合同不完整，必须有 objective、requirement_refs、claim ceiling 和 exclusions。",
-                    {
-                        "target": f"target-{target}",
-                        "missing_fields": missing_fields,
-                        "invalid_requirement_refs": invalid_refs,
-                        "blocked_requirement_refs": blocked_refs,
-                    },
-                    confidence="high",
-                    current_node_ids=[profile_id],
-                    suggested_node_ids=["target_profiles"],
-                )
-            )
     return findings
+
+
+def _canonical_revision_base(
+    root: Path,
+    candidate: dict[str, Any],
+    base: dict[str, Any] | None,
+    base_path: Path | None,
+) -> dict[str, Any] | None:
+    """Only a revision-store identity can authorize Profile preservation."""
+
+    if base is None or base_path is None:
+        return None
+    revision = str(base.get("revision", ""))
+    expected = (root / "kym" / "revisions" / f"kym-{revision}.json").resolve()
+    try:
+        actual = base_path.resolve(strict=True)
+    except OSError:
+        return None
+    if actual != expected or candidate.get("base_revision") != revision:
+        return None
+    return base
 
 
 def _audit_kym_business_rules_shape(document: dict[str, Any]) -> list[Finding]:
@@ -381,87 +568,6 @@ def _audit_kym_business_rules_shape(document: dict[str, Any]) -> list[Finding]:
     branch = node_by_id.get("business_rules")
     if branch is None:
         return findings
-
-    children = list(branch.get("children", []))
-    leaves = [child for child in children if child.get("children") == []]
-    direct_refs = list(branch.get("statement_refs", []))
-    total_rule_leaves = len(leaves) + len(direct_refs)
-    # 旧版 KYM 的普通 flat rule list 仍是合法 candidate 形状；本增量只
-    # 对 P05 Target-B/candidate-governance 语境要求核心主题父级，避免对
-    # TaskMonitor 等受保护 Golden 施加新的结构性语义。
-    p05_context = bool(
-        re.search(
-            r"(target\s*[-_ ]?b|candidate|provider[-_ ]?backed|diagnostic|promotion|governance)",
-            " ".join(_document_texts(document)),
-            re.IGNORECASE,
-        )
-    )
-    # 多个同层 rule leaf 或根节点直接挂多个 statement，说明缺少核心主题父级。
-    if p05_context and total_rule_leaves >= 2 and not children:
-        findings.append(
-            _finding(
-                "KYM_BUSINESS_RULES_OVER_FLAT",
-                "warning",
-                "kym",
-                "/tree/business_rules",
-                ["business_rules", *direct_refs, *(child["id"] for child in leaves)],
-                "Business Rules 规则叶子过度平铺；应先按核心主题建立父级，再挂条件/约束叶子。",
-                {"direct_statement_count": len(direct_refs), "direct_leaf_count": len(leaves)},
-                confidence="high",
-                current_node_ids=["business_rules", *(child["id"] for child in leaves)],
-                suggested_node_ids=["business_rules:p05-target-b-candidate-governance"],
-            )
-        )
-    elif p05_context and total_rule_leaves >= 2 and children and all(child.get("children") == [] for child in children):
-        findings.append(
-            _finding(
-                "KYM_BUSINESS_RULES_PARENT_MISSING",
-                "warning",
-                "kym",
-                "/tree/business_rules/children",
-                ["business_rules", *(child["id"] for child in children)],
-                "Business Rules 有多个同层节点但缺少核心主题父级分解。",
-                {"child_ids": sorted(child["id"] for child in children)},
-                confidence="high",
-                current_node_ids=["business_rules", *(child["id"] for child in children)],
-                suggested_node_ids=["business_rules:p05-target-b-candidate-governance"],
-            )
-        )
-
-    # A named P05 governance parent is not enough if it merely becomes a new
-    # flat bucket for every rule.  Require topic children once the parent has
-    # several direct statements; ordinary non-P05 KYM and one-off rules remain
-    # unaffected.
-    for child in children:
-        marker = f"{child.get('id', '')} {child.get('title', '')}"
-        direct_child_refs = list(child.get("statement_refs", []))
-        if (
-            p05_context
-            and len(direct_child_refs) >= 2
-            and not child.get("children")
-            and re.search(r"(p05|candidate|governance|provider|promotion)", marker, re.IGNORECASE)
-        ):
-            findings.append(
-                _finding(
-                    "KYM_BUSINESS_RULES_PARENT_FLAT",
-                    "warning",
-                    "kym",
-                    f"/tree/business_rules/{child['id']}/statement_refs",
-                    [child["id"], *direct_child_refs],
-                    "P05 Business Rules 语义父节点不应只是平铺规则容器；应继续按主题建立子节点。",
-                    {
-                        "parent_id": child["id"],
-                        "direct_statement_count": len(direct_child_refs),
-                    },
-                    confidence="high",
-                    current_node_ids=["business_rules", child["id"], *direct_child_refs],
-                    suggested_node_ids=[
-                        f"{child['id']}:candidate-output-contract",
-                        f"{child['id']}:diagnostics",
-                        f"{child['id']}:provider-and-promotion",
-                    ],
-                )
-            )
 
     # 只对节点标题/id 中明确的 TCO/M/TSP/Coverage 形状报警，避免规则正文
     # 讨论“不得生成 TCO”时被误报。
@@ -963,7 +1069,7 @@ def audit_kym_candidate(
     candidate_path: Path,
     base_path: Path | None = None,
 ) -> dict[str, Any]:
-    project_root(workspace, product_id)
+    root = project_root(workspace, product_id)
     candidate = load_json(candidate_path)
     # Target Profile 的 minItems/minLength 形状由 candidate lint 解释为
     # 可定位 finding；其余 schema 错误仍保持既有 hard rejection。这样 CLI
@@ -985,8 +1091,10 @@ def audit_kym_candidate(
     findings = _audit_kym_tree_references(candidate)
     findings.extend(_audit_kym_roles(candidate))
     findings.extend(_audit_kym_semantic_placement(candidate))
-    findings.extend(_audit_kym_target_profiles(candidate))
+    preservation_base = _canonical_revision_base(root, candidate, base, base_path)
+    findings.extend(_audit_kym_target_profiles(candidate, root, preservation_base))
     findings.extend(_audit_kym_business_rules_shape(candidate))
+    findings.extend(_audit_kym_cross_project_isolation(candidate, root))
     if candidate_schema_error is not None and not any(
         item["code"] == "KYM_TARGET_PROFILE_INCOMPLETE" for item in findings
     ):

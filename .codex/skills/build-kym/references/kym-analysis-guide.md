@@ -6,7 +6,7 @@ Use with `kym-contract.md`; fixed schema, provenance, revision identity, and can
 
 Ledger first: source actor/authority, evidence, subject, predicate, purpose, time, statement/support type, candidate node, excluded neighbors, conflict/uncertainty, explicit vs inferred.
 
-Then walk fixed nodes backwards against admission questions. Empty nodes are valid; silence is not `N/A`. Route `source -> actor Who -> actor Why -> Product boundaries/rules -> Project execution`.
+First classify source units as product-domain, source identity, or host-execution metadata. Exclude coding-host/session/worktree/global-instruction/child-agent details; a named Agent/Skill/CLI remains eligible only when it is the analyzed product's capability. Then walk fixed nodes backwards against admission questions. Empty nodes are valid; silence is not `N/A`. Route `source -> actor Who -> actor Why -> Product boundaries/rules -> Project execution`.
 
 ## Primary role decision
 
@@ -26,7 +26,7 @@ Use one primary branch per Product actor. Customers pay/request/accept; Users di
 
 ## Target Profiles and explicit context
 
-Keep `target_profiles=[]` for ordinary requests. Only explicit Target language opens Profile generation. If source has both `Target-B Mainline` and `Target-A Calibration/Promotion Side-lane`, generate two complete candidate Profiles with unique id/label, objective, candidate-statement refs, claim ceiling, and exclusions. Profiles cannot cite disputed, unresolved, superseded, or Naming-only statements.
+Keep `target_profiles=[]` for ordinary requests. Only an enduring Target explicitly named by the current source opens Profile generation. Each Profile uses a current-source-supported label/objective with candidate-statement refs, claim ceiling, and exclusions; do not reuse historical example labels or paired shapes. Profiles cannot cite disputed, unresolved, superseded, or Naming-only statements.
 
 ## Conflict and inference
 

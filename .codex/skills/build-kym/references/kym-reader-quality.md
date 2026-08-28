@@ -17,3 +17,5 @@ Classify status as **source snapshot** (ingested file statement), **verified cur
 For controlled experiments, keep effect status, functional/safety/claim acceptance, and final verdict separate. Preserve mode, approval, no-write, non-promotion; never generalize one bounded result into generic, semantic, production, or approval authority.
 
 Before render, ensure populated nodes answer their question with source-supported text, key Product branches have plain language, verification gaps remain explicit, and Target candidate/approval boundary is visible.
+
+Reader Markdown is renderer-owned: bare ATX headings, ASCII spaces, two-space list indentation, no NBSP/Tab/bold-wrapped headings/trailing double spaces, and byte-identical rerender. A model must not hand-format or post-process the rendered reader.

@@ -1,6 +1,6 @@
 interface:
   display_name: "Build TCO Coverage"
   short_description: "Build candidate-only TCO v4 coverage previews"
-  default_prompt: "Use $build-tco-coverage for explicit candidate KYM/Target inputs; model Mc/M1/Policy, keep Coverage candidate-only, and use the tco CLI for deterministic validation and previews."
+  default_prompt: "Use $build-tco-coverage for candidate KYM/Target inputs; model Capability Projection as Mc/M1/Policy, distinguish Contract and Implementation coverage, and enter through $kym-tco-governed-checkpoints before non-trivial persistent writes."
 policy:
   allow_implicit_invocation: true

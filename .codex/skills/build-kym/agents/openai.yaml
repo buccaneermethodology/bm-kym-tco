@@ -1,6 +1,6 @@
 interface:
   display_name: "Build KYM"
   short_description: "Build a fixed-template KYM candidate with source and repo provenance"
-  default_prompt: "Use $build-kym to create a provenance-bound KYM v1 candidate; preserve source boundaries, conflicts, inference labels and human review boundaries, then use the kym CLI for deterministic checks."
+  default_prompt: "Use $build-kym to create a provenance-bound KYM v1 draft; where configured, ingest repo evidence before r001 without overwriting user intent; enter through $kym-tco-governed-checkpoints before non-trivial persistent writes."
 policy:
   allow_implicit_invocation: true

@@ -39,6 +39,10 @@ Naming root must not own statements directly. Apply the remove-term test and spl
 
 ## Target, revision, lint
 
-Target Profiles live under `Product/Scope/Target Profiles`; ordinary drafts keep `target_profiles=[]`, while revisions preserve prior profiles. If the source names `Target-B Mainline` and `Target-A Calibration/Promotion Side-lane`, require two complete candidate Profiles with unique `id`, `label`, `objective`, non-empty `requirement_refs`, `claim_ceiling`, and `exclusions`. Store complete candidate revisions and retain superseded statements.
+Target Profiles live under `Product/Scope/Target Profiles`; ordinary drafts keep `target_profiles=[]`, while revisions preserve prior profiles. Only current-source explicit enduring Targets open Profile generation. Each Profile needs unique `id`, source-supported `label` and `objective`, non-empty `requirement_refs`, `claim_ceiling`, and `exclusions`; never copy a label or paired structure from a shipped example. Store complete candidate revisions and retain superseded statements.
+
+Only an unchanged validated-base Profile is preserved. New or changed Profiles need current-source Target authority, label, objective, and requirement text; otherwise `KYM_TARGET_PROFILE_SOURCE_NOT_EXPLICIT` blocks. Candidate output never self-authorizes.
+
+Reader Markdown is deterministic output, never free-form model prose. Canonical form uses bare ATX headings, ASCII spaces, two-space list indentation, and byte-identical rerender; NBSP, Tab, bold-wrapped headings, noncanonical indentation, trailing double spaces, or byte drift block packaging.
 
 `kym lint` is read-only/model-free. It preserves finding fields and adds `confidence`, `resolution_required`, `current_node_ids`, `suggested_node_ids`. Exit `0` clean, `1` deterministic error or strict high-confidence risk, `2` input/contract error. No lint/Markdown/test result creates accepted state.

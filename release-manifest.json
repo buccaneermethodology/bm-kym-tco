@@ -2,24 +2,38 @@
   "schema": "bm_kym_tco.public_release_manifest.v1",
   "repository": "buccaneermethodology/bm-kym-tco",
   "project_name": "bm-kym-tco",
-  "version": "0.4.1",
-  "tag": "v0.4.1",
-  "release_commit_ref": "tag:v0.4.1",
-  "source_revision": "git:d4d03b0f01aae4d821e55000306660b76c95e76c",
+  "version": "0.4.2",
+  "tag": "v0.4.2",
+  "release_commit_ref": "tag:v0.4.2",
+  "source_revision": "git:dbdfc6d",
   "license": "Apache-2.0",
   "public_tree": {
     "file_count_excluding_release_evidence": 82,
     "digest_algorithm": "sha256(sorted relative path NUL file-sha256 newline)",
-    "digest": "sha256:9b705748a7be99aebb763e39829f87b4cd2228ab110e45811fc45825dddbf829"
+    "digest": "sha256:183d1b58efd2f641dd06ca9a5007e8825d690acbfae9e977410c30dd9af9fae1"
   },
   "identity": {
     "import_package": "kym_tco",
-    "executables": ["kym", "tco"],
-    "skills": ["build-kym", "build-tco-coverage"]
+    "executables": [
+      "kym",
+      "tco"
+    ],
+    "skills": [
+      "build-kym",
+      "build-tco-coverage"
+    ]
   },
   "assets": [
-    {"name": "bm_kym_tco-0.4.1-py3-none-any.whl", "sha256": "62ecb15cfaaec05324edcd21149ad0120f4ffc3df731ae9b8dd2336811c5bf23", "kind": "wheel"},
-    {"name": "bm_kym_tco-0.4.1.tar.gz", "sha256": "693b69fad02a2b790f78793a71cd5185451197af1dd51c1386024c4dd8d5dea7", "kind": "sdist"}
+    {
+      "name": "bm_kym_tco-0.4.2-py3-none-any.whl",
+      "sha256": "bb78544958ca79da6bc645f79bbc23a53f05219735601870d647f617ad0742ec",
+      "kind": "wheel"
+    },
+    {
+      "name": "bm_kym_tco-0.4.2.tar.gz",
+      "sha256": "f0cf8b0852b3b9d7803ee542cf2c47d0a7b02a22943aec57b2d31f7dee7706a9",
+      "kind": "sdist"
+    }
   ],
   "claims": {
     "candidate_only": true,
