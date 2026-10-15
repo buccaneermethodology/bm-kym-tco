@@ -3,8 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "kym-tco"
-version = "0.4.2"
+name = "bm-kym-tco"
+version = "0.4.3"
 description = "Deterministic KYM revision, approval, TCO coverage, and verification tooling"
 readme = "README.md"
 requires-python = ">=3.9"

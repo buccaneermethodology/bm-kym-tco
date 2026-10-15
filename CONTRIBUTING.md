@@ -1,6 +1,6 @@
 # Contributing to kym-tco
 
-本仓库的默认协作语言是中文；命令、schema 字段和 verdict 可保留英文，但必须解释证据边界。
+Contributions should keep user-facing documentation clear and preserve the distinction between candidate output, deterministic validation, and human approval.
 
 ## 开发环境
 
@@ -14,29 +14,24 @@ kym --help
 tco --help
 ```
 
-## 本地验证
+## Validation
 
 最小产品与治理检查：
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 PYTHONPATH=src python3 -m unittest discover -s tests/governance -v
-python3 kb/tools/render_kb.py --check
-python3 kb/tools/check_generated_docs.py
-python3 tools/dashboard_lint.py --check
 git diff --check
 ```
 
-修改 Skill、references 或治理面时，还要运行相应 Skill/contract tests，并更新 `governance/upstream_manifest.json` 中的 digest（如适用）。
+For changes to a Skill or its references, run the matching Skill contract checks and verify the distribution digests.
 
 ## 贡献边界
 
-- 不提交凭据、私有路径、个人历史或不该公开的外部项目事实。
-- 不把 passing tests、HTML render 或 Dashboard `done` 写成 approval。
+- 不提交凭据、私有路径、个人历史或无关项目事实。
+- 不把测试通过或 HTML 渲染当作批准。
 - 不在候选 KYM/TCO 生成请求中自动创建 baseline、Target 或 Coverage receipt。
 - 不把 `candidate_not_approved` 改写成 accepted state。
-- `kb/data/` 是稳定 truth；`kb/docs/` 是确定性生成阅读面。
-- `Dashboard/` 保存执行状态、blocker、decision、closeout evidence，不承载稳定合同。
 
 ## Pull request 建议
 
@@ -46,7 +41,7 @@ git diff --check
 2. 修改的主要文件。
 3. 运行过的验证命令。
 4. 最大声明范围和已知边界。
-5. 是否涉及 Skill、KB、Dashboard、schema、approval 或 release surfaces。
+5. 是否影响 Skills、schema、批准边界或发行文件。
 
 ## 文档贡献
 

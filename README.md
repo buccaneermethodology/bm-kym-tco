@@ -23,9 +23,7 @@ For a step-by-step Chinese guide covering both Codex Skills and CLI setup, see
 [`docs/INSTALLATION_AND_USAGE.zh-CN.md`](docs/INSTALLATION_AND_USAGE.zh-CN.md).
 For a beginner-friendly explanation of the KYM -> TCO generation principle,
 see [`docs/KYM_TO_TCO_WORKFLOW.zh-CN.md`](docs/KYM_TO_TCO_WORKFLOW.zh-CN.md).
-Open-source readiness notes are in
-[`docs/OPEN_SOURCE_CHECKLIST.zh-CN.md`](docs/OPEN_SOURCE_CHECKLIST.zh-CN.md),
-with contribution and security policies in
+Contribution and security policies are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 
 ## Recommended Codex workflow
@@ -97,12 +95,50 @@ Tools / Schedule / Team`. Required first- and second-level nodes remain visible
 when empty. Machine provenance stays in JSON and source manifests; rendered
 Markdown contains no HTML validation annotations.
 
-Each Golden example is a self-contained directory under
-`tests/fixtures/golden/<example-id>/` with `conversation.md`,
-`expected_kym.json`, and `expected_kym.md`. Source-silent interpretations are
-optional, but any included interpretation must use `support_status=inferred`.
-
 ## Direct CLI use
+
+### Installed CLI workflow for external business repositories
+
+An external repository needs the installed `kym`/`tco` CLI and the two Skills. It does not need this tool's `src/kym_tco/`, internal host registry, or source checkout. Skill invocation does not automatically run the deterministic host pipeline on arbitrary platforms; an operator runs it after both Skill candidate packages are ready.
+
+1. Prepare a workspace-relative `source_input_manifest_v1`, then freeze and recheck its original bytes and source bytes:
+
+   ```bash
+   tco --workspace "$PWD" source-ledger build \
+     --input-manifest .kym-tco/<product-id>/source-inputs.json \
+     --output .kym-tco/runtime/source-ledgers/<revision>.json
+   tco --workspace "$PWD" source-ledger verify \
+     --input-manifest .kym-tco/<product-id>/source-inputs.json \
+     --ledger .kym-tco/runtime/source-ledgers/<revision>.json
+   ```
+
+   Repeat `--input-manifest` for additional manifests. The ledger preserves every declared input and denominator; mismatched raw manifest/source bytes block `external-run`.
+2. Inspect the host's actual Skill selection. Project Skills take precedence; a broken or incompatible project copy blocks instead of falling back to global. If the host cannot provide verifiable resolver attestation, write a review note and create a durable operator assertion:
+
+   ```bash
+   tco --workspace "$PWD" selection-record create \
+     --build-kym-skill-dir <build-kym-directory> --build-kym-skill-source <project|global> --build-kym-reason '<selection reason>' \
+     --build-tco-coverage-skill-dir <build-tco-coverage-directory> --build-tco-coverage-skill-source <project|global> --build-tco-coverage-reason '<selection reason>' \
+     --operator-id <operator-id> --evidence-ref .kym-tco/runtime/skill-selection/selection-review.md \
+     --output .kym-tco/runtime/skill-selection/current.json
+   ```
+
+   `operator_confirmed` records the operator's assertion; it does not claim CLI observation of the host UI. Use `--project-copy-exists <skill-id>` when that project copy exists. Run `tco host-preflight --host-profile installed_cli_external_workspace_v1 --skill-id <skill-id> --skill-dir <selected-directory> --skill-source <project|global>` for each Skill. Preflight checks identity only.
+3. After both candidate packages exist, explicitly run `tco external-run` with both selected Skills, the raw source manifest(s), normalized ledger, selection record, candidate file refs, and a unique attempt ID:
+
+   ```bash
+   tco --workspace "$PWD" external-run \
+     --host-profile installed_cli_external_workspace_v1 \
+     --build-kym-skill-dir <build-kym-directory> --build-kym-skill-source <project|global> \
+     --build-tco-coverage-skill-dir <build-tco-coverage-directory> --build-tco-coverage-skill-source <project|global> \
+     --source-manifest .kym-tco/<product-id>/source-inputs.json \
+     --source-ledger .kym-tco/runtime/source-ledgers/<revision>.json \
+     --skill-selection-record .kym-tco/runtime/skill-selection/current.json \
+     --output <kym-candidate-file> --output <tco-candidate-file> \
+     --attempt-id <unique-attempt-id>
+   ```
+
+4. The returned `bundle_ref` is the CLI validation evidence bundle, separate from each Skill's candidate package. Check each candidate and bundle together using `tco --workspace "$PWD" external-consume-check --candidate <candidate-file> --evidence <bundle-ref>`. Only `consumable=true` means the exact candidate bytes match a passing deterministic bundle; lifecycle remains `candidate_not_approved`. Failures, unknown evidence, and retained partial outputs are not consumable. Inspect `.kym-tco/runtime/host-failure-records/`; use a new attempt ID after changing inputs or bytes.
 
 To initialize a project directly from its repository:
 
@@ -135,56 +171,6 @@ The CLI performs deterministic ingest, validation, diffing, receipts,
 verification, and rendering. It does not interpret a conversation or generate
 semantic KYM content by itself; use the two Skills above for semantic drafting.
 
-## Repository governance
-
-### Governed task entry
-
-For a non-trivial persistent change in this repository, start with the repo-local checkpoint before any Builder write:
-
-```bash
-python3 .codex/skills/kym-tco-governed-checkpoints/scripts/task_entry.py assess --change-kind non-trivial
-python3 .codex/skills/kym-tco-governed-checkpoints/scripts/task_entry.py bootstrap --repo . --session-id <S-xxx> --parent <SP-xxx> --slug <Slug> --topic <topic> --scope <scope> --purpose <purpose> --objective <objective> --claim-ceiling <ceiling>
-python3 .codex/skills/kym-tco-governed-checkpoints/scripts/task_entry.py verify --repo . --session-id <S-xxx> --slug <Slug> --phase entry
-```
-
-This creates a `doing` Session, five Markdown entry artifacts, and a safe visible Agent Log; it does not mark work complete or replace independent Validation, Semantic Review, human authority, or reconciliation. Before closeout, explicitly route BDD, KB, and Dashboard through `verify --phase closeout`. The eight repo-local Skills share this bridge. It is a repository-local, detectable contract—not a promise that every host platform will automatically invoke a Skill.
-
-Stable project and governance truth is stored as JSON under `kb/data/`.
-`kb/docs/` is a generated reading surface; verify it with:
-
-```bash
-python3 kb/tools/render_kb.py --check
-```
-
-Execution state lives separately under `Dashboard/`. Upstream governance drift
-is review-only: `tools/governance_sync.py validate` and `diff` never modify the
-repository or approve an adaptation.
-
-The canonical Dashboard field contract is
-`kb/data/strategy/dashboard_governance_contract.json`. Lifecycle `Status` is
-limited to `todo`, `doing`, `blocked`, `decision-needed`, `done`, and
-`archived`; delivery boundedness, claim ceilings, authority/blockers, and
-review verdicts remain separate. Validate current rows and a Git transition
-baseline with:
-
-```bash
-python3 tools/dashboard_lint.py --check
-python3 tools/dashboard_lint.py --check --base <git-ref>
-```
-
-The eight repo-local Skills have deterministic behavior fixtures and a
-machine-readable comparison matrix. Local behavior checks always run; an
-optional source review may compare upstream invariants without modifying this
-repository:
-
-```bash
-python3 tools/governance_sync.py invariants
-python3 tools/governance_sync.py invariants --source-root <semx-root>
-```
-
-The report distinguishes intentional local divergence from unexpected drift.
-It never applies, merges, approves, installs, or publishes an upstream change.
-
 ## Version-pinned Skill distribution
 
 For team use and reproducible results, select a specific release tag and use
@@ -192,7 +178,7 @@ the Skills committed in that tag. Do not copy an unversioned global Skill
 directory between projects.
 
 ```bash
-git clone --branch <release-tag> --depth 1 https://github.com/buccaneermethodology/kym-tco.git
+git clone --branch <release-tag> --depth 1 https://github.com/buccaneermethodology/bm-kym-tco.git
 cd kym-tco
 
 python3 tools/install_codex_skills.py \
@@ -224,27 +210,6 @@ Upgrading is an explicit new-tag selection followed by another dry-run and
 installation; Skills never update automatically. A release tag, successful
 tests, or an installer report does not create source/license authority or any
 KYM/TCO approval.
-
-## Generation knowledge and source boundary
-
-The repository keeps generation guidance separate from runtime contracts:
-
-- `kb/data/kym_generation_knowledge.json` defines the source/authority -> actor
-  Who/Why -> Product boundary/rules -> Project execution analysis sequence,
-  placement rules, and candidate-review risks.
-- `kb/data/tco_generation_knowledge.json` defines stable M/TSP modeling,
-  persistent Target Profiles, conservative Coverage/evidence, and Gap review.
-- `kb/data/evolution/bm_doc_adoption.json` records the file digests and
-  adopt/adapt/reject/evolution decisions for the imported reference material.
-
-The corresponding files under `kb/docs/` are deterministic reading views.
-Raw material under `kb/BM-doc/` is reference/design lineage only: its old node
-names, external product facts, historical counts, commands, and future designs
-are not current repository truth. Its source/redistribution license remains a
-human review requirement. See `kb/BM-doc/README.md` before using it.
-
-The two Skills load one compact analysis guide on demand; they do not copy the
-long reference documents into every prompt.
 
 ## Candidate-only generation audit
 
@@ -334,23 +299,3 @@ Projects may add states or change labels, but cannot change reserved IDs, ranks,
 Verification commands are registered in project config as `argv`, restricted cwd, timeout, node IDs, and allowed environment names. `argv[0]` must be an absolute executable path; the child receives only environment variables named by `allowed_env`, with no implicit host `PATH`. Coverage JSON cannot inject shell commands.
 
 No scheduled automation is included in v1. Automation may rerun `tco verify`, `tco render`, and emit change reports. It must stop for semantic model changes, Target changes, Coverage proposals, authorization changes, or governance-checkout drift. It may create an approval receipt only when `--approval-source authorized_system` is paired with a workspace-local, pre-existing authorization that binds the system principal, Goal, product, scope, Targets, expiry, and approval-reference prefix; the receipt records that binding and is never labeled `human`.
-
-## Tests
-
-The product and Skill contract suite and the repository-governance suite use
-separate discovery roots. Run both commands to execute the complete local set:
-
-```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
-PYTHONPATH=src python3 -m unittest discover -s tests/governance -v
-```
-
-The complete local Validation run is self-contained and never requires an
-external checkout or `SEMX_ROOT`:
-
-```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v && \
-PYTHONPATH=src python3 -m unittest discover -s tests/governance -v
-```
-
-The suite covers source chunking, provenance, conflicts, immutable revisions and receipts, Target denominator stability, graph validation, hidden fields, vocabulary drift, allowlisted verification, and no-repo output.

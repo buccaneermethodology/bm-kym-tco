@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "registry_id", "registry_version", "registry_digest", "profiles", "unsupported_reason_codes", "claim_ceiling"],
+  "properties": {
+    "schema": {"const": "kym_tco.supported_host_registry.v1"},
+    "registry_id": {"const": "s116-supported-host-registry"},
+    "registry_version": {"const": "1.0"},
+    "registry_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "profiles": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/profile"}},
+    "unsupported_reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"}},
+    "claim_ceiling": {"const": "supported_host_deterministic_pipeline_nonterminal_no_semantic_approval"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "expectedSkill": {"type": "object", "additionalProperties": false, "required": ["skill_id", "skill_ref", "expected_distribution_version", "distribution_artifact_ref"], "properties": {"skill_id": {"enum": ["build-kym", "build-tco-coverage"]}, "skill_ref": {"type": "string", "pattern": "^\\.codex/skills/[^/]+/SKILL\\.md$"}, "expected_distribution_version": {"const": "v0.4.3-candidate"}, "distribution_artifact_ref": {"type": "string", "pattern": "^\\.codex/skills/[^/]+/distribution\\.json$"}}},
+    "resolvedSkill": {"type": "object", "additionalProperties": false, "required": ["skill_id", "distribution_version", "distribution_artifact_ref", "distribution_artifact_digest", "skill_ref", "skill_byte_digest"], "properties": {"skill_id": {"enum": ["build-kym", "build-tco-coverage"]}, "distribution_version": {"const": "v0.4.3-candidate"}, "distribution_artifact_ref": {"type": "string", "pattern": "^\\.codex/skills/[^/]+/distribution\\.json$"}, "distribution_artifact_digest": {"$ref": "#/$defs/digest"}, "skill_ref": {"type": "string", "pattern": "^\\.codex/skills/[^/]+/SKILL\\.md$"}, "skill_byte_digest": {"$ref": "#/$defs/digest"}}},
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["host_profile_id", "profile_status", "adapter_id", "entry_ref", "protocol_version", "required_capabilities", "expected_skill_distributions", "resolved_skill_distributions", "resolved_skill_distribution_digest", "pipeline_availability", "identity_fields", "delivery_semantics"],
+      "properties": {
+        "host_profile_id": {"const": "codex_repo_local_skill_workflow_v1"},
+        "profile_status": {"enum": ["enabled", "disabled"]},
+        "adapter_id": {"const": "codex_repo_local_materialization_v1"},
+        "entry_ref": {"const": "kym_tco.supported_host:materialize_and_validate"},
+        "protocol_version": {"const": "skill_materialization_pipeline_v1"},
+        "required_capabilities": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"enum": ["workspace_bytes_read", "candidate_materialize", "repo_local_cli_invoke", "digest_capture", "durable_evidence_write"]}},
+        "expected_skill_distributions": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/expectedSkill"}},
+        "resolved_skill_distributions": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/resolvedSkill"}},
+        "resolved_skill_distribution_digest": {"$ref": "#/$defs/digest"},
+        "pipeline_availability": {"const": "available_slice4_nonterminal"},
+        "identity_fields": {"type": "array", "prefixItems": [{"const": "generation_start_id"}, {"const": "materialization_event_id"}, {"const": "pipeline_run_id"}], "minItems": 3, "maxItems": 3},
+        "delivery_semantics": {"type": "object", "additionalProperties": false, "required": ["mode", "dedupe_key_fields", "same_key_retry", "conflicting_payload"], "properties": {"mode": {"const": "idempotent_exactly_once_effect_v1"}, "dedupe_key_fields": {"type": "array", "prefixItems": [{"const": "host_profile_id"}, {"const": "skill_distribution_digest"}, {"const": "generation_start_id"}, {"const": "materialization_event_id"}], "minItems": 4, "maxItems": 4}, "same_key_retry": {"const": "reuse_pipeline_run_id"}, "conflicting_payload": {"const": "blocked"}}}
+      }
+    }
+  }
+}

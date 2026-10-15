@@ -1,13 +1,14 @@
 {
   "schema": "kym_tco.skill_distribution.v1",
   "skill_id": "build-tco-coverage",
-  "distribution_version": "v0.4.2-candidate",
+  "distribution_version": "v0.4.3-candidate",
   "release_status": "unreleased",
-  "source_revision": "git:dcba8b8dfdaef6ce4898970e48d3dbd61476dca4+worktree",
+  "source_revision": "git:e7a27ae22b936f766ba27aa6b0b5ec1806206dcd+worktree",
   "source_snapshot_status": "dirty_unreleased_candidate",
-  "artifact_id": "build-tco-coverage-v0.4.2-candidate-worktree",
+  "artifact_id": "build-tco-coverage-v0.4.3-candidate-worktree",
   "skill_ref": ".codex/skills/build-tco-coverage/SKILL.md",
-  "skill_byte_digest": "sha256:8a83b8d106eaa9f1a5675c9378663f2a35945be0dc018d2ed0f5bc258278e0e7",
-  "archive_manifest_digest": "sha256:fb5be1c7abb1bbd43c1a46ca032dcfd166c0abf1117a12cb171ac9234c665212",
-  "manifest_digest": "sha256:37fcb21a3de63f352c6700ba6d398f773cbe78092aa00c3623c48f7c2abdd243"
+  "skill_byte_digest": "sha256:8bcdee6e8a7402c0421a4f0c74e47661ed72837c457e381f33299ee137894744",
+  "archive_manifest_digest": "sha256:92f28fc7fc2123be693cabd315ee51e663b8d33d6e7a0ae75d6112d790fc46dd",
+  "manifest_digest": "sha256:2639b8e42699755cd6ba047d07df6888df130b6710f95ccb0de62c2817824f4d",
+  "distribution_tree_digest": "sha256:bf6b2f95b7abd879db1bff0ef2339a6733b98b000ce07874e6af4cf3774309b0"
 }

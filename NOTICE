@@ -1,14 +1,11 @@
 kym-tco
 Copyright 2026 kym-tco contributors
 
-This product includes governance materials adapted from the Semx project at
-revision 9b063e30006c14848f147e9c6d8cb5fed745aa31. File-level provenance,
-digests, adaptation notes, license declarations, and review requirements are
-recorded in governance/upstream_manifest.json and validated against
-governance/upstream_manifest.schema.json. Repo-local Skills whose original
-source is not a versioned Semx path use path-clean snapshot provenance and
-remain marked for source-license review.
+This candidate contains adapted governance methods from the Semx project at
+revision 9b063e30006c14848f147e9c6d8cb5fed745aa31. The included material is
+limited to reusable methods; it does not include project facts, execution
+history, phase status, runtime state, or approval state from that source.
 
-The adapted materials transfer reusable governance methods only. They do not
-include or assert Semx project facts, execution history, phase status, runtime
-state, or approval state.
+The source and redistribution rights for adapted materials remain subject to
+the version-specific rights review. This notice does not itself grant or imply
+permission to redistribute those materials.

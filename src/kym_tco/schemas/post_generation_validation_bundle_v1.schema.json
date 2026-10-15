@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "externalDispositionEnvelope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "status", "request_payload_digest", "pipeline_run_id", "claim_ceiling", "manifest_ref", "manifest_raw_digest", "manifest"],
+      "properties": {
+        "schema": {"const": "kym_tco.external_partial_output_disposition.v1"},
+        "status": {"enum": ["quarantined", "no_partial_package_outputs", "cleanup_failed"]},
+        "request_payload_digest": {"$ref": "#/$defs/digest"}, "pipeline_run_id": {"type": "string", "minLength": 1},
+        "claim_ceiling": {"enum": ["failed_deterministic_candidate_run_no_candidate_package_available", "failed_deterministic_candidate_run_partial_outputs_retained_not_candidate"]},
+        "manifest_ref": {"type": ["string", "null"]},
+        "manifest_raw_digest": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "manifest": {"type": "object", "required": ["schema", "status", "request_payload_digest", "pipeline_run_id", "claim_ceiling"], "properties": {"schema": {"const": "kym_tco.partial_output_disposition.v2"}}}
+      },
+      "allOf": [{"if": {"properties": {"status": {"const": "cleanup_failed"}}, "required": ["status"]}, "then": {"properties": {"manifest": {"properties": {"status": {"const": "cleanup_failed"}}}}}}]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "kind", "byte_digest", "file_count"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["file", "directory", "missing"]},
+        "byte_digest": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "file_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "ref": {"type": "string", "minLength": 1},
+        "byte_digest": {"$ref": "#/$defs/digest"},
+        "value": {}
+      },
+      "anyOf": [{"required": ["ref", "byte_digest"]}, {"required": ["value"]}]
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "pipeline_identity", "applicability_context", "report_identity",
+    "skill_identities", "cli_identity", "gate_registry_digest", "gates",
+    "denominator", "aggregate_status", "artifacts", "partial_output_disposition", "claim_ceiling", "bundle_digest"
+  ],
+  "properties": {
+    "schema": {"const": "kym_tco.post_generation_validation_bundle.v1"},
+    "pipeline_identity": {"type": "object"},
+    "applicability_context": {"type": "object"},
+    "report_identity": {"type": "object"},
+    "skill_identities": {"type": "array", "minItems": 2, "maxItems": 2, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["skill_id", "distribution_version", "release_status", "source_revision", "artifact_id", "skill_ref", "skill_byte_digest", "distribution_artifact_ref", "distribution_artifact_byte_digest", "archive_manifest_digest", "manifest_digest"],
+      "properties": {
+        "skill_id": {"type": "string"}, "distribution_version": {"type": "string"}, "release_status": {"type": "string"},
+        "source_revision": {"type": "string"}, "artifact_id": {"type": "string"}, "skill_ref": {"type": "string"},
+        "skill_byte_digest": {"$ref": "#/$defs/digest"}, "distribution_artifact_ref": {"type": "string"},
+        "distribution_artifact_byte_digest": {"$ref": "#/$defs/digest"}, "archive_manifest_digest": {"$ref": "#/$defs/digest"},
+        "manifest_digest": {"$ref": "#/$defs/digest"},
+        "distribution_tree_digest": {"$ref": "#/$defs/digest"},
+        "distribution_manifest_digest": {"$ref": "#/$defs/digest"},
+        "selection_assurance": {"enum": ["host_attested", "operator_confirmed", "not_attested"]}
+      }
+    }},
+    "cli_identity": {"type": "object"},
+    "gate_registry_digest": {"$ref": "#/$defs/digest"},
+    "gates": {
+      "type": "array", "minItems": 24, "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gate_id", "stage", "required", "applicable", "applicability_rule_id",
+          "predicate_evidence", "dependencies", "attempted", "status", "command_identity",
+          "exit_code", "stdout_digest", "stderr_digest", "artifact_refs", "blocker", "claim_ceiling"
+        ],
+        "properties": {
+          "gate_id": {"type": "string"},
+          "stage": {"type": "string"},
+          "required": {"type": "boolean"},
+          "applicable": {"type": "boolean"},
+          "applicability_rule_id": {"type": "string"},
+          "predicate_evidence": {"type": "array", "minItems": 4, "items": {"$ref": "#/$defs/evidence"}},
+          "dependencies": {"type": "array", "items": {"type": "string"}},
+          "attempted": {"type": "boolean"},
+          "status": {"enum": ["not_run", "blocked", "passed", "failed", "not_applicable"]},
+          "command_identity": {"type": "object"},
+          "exit_code": {"anyOf": [{"type": "integer"}, {"type": "null"}]},
+          "stdout_digest": {"$ref": "#/$defs/digest"},
+          "stderr_digest": {"$ref": "#/$defs/digest"},
+          "artifact_refs": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+          "blocker": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+          "claim_ceiling": {"type": "string"}
+        }
+      }
+    },
+    "denominator": {"type": "object"},
+    "aggregate_status": {"enum": ["passed", "blocked", "failed"]},
+    "artifacts": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+    "partial_output_disposition": {"anyOf": [{"$ref": "#/$defs/externalDispositionEnvelope"}, {"type": "null"}]},
+    "claim_ceiling": {"const": "deterministic_validation_only_no_semantic_synthesis_coverage_promotion_or_approval"},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  }
+}

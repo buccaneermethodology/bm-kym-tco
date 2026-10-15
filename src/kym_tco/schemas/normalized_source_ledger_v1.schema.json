@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "normalization_rule_version", "manifest_id", "manifest_digest", "source_manifest_bindings", "workspace_boundary", "inputs", "aggregate_status", "coverage_mode", "applicability", "ledger_digest"],
+  "properties": {
+    "schema_version": {"const": "normalized_source_ledger_v1"},
+    "normalization_rule_version": {"const": "source-normalization-v1"},
+    "manifest_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "manifest_digest": {"$ref": "#/$defs/digest"},
+    "source_manifest_bindings": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["ref", "byte_digest", "manifest_id", "manifest_digest"],
+        "properties": {
+          "ref": {"type": "string", "minLength": 1},
+          "byte_digest": {"$ref": "#/$defs/digest"},
+          "manifest_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "manifest_digest": {"$ref": "#/$defs/digest"}
+        }
+      }
+    },
+    "workspace_boundary": {"const": "."},
+    "inputs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/input_result"}},
+    "aggregate_status": {"enum": ["passed", "blocked"]},
+    "coverage_mode": {"enum": ["repo", "not_evaluated"]},
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dashboard", "kb", "git"],
+      "properties": {
+        "dashboard": {"$ref": "#/$defs/applicability"},
+        "kb": {"$ref": "#/$defs/applicability"},
+        "git": {"$ref": "#/$defs/applicability"}
+      }
+    },
+    "ledger_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "rule_id", "evidence"],
+      "properties": {
+        "status": {"enum": ["applicable", "not_applicable"]},
+        "rule_id": {"enum": ["RULE-DASHBOARD-PRESENT", "RULE-KB-PRESENT", "RULE-GIT-PRESENT"]},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_unit_id", "ref", "byte_digest", "disposition", "reason"],
+      "properties": {
+        "source_unit_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*-u[0-9]{4}$"},
+        "ref": {"type": "string", "minLength": 1},
+        "byte_digest": {"$ref": "#/$defs/digest"},
+        "disposition": {"enum": ["included", "skipped", "failed"]},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["term", "discovered", "included", "skipped", "failed", "units"],
+      "properties": {
+        "term": {"enum": ["declared_closure", "selected_closure", "full_source_closure"]},
+        "discovered": {"type": "integer", "minimum": 0},
+        "included": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "units": {"type": "array", "items": {"$ref": "#/$defs/unit"}}
+      }
+    },
+    "input_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_id", "kind", "requirement", "attempted", "status", "input_snapshot_digest", "diagnostics", "closure"],
+      "properties": {
+        "input_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "kind": {"enum": ["repo", "conversation_text", "file_set", "dashboard", "kb", "kym", "target", "tco_model", "coverage"]},
+        "requirement": {"enum": ["required", "optional"]},
+        "attempted": {"const": true},
+        "status": {"enum": ["passed", "blocked", "not_applicable"]},
+        "input_snapshot_digest": {"$ref": "#/$defs/digest"},
+        "diagnostics": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "closure": {"$ref": "#/$defs/closure"}
+      }
+    }
+  }
+}

@@ -7,23 +7,69 @@ description: Build or revise source-traceable fixed-template KYM JSON and reader
 
 Create source-traceable KYM. JSON is truth; Markdown is deterministic. CLI validates/stores, not semantics.
 
-## Governed Repository Bridge
-
-Before a non-trivial persistent write in a governed kym-tco repository, run the governed task entry and pass entry verification. Then use `kym-tco-governed-checkpoints`; follow external-workspace rules.
-
 ## Preconditions
 
-1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.2 [--output <report.json>]`. `ready` is not semantics or approval.
+1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.3 [--output <report.json>]`. `ready` is not semantics or approval.
 2. Choose a stable lowercase `product-id` and workspace.
 3. Read [references/kym-contract.md](references/kym-contract.md) completely before drafting or validating JSON.
 4. Read [references/kym-analysis-guide.md](references/kym-analysis-guide.md) completely for multi-actor, ambiguous, conflicting, inferred, or long-source analysis.
-5. Read `references/kym-semantic-placement.md` completely for Product/Project placement, Naming Conventions, lint review, and pre-draft placement before any non-trivial KYM. In the source repo, `kb/docs/KYM_Semantic_Placement.md` is the canonical generated KB surface; external installs use the bundled reference. It keeps roadmap, taxonomy, protocol, Target, and lane concepts out of Business Rules. For Goal、Loop Goal、Stage Plan、执行计划或治理角色输入，also read `references/kym-reader-quality.md` before drafting.
+5. Read `references/kym-semantic-placement.md` completely for Product/Project placement, Naming Conventions, lint review, and pre-draft placement before any non-trivial KYM. The bundled reference is self-contained and applies to external workspaces. It keeps roadmap, taxonomy, protocol, Target, and lane concepts out of Business Rules. For Goal、Loop Goal、Stage Plan、执行计划或治理角色输入，also read `references/kym-reader-quality.md` before drafting.
 
 ## Workflow
 
-### v0.4.2-candidate supported-host handoff
+### External business workspace handoff
 
-This is an unreleased `v0.4.2-candidate`, not the CLI version/latest release. A supported host consumes validated `source_input_manifest_v1` + exact `normalized_source_ledger_v1`, freezes `generation_start_id`, then `materialization_event_id`, and calls `kym_tco.supported_host:materialize_and_validate` once per dedupe key, preserving `pipeline_run_id`. It must invoke the repo-local deterministic post-generation pipeline; unavailable/mismatched host, Skill, bytes, CLI, tool, or required gate returns blocked. This execution contract is not an automatic hook for an arbitrary platform. Pipeline pass is deterministic evidence, not semantic correctness, approval, or release.
+This Skill distribution is versioned independently from the installed CLI. In an external business repository, use the installed `tco` CLI; the project does not need `src/kym_tco`, `governance/supported_host_registry_v1.json`, or the tool's source repository. The host does not automatically attach a pipeline to every Skill invocation: an operator must run the documented commands after both candidate packages exist.
+
+1. Record the raw source inputs in a workspace-relative `source_input_manifest_v1` file and confirm its source refs/digests. Ask the installed CLI to normalize and freeze the exact manifest bytes and current source bytes:
+
+   ```bash
+   tco --workspace "$PWD" source-ledger build \
+     --input-manifest .kym-tco/<product-id>/source-inputs.json \
+     --output .kym-tco/runtime/source-ledgers/<revision>.json
+   tco --workspace "$PWD" source-ledger verify \
+     --input-manifest .kym-tco/<product-id>/source-inputs.json \
+     --ledger .kym-tco/runtime/source-ledgers/<revision>.json
+   ```
+
+2. Inspect the host's actual project/global Skill selection. A project copy takes precedence when present; if that selected copy is broken or incompatible, stop and repair it rather than silently choosing global. If the host cannot provide a verifiable resolver attestation, write a short operator evidence note in the workspace and create a `selection-record` with both actual Skill directories, source labels, reasons, operator ID, and evidence ref. `operator_confirmed` is the operator's assertion, not a CLI claim that it observed the host UI. `caller_declared` inputs alone cannot authorize `external-run`.
+
+   ```bash
+   tco --workspace "$PWD" selection-record create \
+     --build-kym-skill-dir <selected-build-kym-directory> --build-kym-skill-source <project|global> --build-kym-reason '<why this copy was selected>' \
+     --build-tco-coverage-skill-dir <selected-build-tco-coverage-directory> --build-tco-coverage-skill-source <project|global> --build-tco-coverage-reason '<why this copy was selected>' \
+     --operator-id <operator-id> --evidence-ref .kym-tco/runtime/skill-selection/selection-review.md \
+     --output .kym-tco/runtime/skill-selection/current.json
+   ```
+
+   Add `--project-copy-exists build-kym` and/or `--project-copy-exists build-tco-coverage` when that project copy exists. The evidence note is written and reviewed by the operator before running the command.
+3. Build and package the KYM candidate by following this Skill. Hand off the candidate file refs, source manifest refs, and source boundary to `build-tco-coverage`; do not call the CLI evidence bundle a candidate package.
+4. After both candidate packages exist, run `tco host-preflight` for each selected Skill, then the supported deterministic pipeline:
+
+   ```bash
+   tco --workspace "$PWD" external-run \
+     --host-profile installed_cli_external_workspace_v1 \
+     --build-kym-skill-dir <selected-build-kym-directory> --build-kym-skill-source <project|global> \
+     --build-tco-coverage-skill-dir <selected-build-tco-coverage-directory> --build-tco-coverage-skill-source <project|global> \
+     --source-manifest .kym-tco/<product-id>/source-inputs.json \
+     --source-ledger .kym-tco/runtime/source-ledgers/<revision>.json \
+     --skill-selection-record .kym-tco/runtime/skill-selection/<selection-id>.json \
+     --output <kym-candidate-file> --output <tco-candidate-file> \
+     --attempt-id <unique-attempt-id>
+   ```
+
+5. The command returns a `bundle_ref` for the CLI **validation evidence bundle**. The Skill-generated **candidate packages** remain separate and unchanged. Supported consumers check the candidate ref and that bundle together:
+
+   ```bash
+   tco --workspace "$PWD" external-consume-check \
+     --candidate <candidate-file> --evidence <bundle-ref>
+   ```
+
+   Only `consumable=true` means that candidate's bytes match a passing deterministic bundle; it remains `candidate_not_approved`. A failed, blocked, unknown, or retained-partial result is not consumable. Read `.kym-tco/runtime/host-failure-records/` and the referenced bundle/disposition; after changing inputs, Skill selection, or candidate bytes, retry with a new attempt ID. A successful gate never means semantic correctness, Coverage Met, approval, or release.
+
+### Internal tool-development repository
+
+When maintainers use this Skill in the tool's own source repository, retain its repo-local Supported Host registration and governance process. Those maintainer controls are separate from the external-workspace flow above and are not prerequisites for ordinary business repositories.
 
 1. Initialize once:
 

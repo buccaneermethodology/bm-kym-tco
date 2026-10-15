@@ -36,7 +36,7 @@ git --version
 适合开发或本机验证：
 
 ```bash
-git clone https://github.com/buccaneermethodology/kym-tco.git
+git clone https://github.com/buccaneermethodology/bm-kym-tco.git
 cd kym-tco
 
 uv tool install --editable .
@@ -63,7 +63,7 @@ tco --help
 
 ```bash
 python3 -m pip install \
-  "git+https://github.com/buccaneermethodology/kym-tco.git@v0.3.8"
+  "git+https://github.com/buccaneermethodology/bm-kym-tco.git@v0.4.3"
 
 kym --help
 tco --help
@@ -135,7 +135,7 @@ test -f .codex/skills/build-tco-coverage/SKILL.md
 5. 最终给我 KYM reader、TCO preview、verification results 和 audit report 的路径。
 ```
 
-当前 Skill 会指导 Agent 运行这些步骤；未来的最佳体验 Loop Goal 会把这些步骤进一步收敛成一条高层命令或固定自动流水线。
+Skill 会指导 Agent 按步骤运行。对于外部业务仓，候选包准备完成后还需显式调用 Supported Host 流水线；不能假设宿主平台会自动触发它。
 
 ## 手动运行 KYM 基础流程
 

@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from .common import ContractError, load_json, write_json
+from .common import ContractError, load_json, project_root, write_json, utc_now
 from .tco_ops import (
     approve_coverage,
     build_report,
@@ -22,16 +22,79 @@ from .tco_ops import (
     validate_coverage_model,
     validate_tco_model,
 )
-from .workspace import init_project
+from .workspace import init_project, load_config
 from .doctor import run_doctor
 from .tco_package import build_tco_candidate_package
 from .tco_multi_input import build_multi_input_candidate_package
+from .supported_host import (
+    EXTERNAL_PROFILE_ID,
+    installed_runtime_root,
+    installed_distribution_identity,
+    require_external_profile,
+    resolve_selected_skill,
+    run_external_pipeline,
+    _external_workspace_path,
+    build_operator_selection_record,
+    external_consume_check,
+)
+from .source_adapters import (
+    load_source_input_manifest,
+    normalize_source_manifests,
+    verify_normalized_manifests,
+)
+from .common import digest_bytes
 
 
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="tco", description="TCO model, coverage, verification, and rendering CLI")
     root.add_argument("--workspace", type=Path, default=Path.cwd())
     sub = root.add_subparsers(dest="command", required=True)
+
+    host_preflight = sub.add_parser("host-preflight", help="validate installed runtime and selected Skill for an external workspace")
+    host_preflight.add_argument("--host-profile", required=True)
+    host_preflight.add_argument("--skill-id", choices=["build-kym", "build-tco-coverage"], required=True)
+    host_preflight.add_argument("--skill-dir", type=Path, required=True)
+    host_preflight.add_argument("--skill-source", choices=["global", "project"], default="project")
+    host_preflight.add_argument("--expected-skill-digest")
+
+    host_run = sub.add_parser("external-run", help="run the installed deterministic pipeline for a registered external workspace")
+    host_run.add_argument("--host-profile", required=True)
+    host_run.add_argument("--build-kym-skill-dir", type=Path, required=True)
+    host_run.add_argument("--build-kym-skill-source", choices=["global", "project"], required=True)
+    host_run.add_argument("--build-tco-coverage-skill-dir", type=Path, required=True)
+    host_run.add_argument("--build-tco-coverage-skill-source", choices=["global", "project"], required=True)
+    host_run.add_argument("--source-ledger", required=True)
+    host_run.add_argument("--source-manifest", action="append", required=True)
+    host_run.add_argument("--skill-selection-record", required=True)
+    host_run.add_argument("--output", action="append", required=True)
+    host_run.add_argument("--attempt-id", default="initial", help="distinct retry identity; same value replays the same terminal result")
+
+    consume = sub.add_parser("external-consume-check", help="verify that a candidate has a passing, matching external validation bundle")
+    consume.add_argument("--candidate", required=True)
+    consume.add_argument("--evidence", required=True)
+
+    source_ledger = sub.add_parser("source-ledger", help="build and verify normalized source ledgers for an external workspace")
+    ledger_commands = source_ledger.add_subparsers(dest="ledger_command", required=True)
+    ledger_build = ledger_commands.add_parser("build", help="normalize one or more raw source input manifests")
+    ledger_build.add_argument("--input-manifest", action="append", required=True)
+    ledger_build.add_argument("--output", required=True)
+    ledger_verify = ledger_commands.add_parser("verify", help="recompute a ledger from its raw manifests and workspace sources")
+    ledger_verify.add_argument("--input-manifest", action="append", required=True)
+    ledger_verify.add_argument("--ledger", required=True)
+
+    selection_record = sub.add_parser("selection-record", help="create an auditable operator-confirmed Skill selection record")
+    selection_commands = selection_record.add_subparsers(dest="selection_command", required=True)
+    selection_create = selection_commands.add_parser("create", help="record the operator's observed host Skill selection")
+    selection_create.add_argument("--build-kym-skill-dir", type=Path, required=True)
+    selection_create.add_argument("--build-kym-skill-source", choices=["global", "project"], required=True)
+    selection_create.add_argument("--build-kym-reason", required=True)
+    selection_create.add_argument("--build-tco-coverage-skill-dir", type=Path, required=True)
+    selection_create.add_argument("--build-tco-coverage-skill-source", choices=["global", "project"], required=True)
+    selection_create.add_argument("--build-tco-coverage-reason", required=True)
+    selection_create.add_argument("--project-copy-exists", choices=["build-kym", "build-tco-coverage"], action="append", default=[])
+    selection_create.add_argument("--operator-id", required=True)
+    selection_create.add_argument("--evidence-ref", action="append", required=True)
+    selection_create.add_argument("--output", required=True)
 
     doctor = sub.add_parser("doctor")
     doctor.add_argument("--product-id", required=True)
@@ -130,6 +193,97 @@ def parser() -> argparse.ArgumentParser:
 
 def run(args: argparse.Namespace) -> dict[str, object]:
     workspace = args.workspace.resolve()
+    if args.command == "source-ledger":
+        entries = []
+        for ref in args.input_manifest:
+            path = _external_workspace_path(workspace, ref, "source input manifest")
+            data = path.read_bytes()
+            document = load_source_input_manifest(path)
+            entries.append((ref, document, digest_bytes(data)))
+        if args.ledger_command == "build":
+            ledger = normalize_source_manifests(entries, workspace)
+            output = _external_workspace_path(workspace, args.output, "normalized source ledger output")
+            output.parent.mkdir(parents=True, exist_ok=True)
+            write_json(output, ledger)
+            return {
+                "status": "built", "ledger_ref": args.output,
+                "ledger_byte_digest": digest_bytes(output.read_bytes()),
+                "source_manifest_bindings": ledger["source_manifest_bindings"],
+                "normalization_rule_version": ledger["normalization_rule_version"],
+                "aggregate_status": ledger["aggregate_status"],
+                "coverage_mode": ledger["coverage_mode"],
+            }
+        ledger_path = _external_workspace_path(workspace, args.ledger, "normalized source ledger")
+        ledger = load_json(ledger_path)
+        verify_normalized_manifests(ledger, entries, workspace)
+        return {
+            "status": "verified", "ledger_ref": args.ledger,
+            "ledger_byte_digest": digest_bytes(ledger_path.read_bytes()),
+            "source_manifest_bindings": ledger["source_manifest_bindings"],
+            "normalization_rule_version": ledger["normalization_rule_version"],
+            "aggregate_status": ledger["aggregate_status"],
+            "coverage_mode": ledger["coverage_mode"],
+        }
+    if args.command == "selection-record":
+        bindings = {
+            "build-kym": args.build_kym_skill_dir,
+            "build-tco-coverage": args.build_tco_coverage_skill_dir,
+        }
+        sources = {
+            "build-kym": args.build_kym_skill_source,
+            "build-tco-coverage": args.build_tco_coverage_skill_source,
+        }
+        reasons = {
+            "build-kym": args.build_kym_reason,
+            "build-tco-coverage": args.build_tco_coverage_reason,
+        }
+        record = build_operator_selection_record(
+            workspace, bindings, sources, args.operator_id, utc_now(), reasons,
+            args.evidence_ref, {skill_id: skill_id in args.project_copy_exists for skill_id in bindings},
+        )
+        output = _external_workspace_path(workspace, args.output, "skill selection record output")
+        output.parent.mkdir(parents=True, exist_ok=True)
+        write_json(output, record)
+        return {
+            "status": "operator_confirmed",
+            "selection_assurance": record["selection_assurance"],
+            "record_ref": args.output,
+            "record_byte_digest": digest_bytes(output.read_bytes()),
+            "record_digest": record["record_digest"],
+            "operator_assertion": record["operator_assertion"],
+        }
+    if args.command == "external-consume-check":
+        return external_consume_check(workspace, args.candidate, args.evidence)
+    if args.command == "host-preflight":
+        if args.host_profile != EXTERNAL_PROFILE_ID:
+            raise ContractError("unknown_profile")
+        runtime_root = installed_runtime_root()
+        profile = require_external_profile(args.host_profile, runtime_root, workspace)
+        skill = resolve_selected_skill(args.skill_id, args.skill_dir, args.expected_skill_digest, args.skill_source)
+        return {
+            "status": "ready",
+            "host_profile": profile,
+            "selected_skill": skill,
+            "cli_version": __import__("kym_tco").__version__,
+            "runtime_distribution": installed_distribution_identity(),
+            "claim_ceiling": "host_preflight_only_no_candidate_gate_pass",
+        }
+    if args.command == "external-run":
+        if args.host_profile != EXTERNAL_PROFILE_ID:
+            raise ContractError("unknown_profile")
+        skill_bindings = {
+            "build-kym": args.build_kym_skill_dir,
+            "build-tco-coverage": args.build_tco_coverage_skill_dir,
+        }
+        skill_sources = {
+            "build-kym": args.build_kym_skill_source,
+            "build-tco-coverage": args.build_tco_coverage_skill_source,
+        }
+        return run_external_pipeline(
+            installed_runtime_root(), workspace, args.host_profile,
+            skill_bindings, skill_sources, args.source_ledger, args.output,
+            args.attempt_id, args.source_manifest, args.skill_selection_record,
+        )
     if args.command == "doctor":
         return run_doctor(
             tool="tco",
@@ -177,6 +331,16 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         results = run_verification(workspace, args.product_id, args.node)
         if args.output:
             write_json(args.output, results)
+        if not results:
+            config = load_config(project_root(workspace, args.product_id))
+            reason = (
+                "coverage_mode_not_evaluated"
+                if config.get("coverage_mode") == "not_evaluated"
+                else "no_registered_verification_commands"
+            )
+            raise ContractError(
+                f"verification 未执行（{reason}）；不得将空命令集记录为 passed。"
+            )
         failed = [key for key, value in results.items() if value["status"] != "passed"]
         if failed:
             raise ContractError(f"verification commands 未通过: {failed}")
@@ -280,6 +444,8 @@ def main() -> None:
         print(json.dumps({"status": "rejected", "error": str(exc)}, ensure_ascii=False), file=sys.stderr)
         raise SystemExit(2)
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    if args.command == "external-consume-check" and not result.get("consumable", False):
+        raise SystemExit(1)
     if result.get("state_axes", {}).get("package_execution_status") in {"blocked", "failed"}:
         raise SystemExit(1)
     if args.command == "doctor" and result["environment_status"] != "ready":

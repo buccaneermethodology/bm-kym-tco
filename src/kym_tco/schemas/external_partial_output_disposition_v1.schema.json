@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "request_payload_digest", "pipeline_run_id", "claim_ceiling", "manifest_ref", "manifest_raw_digest", "manifest"],
+  "properties": {
+    "schema": {"const": "kym_tco.external_partial_output_disposition.v1"},
+    "status": {"enum": ["quarantined", "no_partial_package_outputs", "cleanup_failed"]},
+    "request_payload_digest": {"$ref": "#/$defs/digest"},
+    "pipeline_run_id": {"type": "string", "minLength": 1},
+    "claim_ceiling": {"enum": ["failed_deterministic_candidate_run_no_candidate_package_available", "failed_deterministic_candidate_run_partial_outputs_retained_not_candidate"]},
+    "manifest_ref": {"type": ["string", "null"]},
+    "manifest_raw_digest": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+    "manifest": {
+      "type": "object",
+      "required": ["schema", "status", "request_payload_digest", "pipeline_run_id", "claim_ceiling"],
+      "properties": {"schema": {"const": "kym_tco.partial_output_disposition.v2"}}
+    }
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "cleanup_failed"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "manifest": {"properties": {"status": {"const": "cleanup_failed"}}}
+        }
+      }
+    }
+  ]
+}

@@ -1,13 +1,14 @@
 {
   "schema": "kym_tco.skill_distribution.v1",
   "skill_id": "build-kym",
-  "distribution_version": "v0.4.2-candidate",
+  "distribution_version": "v0.4.3-candidate",
   "release_status": "unreleased",
-  "source_revision": "git:dcba8b8dfdaef6ce4898970e48d3dbd61476dca4+worktree",
+  "source_revision": "git:e7a27ae22b936f766ba27aa6b0b5ec1806206dcd+worktree",
   "source_snapshot_status": "dirty_unreleased_candidate",
-  "artifact_id": "build-kym-v0.4.2-candidate-worktree",
+  "artifact_id": "build-kym-v0.4.3-candidate-worktree",
   "skill_ref": ".codex/skills/build-kym/SKILL.md",
-  "skill_byte_digest": "sha256:dfb75289ee17702e2a98a981b32d1540eda40a1c847e81842cc14bd4a41accfd",
-  "archive_manifest_digest": "sha256:3419826f4c6611d3cb8fc96c8fa5971da8c6f1804e9c993d366345adda6fd0b1",
-  "manifest_digest": "sha256:40cc7037b5221054066bdea63464f88531ec38b9198c6a379646e081c7c2f1c7"
+  "skill_byte_digest": "sha256:fa70577202ab83d66282c0a8ee65e88bd5edde756002e9399e5c12db5d67970f",
+  "archive_manifest_digest": "sha256:5b166751e745aa1540d8b5cc01b1556da5a32966f825146825bb8656414e9765",
+  "manifest_digest": "sha256:c1b0a3b72f9a448c2c94490035726484695cb88dc625f7e41eeb05c71d89e0d5",
+  "distribution_tree_digest": "sha256:a0fb02ee98a8beec501413a1f7d04af26df2f75ab6bbc83499a72500297b8f0b"
 }

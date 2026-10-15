@@ -60,11 +60,11 @@ Agent 在这一步做 LLM 辅助判断：
 - 哪些只是 inferred；
 - 哪些存在 disputed、unresolved 或 superseded 风险。
 
-这一步的 know-how 来自：
+这一步的分析方法来自：
 
 - `build-kym/SKILL.md`；
 - bundled references，例如 semantic placement、analysis guide、reader quality；
-- repo 的 canonical KB 中沉淀出来的可移植规则；
+- Skill 随附的可移植分析与放置规则；
 - 过去 Golden fixture、PDI 和审计发现中沉淀的防复发规则。
 
 但最终 KYM draft 仍是 candidate，不是 approved baseline。
@@ -128,12 +128,12 @@ Agent 在这一步做 LLM 辅助判断：
 - witness、negative fixture、claim ceiling 应该如何放置；
 - 是否存在 Target gap。
 
-TCO 的 know-how 来自：
+TCO 的建模方法来自：
 
 - `build-tco-coverage/SKILL.md`；
 - `tco-contract.md`；
 - `tco-modeling-guide.md`；
-- `kb/data/tco_generation_knowledge.json` 的可移植规则；
+- Skill 随附的可移植建模规则；
 - 历史 PDI、Golden fixture、审计脚本与 renderer 误读修正。
 
 ## 第六步：Coverage proposal 的含义

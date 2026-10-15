@@ -1,25 +1,863 @@
 SPDXVersion: SPDX-2.3
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
-DocumentName: bm-kym-tco-0.4.2-license-report
-DocumentNamespace: https://github.com/buccaneermethodology/bm-kym-tco/releases/tag/v0.4.2
-Creator: Tool: bm-kym-tco release validation
+DocumentName: bm-kym-tco-v0.4.3-candidate-license-review
+DocumentNamespace: https://spdx.org/spdxdocs/bm-kym-tco-v043-2fc9f4290ba1a34522a8b176dd17da15982326031f3eb79bfcc9f057b328e3e3
+Creator: Tool: bm-kym-tco release preflight
+Created: 2026-10-15T00:00:00Z
+CreatorComment: Rights review pending; NOASSERTION is deliberate and is not release authorization.
 
 PackageName: bm-kym-tco
-SPDXID: SPDXRef-Package-bm-kym-tco
-PackageVersion: 0.4.2
-PackageLicenseDeclared: Apache-2.0
+SPDXID: SPDXRef-Package
 PackageDownloadLocation: NOASSERTION
-FilesAnalyzed: false
+FilesAnalyzed: true
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: NOASSERTION
+PackageCopyrightText: NOASSERTION
+PackageComment: Candidate package identity targets Apache-2.0, but each file and the right to redistribute require version-bound human authority confirmation.
 
-FileName: LICENSE
-SPDXID: SPDXRef-File-LICENSE
-LicenseConcluded: Apache-2.0
-LicenseInfoInFile: Apache-2.0
+FileName: ./.codex/skills/build-kym/SKILL.md
+SPDXID: SPDXRef-File-1f7bdc852456e8ebdafd
+FileChecksum: SHA256: fa70577202ab83d66282c0a8ee65e88bd5edde756002e9399e5c12db5d67970f
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-1f7bdc852456e8ebdafd
 
-FileName: NOTICE
-SPDXID: SPDXRef-File-NOTICE
-LicenseConcluded: Apache-2.0
-LicenseInfoInFile: Apache-2.0
+FileName: ./.codex/skills/build-kym/agents/openai.yaml
+SPDXID: SPDXRef-File-bd763cabd5af9b394d78
+FileChecksum: SHA256: 961042a4464dffd62a6835aed19a4871f319c7f2744572771d20ca1cc4c4194f
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-bd763cabd5af9b394d78
 
-Comment: The exact public file scope and outbound redistribution disposition were confirmed by the repository owner on 2026-08-27. Other repository Skills, internal governance records, private history and protected fixtures are excluded.
+FileName: ./.codex/skills/build-kym/distribution.json
+SPDXID: SPDXRef-File-b3b93710245ef4b03617
+FileChecksum: SHA256: 001600bba6576f25d0c8240261b5953d17ee779f34245fd2eb44f75e248911e9
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b3b93710245ef4b03617
+
+FileName: ./.codex/skills/build-kym/references/doctor-cli-missing-report.json
+SPDXID: SPDXRef-File-a3840f9a09bc9d31da40
+FileChecksum: SHA256: 5ce01261ee48069b2c2fd50664afb65b0bdeb9650b0e3123daedba1650b1b807
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-a3840f9a09bc9d31da40
+
+FileName: ./.codex/skills/build-kym/references/kym-analysis-guide.md
+SPDXID: SPDXRef-File-c7ffc9fcf7c4c38c3e93
+FileChecksum: SHA256: 18c64ba082a625dd3c60c424bdc3469ef32b021df657cb42d6e4ad6b9322139c
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c7ffc9fcf7c4c38c3e93
+
+FileName: ./.codex/skills/build-kym/references/kym-contract.md
+SPDXID: SPDXRef-File-4c74356060737f0f1dbc
+FileChecksum: SHA256: 591c1a2385e6657c75286c27486a325227c00fdf2542f47ebc190bce52c91394
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-4c74356060737f0f1dbc
+
+FileName: ./.codex/skills/build-kym/references/kym-reader-quality.md
+SPDXID: SPDXRef-File-40ccf3281d980a0a7934
+FileChecksum: SHA256: ab67541c3ecb5041013758167664fd66a99b6c0c0db622ab640663c553844faf
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-40ccf3281d980a0a7934
+
+FileName: ./.codex/skills/build-kym/references/kym-semantic-placement.md
+SPDXID: SPDXRef-File-efa9d442d1c4e5debdeb
+FileChecksum: SHA256: 63ed5b3c21e49f1a3af94f8eb9228405e83a9414fcebd53e072513c297a11a55
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-efa9d442d1c4e5debdeb
+
+FileName: ./.codex/skills/build-kym/references/portable-governance.yaml
+SPDXID: SPDXRef-File-c0b22d3ce3b7f248de00
+FileChecksum: SHA256: a9f6af692b5f3b14699d26d5f3f24aa5adc222a4fa4f8d9c2474e31cef3d1ee5
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c0b22d3ce3b7f248de00
+
+FileName: ./.codex/skills/build-kym/scripts/audit_candidate.py
+SPDXID: SPDXRef-File-82abfe03ecb668a27326
+FileChecksum: SHA256: c45e744872cf20ba6912f84a69bd1505e0c705642659875c498388b89fbbe513
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-82abfe03ecb668a27326
+
+FileName: ./.codex/skills/build-tco-coverage/SKILL.md
+SPDXID: SPDXRef-File-15a17e9bd8218b446bfa
+FileChecksum: SHA256: 8bcdee6e8a7402c0421a4f0c74e47661ed72837c457e381f33299ee137894744
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-15a17e9bd8218b446bfa
+
+FileName: ./.codex/skills/build-tco-coverage/agents/openai.yaml
+SPDXID: SPDXRef-File-4c5363c15aa0673b15b9
+FileChecksum: SHA256: e9259db148d2f2ededaf463b331ea94ffd4c44fe8dcada358390dda8e0833215
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-4c5363c15aa0673b15b9
+
+FileName: ./.codex/skills/build-tco-coverage/distribution.json
+SPDXID: SPDXRef-File-9661a54b8519554e758c
+FileChecksum: SHA256: 45f3bc26e5ca1d7db8d9877da600d49bd79a5cd0abb43c60820309c1642e5395
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-9661a54b8519554e758c
+
+FileName: ./.codex/skills/build-tco-coverage/references/doctor-cli-missing-report.json
+SPDXID: SPDXRef-File-182702d7c8a7ab71be9e
+FileChecksum: SHA256: 12279abb3df417dba1579a85e9cf9d454f7f5514044dffa52767a1c1a95b84b9
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-182702d7c8a7ab71be9e
+
+FileName: ./.codex/skills/build-tco-coverage/references/portable-governance.yaml
+SPDXID: SPDXRef-File-8aa135ce630b240e6ef3
+FileChecksum: SHA256: a9f6af692b5f3b14699d26d5f3f24aa5adc222a4fa4f8d9c2474e31cef3d1ee5
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-8aa135ce630b240e6ef3
+
+FileName: ./.codex/skills/build-tco-coverage/references/tco-contract.md
+SPDXID: SPDXRef-File-b92564774b4c092b7dff
+FileChecksum: SHA256: a945c0fe11b5d6d9f9c8dc22afa39099c1235ad3cfcd86ffd679917178429261
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b92564774b4c092b7dff
+
+FileName: ./.codex/skills/build-tco-coverage/references/tco-modeling-guide.md
+SPDXID: SPDXRef-File-9ce2e675bd0128bdc1ee
+FileChecksum: SHA256: 77631ecbb167c0bd4b8aa37a2c2279b7c2257a5f6bb917e6ee227588f1d331ec
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-9ce2e675bd0128bdc1ee
+
+FileName: ./.codex/skills/build-tco-coverage/scripts/audit_candidate.py
+SPDXID: SPDXRef-File-6f6d3fcefe2590d9dbbc
+FileChecksum: SHA256: c3fb1faa2c0ff3945467f8dd6ba2f5d43fe93ef23c4a3fe02107f4227dd9deba
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-6f6d3fcefe2590d9dbbc
+
+FileName: ./.codex/skills/build-tco-coverage/scripts/audit_reader_language.py
+SPDXID: SPDXRef-File-6ae0ce9fe5fd219c88ea
+FileChecksum: SHA256: 1f068494e3e6be7d9e270e1ecd6dd30e662c4433edeb6e8a1e54cbdb0f97890b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-6ae0ce9fe5fd219c88ea
+
+FileName: ./.github/workflows/ci.yml
+SPDXID: SPDXRef-File-b803fcb7f17ed9235f1e
+FileChecksum: SHA256: 7a011c293ee71f75828e9ba474002315b96f010f42a3b3ed9be3230829672fe0
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b803fcb7f17ed9235f1e
+
+FileName: ./.gitignore
+SPDXID: SPDXRef-File-bc37d034bad564583790
+FileChecksum: SHA256: fef31fc72fed27b1549200d2f01e01c1931af6c43a4d5f399a95273f183c98ca
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-bc37d034bad564583790
+
+FileName: ./CHANGELOG.md
+SPDXID: SPDXRef-File-06572a96a58dc510037d
+FileChecksum: SHA256: 7365524f655289950b881ae4443035c8a6ad49212893c934a78f00c5cbb7f496
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-06572a96a58dc510037d
+
+FileName: ./CONTRIBUTING.md
+SPDXID: SPDXRef-File-eca12c0a30e25b4b4652
+FileChecksum: SHA256: 83d930dc5f26fc173ae5c53469f7a5cf5bba1f9392baed6293bd0cefb78dc30a
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-eca12c0a30e25b4b4652
+
+FileName: ./LICENSE
+SPDXID: SPDXRef-File-c693279643b8cd5d2481
+FileChecksum: SHA256: c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c693279643b8cd5d2481
+
+FileName: ./MANIFEST.in
+SPDXID: SPDXRef-File-41d5a52589e0480be9c0
+FileChecksum: SHA256: 5137476bf000ace9632a4d6407dd5a75dc60228a1139c7607fcdd47287cb7413
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-41d5a52589e0480be9c0
+
+FileName: ./NOTICE
+SPDXID: SPDXRef-File-dfb14fbb9e7d095209ec
+FileChecksum: SHA256: e23ef9fdce3f0c6b1e4893895ad58f655253028130c6f26b3fdbe61aaa8cbcaa
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-dfb14fbb9e7d095209ec
+
+FileName: ./README.md
+SPDXID: SPDXRef-File-b335630551682c19a781
+FileChecksum: SHA256: 4dda3777bb29a966cb41b4134f08d0ad90d7632c5d52892a72e52b2ecc9475d2
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b335630551682c19a781
+
+FileName: ./README.zh-CN.md
+SPDXID: SPDXRef-File-13f564fa6ce92394f842
+FileChecksum: SHA256: b4f69b55adba0b07db672b536b3c2a3b95ebb3c106cff60b69ff62fbff3088fe
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-13f564fa6ce92394f842
+
+FileName: ./SECURITY.md
+SPDXID: SPDXRef-File-f6ed156e4bf5c7916806
+FileChecksum: SHA256: 1bf9b82e34421466dc37bff90a45d33804d5c650d192785cd7470814e3594d49
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-f6ed156e4bf5c7916806
+
+FileName: ./docs/INSTALLATION_AND_USAGE.zh-CN.md
+SPDXID: SPDXRef-File-7b3a736edbbe743daa18
+FileChecksum: SHA256: 3a381dc5988b1b42af1da7a632877eedff7bde51331be0a4ec2fc82018473a29
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-7b3a736edbbe743daa18
+
+FileName: ./docs/KYM_TO_TCO_WORKFLOW.zh-CN.md
+SPDXID: SPDXRef-File-8c7397b2397981448802
+FileChecksum: SHA256: 61cb2b5cd2e4ac3503001a06c05f8e2148937aefb94ddcb63c733d66db455bd1
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-8c7397b2397981448802
+
+FileName: ./pyproject.toml
+SPDXID: SPDXRef-File-50c86b7ed8ac2cf95bd4
+FileChecksum: SHA256: 579111428e15994c807ddad2219a6fc5c7dc0dc1e69e09d834b0945e36c808e6
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-50c86b7ed8ac2cf95bd4
+
+FileName: ./src/kym_tco/__init__.py
+SPDXID: SPDXRef-File-99cdd2d81c2c2100c998
+FileChecksum: SHA256: b6bc750dff5b2577dcbbc1064f6dac15895c33216722387adaac8452d15d6f8b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-99cdd2d81c2c2100c998
+
+FileName: ./src/kym_tco/approval_authorization.py
+SPDXID: SPDXRef-File-fd23691ba2d3328ea025
+FileChecksum: SHA256: 3f00976148307fca3fc72771cf7d8575fd354ba18438dc51936c370f64f10c76
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-fd23691ba2d3328ea025
+
+FileName: ./src/kym_tco/capability_claims.py
+SPDXID: SPDXRef-File-dd4b24650e2c10ae62d1
+FileChecksum: SHA256: 641a303440d106b772ced7e9ff5a96122cc496be6903abc2ba0d5512ec4ce914
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-dd4b24650e2c10ae62d1
+
+FileName: ./src/kym_tco/common.py
+SPDXID: SPDXRef-File-2a49263183952ebdb488
+FileChecksum: SHA256: 053859a6c6c92036bd92066d2e3f5db8ca386cf5d48231a4e8b140660e85ea08
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-2a49263183952ebdb488
+
+FileName: ./src/kym_tco/dashboard_observer.py
+SPDXID: SPDXRef-File-384dbf910a7926dc2ed6
+FileChecksum: SHA256: 03ead7c8ea720b56990678ea6ae39dc8bb7438b1c5633a1f58b1d8ad4655033b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-384dbf910a7926dc2ed6
+
+FileName: ./src/kym_tco/doctor.py
+SPDXID: SPDXRef-File-40e6c563fff1da2e4588
+FileChecksum: SHA256: 6d437c766075d380e0342a9ef1a67cb94b02ee9f49bf54830f8a70ec64efb792
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-40e6c563fff1da2e4588
+
+FileName: ./src/kym_tco/evidence_hub.py
+SPDXID: SPDXRef-File-518f9e903afa99fec40f
+FileChecksum: SHA256: ac9fce5b619133a81b415a4d330824c63f281762fa58596344b539b223fabe59
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-518f9e903afa99fec40f
+
+FileName: ./src/kym_tco/gate_registry.py
+SPDXID: SPDXRef-File-92c10059a0c92fd0fb96
+FileChecksum: SHA256: 673362893f741402f4974fee7145667eeb7135c00157003319aca317cbc29cf9
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-92c10059a0c92fd0fb96
+
+FileName: ./src/kym_tco/git_freshness.py
+SPDXID: SPDXRef-File-aacd98ea1a41cf864d8d
+FileChecksum: SHA256: dc8bbcb1547d6cec6f3d99a982d5d8e2c2fd33b3e57042147f0ca59b11eabd5d
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-aacd98ea1a41cf864d8d
+
+FileName: ./src/kym_tco/kym_cli.py
+SPDXID: SPDXRef-File-7d9388955bca74d3f151
+FileChecksum: SHA256: 31bfe63b286d62927f6f213a80199660b7b379f76b19cd0bd68c3454d007b9a3
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-7d9388955bca74d3f151
+
+FileName: ./src/kym_tco/kym_ops.py
+SPDXID: SPDXRef-File-8fb3ca80d70c0edb0ca8
+FileChecksum: SHA256: 849f56918083b6ce7a1041a7ec5789cbe179d587c7d69cc024150a2371f73153
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-8fb3ca80d70c0edb0ca8
+
+FileName: ./src/kym_tco/kym_package.py
+SPDXID: SPDXRef-File-81b8562f5f44b2a006ae
+FileChecksum: SHA256: b7a06fa95530af19ffd862b24ac74bdb38017b641faf6b2925790f615e3ebb4f
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-81b8562f5f44b2a006ae
+
+FileName: ./src/kym_tco/post_generation_pipeline.py
+SPDXID: SPDXRef-File-44e74e0a3f333585ed04
+FileChecksum: SHA256: 10a93c62dca4fe4b33569b697f6c22fba21607ce24d184e2de48f9629ef53ea6
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-44e74e0a3f333585ed04
+
+FileName: ./src/kym_tco/reader_language.py
+SPDXID: SPDXRef-File-95a99289430e487b21fe
+FileChecksum: SHA256: 1ed06de48fc41584bb61a42d1627a38245c4dd4dc46ad5afb9404d80335650c3
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-95a99289430e487b21fe
+
+FileName: ./src/kym_tco/reader_markdown.py
+SPDXID: SPDXRef-File-94a394147b2f2c93bd41
+FileChecksum: SHA256: 1d67667709cf9b68ce1abb0e666c3206655269e42eb0d6c9760719f67b494b42
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-94a394147b2f2c93bd41
+
+FileName: ./src/kym_tco/schemas/approval_receipt_v1.schema.json
+SPDXID: SPDXRef-File-54a13c89f32700e0e2f9
+FileChecksum: SHA256: 272079927aa09e9832849c9f4f0854f0edd857185cfaaafe152b60811c61d749
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-54a13c89f32700e0e2f9
+
+FileName: ./src/kym_tco/schemas/authorized_system_authorization_v1.schema.json
+SPDXID: SPDXRef-File-9a10d90b25ee9a9e3cf5
+FileChecksum: SHA256: 8ad6667b09a1bfde7e2ac7a4510df80a6316d5d3942efb7ed8ff66053af0c31b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-9a10d90b25ee9a9e3cf5
+
+FileName: ./src/kym_tco/schemas/doctor_report_v1.schema.json
+SPDXID: SPDXRef-File-0785c84f5b5b0e77a155
+FileChecksum: SHA256: 4d00bc8f368c3cda05e0aabda543931c090084af4d4a503329c3df14b8921b82
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-0785c84f5b5b0e77a155
+
+FileName: ./src/kym_tco/schemas/evidence_hub_integrity_v1.schema.json
+SPDXID: SPDXRef-File-6173d43793bd44ef8c39
+FileChecksum: SHA256: 1c5c8cdd082d3279b016f3e3fe12666833f1a63fd736799f6ea277fc9ea0b366
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-6173d43793bd44ef8c39
+
+FileName: ./src/kym_tco/schemas/executable_package_cases_v1.schema.json
+SPDXID: SPDXRef-File-8f158cd5fb3a6ce94696
+FileChecksum: SHA256: 932069cb44df19875b06f98f29b9eb313ec7dad9829f30c7621afbe8837e0af1
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-8f158cd5fb3a6ce94696
+
+FileName: ./src/kym_tco/schemas/executable_package_contract_v1.schema.json
+SPDXID: SPDXRef-File-b583fbb7227928d38f91
+FileChecksum: SHA256: 882c0ae5a72cc5503110e9d0d39132d8bac340f65ce3ec20648c695611ddd01b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b583fbb7227928d38f91
+
+FileName: ./src/kym_tco/schemas/external_host_failure_v2.schema.json
+SPDXID: SPDXRef-File-4df3c1db19e105da4f82
+FileChecksum: SHA256: fce72975bcbd5e4a959d2720fcbe137c6e984ba2ec317518891bca61bd5e92de
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-4df3c1db19e105da4f82
+
+FileName: ./src/kym_tco/schemas/external_partial_output_disposition_v1.schema.json
+SPDXID: SPDXRef-File-408a3a5d1cbe8c71ca9c
+FileChecksum: SHA256: 9118abe7d62c53e4bfbcda7d07066417632119a6fd79a01ea886ad53ea7dfdc2
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-408a3a5d1cbe8c71ca9c
+
+FileName: ./src/kym_tco/schemas/gate_registry_v1.json
+SPDXID: SPDXRef-File-e2bd2112e7c3c917cc80
+FileChecksum: SHA256: 82bfc7b0cd7f9a6c26c0d812d81014afceeac3aacaa2d41fbd169c51b57f95ff
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-e2bd2112e7c3c917cc80
+
+FileName: ./src/kym_tco/schemas/gate_registry_v1.schema.json
+SPDXID: SPDXRef-File-f404b9ec6ccee73e1302
+FileChecksum: SHA256: 7dbac0fdce26452ef0a437b443e29df8d7fb615a8f4e99dec0c4feea930dd608
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-f404b9ec6ccee73e1302
+
+FileName: ./src/kym_tco/schemas/kym_delta_v1.schema.json
+SPDXID: SPDXRef-File-c377300e7b2b59122af6
+FileChecksum: SHA256: 128b724155e799ba6ab468e31e7ba68df7cfae47516872e9fe93c0ab8d127f0f
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c377300e7b2b59122af6
+
+FileName: ./src/kym_tco/schemas/kym_model_v1.schema.json
+SPDXID: SPDXRef-File-f3996a61df1f49916d44
+FileChecksum: SHA256: d9af08c623b89f9ee732e0a30a86cdc647fdd165c065525c0bf03784d4d3e682
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-f3996a61df1f49916d44
+
+FileName: ./src/kym_tco/schemas/kym_package_artifact_index_v1.schema.json
+SPDXID: SPDXRef-File-b5f7cbd0543393d6b888
+FileChecksum: SHA256: 3334114296b0e5bd5728e10b4fbe7a75bd22ceecde95a237c59c51b05da6c4c5
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b5f7cbd0543393d6b888
+
+FileName: ./src/kym_tco/schemas/kym_package_lineage_v1.schema.json
+SPDXID: SPDXRef-File-15b4dfb22a8b16d203ba
+FileChecksum: SHA256: 683f237810e155f07a045d5af1b65fffeab67643c83b73d2ca1bb95f1f62f345
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-15b4dfb22a8b16d203ba
+
+FileName: ./src/kym_tco/schemas/kym_package_manifest_v1.schema.json
+SPDXID: SPDXRef-File-c295a19bf512554100b1
+FileChecksum: SHA256: 061256daf0ff49e09fc0f39ad4cd8cc3b476cd941fe468553fc1971386fe8caf
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c295a19bf512554100b1
+
+FileName: ./src/kym_tco/schemas/normalized_source_ledger_v1.schema.json
+SPDXID: SPDXRef-File-a0a007b53d07a9606bc9
+FileChecksum: SHA256: 6399139e90597110ce4e4c093044c2adf7c9509bdc39aae53df346392692c296
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-a0a007b53d07a9606bc9
+
+FileName: ./src/kym_tco/schemas/partial_output_disposition_v2.schema.json
+SPDXID: SPDXRef-File-c95299f6f3b5274f4691
+FileChecksum: SHA256: 0d1f8c4998d209c29df19e99fe05ac0a81897d66bc0927ee0f8bed77c19d05d8
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c95299f6f3b5274f4691
+
+FileName: ./src/kym_tco/schemas/post_generation_validation_bundle_v1.schema.json
+SPDXID: SPDXRef-File-7fdc4d1a2200fec05d24
+FileChecksum: SHA256: 0cb9bffa75e99df1d9eb0ffc4b1d6ce56a1c25799f7360bbad9847255394cb78
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-7fdc4d1a2200fec05d24
+
+FileName: ./src/kym_tco/schemas/project_config_v1.schema.json
+SPDXID: SPDXRef-File-28f0e802c549bab43970
+FileChecksum: SHA256: 3c73ed9fbd280674d587063cbfaaa687f10acb0f4831aaa1c7f5698d8297cc14
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-28f0e802c549bab43970
+
+FileName: ./src/kym_tco/schemas/source_input_manifest_v1.schema.json
+SPDXID: SPDXRef-File-2a3142e9cb429310f71c
+FileChecksum: SHA256: 303df44ab779d3ddeb9a41d3fe3f8726bf877d63c978f274d3d5a14fc82f61cb
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-2a3142e9cb429310f71c
+
+FileName: ./src/kym_tco/schemas/source_manifest_v1.schema.json
+SPDXID: SPDXRef-File-61126207d27042be7da9
+FileChecksum: SHA256: 74b227fe85103be47bcbfe81f899044f7b18ea359e1bfaf0bcdfc53eeaf82b66
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-61126207d27042be7da9
+
+FileName: ./src/kym_tco/schemas/source_manifest_v2.schema.json
+SPDXID: SPDXRef-File-c0ce548c458c0edd0b44
+FileChecksum: SHA256: 10d86eaf6b27ef6013b5aebbb28fc17a665834574e91905a805b4136a0a50481
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c0ce548c458c0edd0b44
+
+FileName: ./src/kym_tco/schemas/supported_host_registry_v1.schema.json
+SPDXID: SPDXRef-File-9a3531a76ec43e9f3731
+FileChecksum: SHA256: fb45d5ef5c138ce14f52114746e4d448fa1366dac5e0376bbfe3bae153fc85bb
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-9a3531a76ec43e9f3731
+
+FileName: ./src/kym_tco/schemas/target_fragment_v1.schema.json
+SPDXID: SPDXRef-File-b16d842541dc99674469
+FileChecksum: SHA256: c4975c7cbe50fdeeda5c6fa78222adf735fffd44e436b8ffca6dcad01ccaadce
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-b16d842541dc99674469
+
+FileName: ./src/kym_tco/schemas/tco_coverage_model_v1.schema.json
+SPDXID: SPDXRef-File-2d351f378088c5faea87
+FileChecksum: SHA256: 46824cde496d9b5e3f1721358cae174fbc814e9e403b20ec3a9f6155265c16e7
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-2d351f378088c5faea87
+
+FileName: ./src/kym_tco/schemas/tco_coverage_model_v2.schema.json
+SPDXID: SPDXRef-File-758c643f1b56985c0441
+FileChecksum: SHA256: 3b5e01d853c81c8f97f3346a056e160d4c221196276e9222cee0dabb3f58dfbb
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-758c643f1b56985c0441
+
+FileName: ./src/kym_tco/schemas/tco_coverage_model_v3.schema.json
+SPDXID: SPDXRef-File-44c0a0453d89aa118c51
+FileChecksum: SHA256: 42e6b882fda16cd92d0b881dc5d4ed513833acc8feb4279aaabd3eae6917c52b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-44c0a0453d89aa118c51
+
+FileName: ./src/kym_tco/schemas/tco_coverage_report_v2.schema.json
+SPDXID: SPDXRef-File-5188680e2988ef52d154
+FileChecksum: SHA256: d35735467d5fcb3bf7e4d63506d56d61fa820e7d34eacf7e20563279344d2350
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-5188680e2988ef52d154
+
+FileName: ./src/kym_tco/schemas/tco_coverage_report_v3.schema.json
+SPDXID: SPDXRef-File-09201cffb5bb4a50fef6
+FileChecksum: SHA256: 025982ff512238bd07c2f576395f5ff144c5f48fd9d23c2d7ca9a81d56cf5071
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-09201cffb5bb4a50fef6
+
+FileName: ./src/kym_tco/schemas/tco_execution_result_v1.schema.json
+SPDXID: SPDXRef-File-066b2e6a405771203239
+FileChecksum: SHA256: 5c676fa33548bae5e05d52c3972e98202f5d049fc30bb57a79d19ff6118a46f0
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-066b2e6a405771203239
+
+FileName: ./src/kym_tco/schemas/tco_model_v1.schema.json
+SPDXID: SPDXRef-File-e5d89748d9679b9284bd
+FileChecksum: SHA256: df85b6f5ffdb1c144c7ab243cdb3091df8306072b2b09e9657e9ab7ab482258d
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-e5d89748d9679b9284bd
+
+FileName: ./src/kym_tco/schemas/tco_model_v2.schema.json
+SPDXID: SPDXRef-File-c06e88054f7d24a56995
+FileChecksum: SHA256: 1b8a78659c53e6e00c7c361708727006aac69c78e22eeffc28a93839e8568be6
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c06e88054f7d24a56995
+
+FileName: ./src/kym_tco/schemas/tco_model_v3.schema.json
+SPDXID: SPDXRef-File-29225bb2db789b9aeb69
+FileChecksum: SHA256: 90acaf99dd4dc4b8da22a4c76d7c7aa2cf3501a5a5dfa71f6fd322eabf76d0a2
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-29225bb2db789b9aeb69
+
+FileName: ./src/kym_tco/schemas/tco_model_v4.schema.json
+SPDXID: SPDXRef-File-7811bcf5b7e8088bc629
+FileChecksum: SHA256: eecfed5bf960e8c98f8f38ac1013891f55f2322f046f5362f11fcee11b2cf68b
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-7811bcf5b7e8088bc629
+
+FileName: ./src/kym_tco/schemas/tco_multi_input_package_manifest_v1.schema.json
+SPDXID: SPDXRef-File-4c875f7b5989ddc5eec0
+FileChecksum: SHA256: ef5ac685b37bf5cacbe9d9d2a6fb3e94fa9a9ce1c9d4387f45cf79419a43d9cd
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-4c875f7b5989ddc5eec0
+
+FileName: ./src/kym_tco/schemas/tco_package_artifact_index_v1.schema.json
+SPDXID: SPDXRef-File-de496c36c8ffd0ce0ee7
+FileChecksum: SHA256: 1db23cbaffe5fe6559a587f049defa2afc1167d0536fcb8608ffa27d0962951f
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-de496c36c8ffd0ce0ee7
+
+FileName: ./src/kym_tco/schemas/tco_package_manifest_v1.schema.json
+SPDXID: SPDXRef-File-2ebdaf1ff5cc6bff25a5
+FileChecksum: SHA256: 6546b8516e447057d4ffaca47310358e2939c323076c436b0bd8c3434d3df3b5
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-2ebdaf1ff5cc6bff25a5
+
+FileName: ./src/kym_tco/semantic_risk.py
+SPDXID: SPDXRef-File-315003015c1228e693a7
+FileChecksum: SHA256: a3a47ce17d95cde5f089fcd940d6983aaa6586b202933ec478666a776a636e9d
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-315003015c1228e693a7
+
+FileName: ./src/kym_tco/source_adapters.py
+SPDXID: SPDXRef-File-ddedff5dbf3a6058959f
+FileChecksum: SHA256: 8b67d04528088c0f466dad926f8ff7f820daf10c4b25be2aa57d600943401c30
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-ddedff5dbf3a6058959f
+
+FileName: ./src/kym_tco/supported_host.py
+SPDXID: SPDXRef-File-9e12414e8dc3d8a1950e
+FileChecksum: SHA256: 55536f5722e71466c57452f576b3923bf4a3977d01f8beb2562d08bcd97bd882
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-9e12414e8dc3d8a1950e
+
+FileName: ./src/kym_tco/tco_cli.py
+SPDXID: SPDXRef-File-fbb1652f0a9f73954a11
+FileChecksum: SHA256: cc371c5aa6a0d1b9e205432772e500b3b236e481e59862998fc33b2e890c89b0
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-fbb1652f0a9f73954a11
+
+FileName: ./src/kym_tco/tco_multi_input.py
+SPDXID: SPDXRef-File-24f40d2f35ecf1eaa152
+FileChecksum: SHA256: 8a020f3babaf847c86cc849a5239d1ef6840f03e3691c3e97b81c0a5b08bddc9
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-24f40d2f35ecf1eaa152
+
+FileName: ./src/kym_tco/tco_ops.py
+SPDXID: SPDXRef-File-48a5e26c910bcf1519bc
+FileChecksum: SHA256: 07b8e78ebb7059dfa09d3c5efcc871e1b125b783b9cc863b4606ae38739a5f90
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-48a5e26c910bcf1519bc
+
+FileName: ./src/kym_tco/tco_package.py
+SPDXID: SPDXRef-File-83c797d7777ff380f8bf
+FileChecksum: SHA256: c22609105842f3e15dccb53db8333ea1bc3cedd9ca684cb46c8dce56cf5d7ddc
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-83c797d7777ff380f8bf
+
+FileName: ./src/kym_tco/validation.py
+SPDXID: SPDXRef-File-73f3db212f50fd556f9a
+FileChecksum: SHA256: 8628109f6bde773701d1992c85e8b6cdecb4d3aab9e879b2e2f5d0daa081e3e3
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-73f3db212f50fd556f9a
+
+FileName: ./src/kym_tco/workspace.py
+SPDXID: SPDXRef-File-c1d9aef08a2085c7f939
+FileChecksum: SHA256: f2f38f60dac9608436372667b1849a3fc7994988021e06d5a047d15a204a8267
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c1d9aef08a2085c7f939
+
+FileName: ./tools/install_codex_skills.py
+SPDXID: SPDXRef-File-c8d1f49c80e6af26b835
+FileChecksum: SHA256: fade60d17b135c1522877c638b8ec527a265ecf3181820450b63bc3baab9452c
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+FileComment: Per-file source/license and redistribution review is pending for v0.4.3.
+Relationship: SPDXRef-Package CONTAINS SPDXRef-File-c8d1f49c80e6af26b835

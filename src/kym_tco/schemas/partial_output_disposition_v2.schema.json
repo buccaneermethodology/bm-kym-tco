@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+    "required": ["schema", "pipeline_run_id", "request_payload_digest", "status", "reason_code", "failed_gate_ids", "blocked_gate_ids", "conflict_ref", "candidate_inputs_retained", "generated_artifacts", "retained_artifacts", "cleanup_errors", "recorded_at", "claim_ceiling"],
+  "properties": {
+    "schema": {"const": "kym_tco.partial_output_disposition.v2"},
+    "pipeline_run_id": {"type": "string", "minLength": 1},
+    "request_payload_digest": {"$ref": "#/$defs/digest"},
+    "status": {"enum": ["quarantined", "no_partial_package_outputs", "cleanup_failed"]},
+    "reason_code": {"enum": ["deterministic_gate_failed", "required_gate_blocked"]},
+    "failed_gate_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "blocked_gate_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "conflict_ref": {"type": ["string", "null"]},
+    "candidate_inputs_retained": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+    "generated_artifacts": {"type": "array", "items": {"$ref": "#/$defs/generated"}},
+    "retained_artifacts": {"type": "array", "items": {"$ref": "#/$defs/retained"}},
+    "cleanup_errors": {"type": "array", "items": {"$ref": "#/$defs/cleanupError"}},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "claim_ceiling": {"enum": ["failed_deterministic_candidate_run_no_candidate_package_available", "failed_deterministic_candidate_run_partial_outputs_retained_not_candidate"]}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "artifact": {"type": "object", "additionalProperties": false, "required": ["ref", "byte_digest"], "properties": {"ref": {"type": "string", "minLength": 1}, "byte_digest": {"$ref": "#/$defs/digest"}}},
+    "generated": {"type": "object", "additionalProperties": false, "required": ["gate_id", "original_ref", "quarantine_ref", "byte_digest", "file_count"], "properties": {"gate_id": {"type": "string"}, "original_ref": {"type": "string"}, "quarantine_ref": {"type": "string"}, "byte_digest": {"$ref": "#/$defs/digest"}, "file_count": {"type": "integer", "minimum": 0}}},
+    "retained": {"type": "object", "additionalProperties": true, "required": ["gate_id", "disposition", "ref", "byte_digest"], "properties": {"gate_id": {"type": "string"}, "disposition": {"enum": ["retained_in_output", "retained_identity_unverified", "retained_unresolved"]}, "ref": {"type": "string"}, "byte_digest": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}}},
+    "cleanupError": {"type": "object", "additionalProperties": false, "required": ["gate_id", "source_ref", "error"], "properties": {"gate_id": {"type": "string"}, "source_ref": {"type": "string"}, "error": {"type": "string"}}}
+  }
+}

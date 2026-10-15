@@ -1,6 +1,6 @@
 # KYM Semantic Placement
 
-Reachable placement gate. In kym-tco, `kb/data/kym_semantic_placement.json` is canonical truth and `kb/docs/KYM_Semantic_Placement.md` is generated.
+Reachable placement gate. This bundled reference is the portable placement guide for installed Skill users.
 
 ## Two-Pass Gate
 

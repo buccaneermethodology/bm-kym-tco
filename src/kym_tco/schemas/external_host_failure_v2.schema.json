@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "host_profile_id", "request_payload_digest", "reason_code", "terminal_status", "detail_digest", "input_artifacts_digest", "generated_artifacts_digest", "gate_ids", "retry_key", "partial_output_disposition", "recorded_at", "claim_ceiling"],
+  "properties": {
+    "schema": {"const": "kym_tco.external_host_failure.v2"},
+    "host_profile_id": {"type": ["string", "null"]},
+    "request_payload_digest": {"$ref": "#/$defs/digest"},
+    "reason_code": {"enum": ["unsupported_profile", "capability_unavailable", "cli_missing", "runtime_version_mismatch", "skill_digest_mismatch", "skill_selection_ambiguous", "workspace_permission_denied", "workspace_path_escape", "source_digest_mismatch", "deterministic_gate_failed", "partial_output_quarantined", "retry_payload_conflict", "incomplete_prior_claim"]},
+    "terminal_status": {"enum": ["blocked", "failed"]},
+    "detail_digest": {"$ref": "#/$defs/digest"},
+    "input_artifacts_digest": {"$ref": "#/$defs/digest"},
+    "generated_artifacts_digest": {"$ref": "#/$defs/digest"},
+    "gate_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "retry_key": {"$ref": "#/$defs/digest"},
+    "partial_output_disposition": {"enum": ["not_started", "retained_nonterminal", "quarantined", "cleanup_failed"]},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "claim_ceiling": {"const": "deterministic_runtime_failure_evidence_only_no_semantic_approval"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}
