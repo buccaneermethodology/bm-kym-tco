@@ -99,6 +99,8 @@ Markdown contains no HTML validation annotations.
 
 ### Installed CLI workflow for external business repositories
 
+The v0.4.4 candidate keeps source Skill manifests marked unreleased and uses a deterministic release overlay for exact released identities. External host checks pin both Skill manifests, file trees, and `SKILL.md` bytes. The overlay and rights packet are local candidate evidence only until a payload-specific rights receipt authorizes any external action.
+
 An external repository needs the installed `kym`/`tco` CLI and the two Skills. It does not need this tool's `src/kym_tco/`, internal host registry, or source checkout. Skill invocation does not automatically run the deterministic host pipeline on arbitrary platforms; an operator runs it after both Skill candidate packages are ready.
 
 1. Prepare a workspace-relative `source_input_manifest_v1`, then freeze and recheck its original bytes and source bytes:

@@ -7,6 +7,8 @@
 - `build-kym`：不可变来源快照、KYM 修订、Markdown 阅读视图、差异、baseline 批准和 Target 批准。
 - `build-tco-coverage`：基于已批准 Target 的 TCO 模型、证据提案、白名单验证、Coverage 批准、Profile 对比以及 HTML/JSON 报告。
 
+v0.4.4 候选版为两个 Skill 增加单独的 released identity overlay：源码清单仍标记为未发行候选，外部宿主则按精确的 v0.4.4 Skill manifest、目录树和 `SKILL.md` 字节摘要验证。KYM/TCO/Coverage 的输出仍是候选内容；本地 rights ledger 与回执模板不授权发布或 Skill 同步。
+
 CLI 本身不会调用 LLM。调用它的 Agent 负责语义分析与综合；工具负责强制执行来源追溯、修订、批准、图结构、词汇和证据边界。
 
 ## 安装

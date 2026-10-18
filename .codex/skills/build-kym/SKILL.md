@@ -9,7 +9,7 @@ Create source-traceable KYM. JSON is truth; Markdown is deterministic. CLI valid
 
 ## Preconditions
 
-1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.3 [--output <report.json>]`. `ready` is not semantics or approval.
+1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.4 [--output <report.json>]`. `ready` is not semantics or approval.
 2. Choose a stable lowercase `product-id` and workspace.
 3. Read [references/kym-contract.md](references/kym-contract.md) completely before drafting or validating JSON.
 4. Read [references/kym-analysis-guide.md](references/kym-analysis-guide.md) completely for multi-actor, ambiguous, conflicting, inferred, or long-source analysis.

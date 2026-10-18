@@ -9,7 +9,7 @@ The agent performs semantic decomposition; `tco` deterministically validates, ve
 
 ## Preconditions
 
-1. Run `tco --help`. Missing: fill `references/doctor-cli-missing-report.json` and print stdout; no semantic verdict. Available: run `tco --workspace <workspace> doctor --product-id <id> --skill-dir <skill-dir> --expected-cli-version 0.4.3`. `ready` means environment only.
+1. Run `tco --help`. Missing: fill `references/doctor-cli-missing-report.json` and print stdout; no semantic verdict. Available: run `tco --workspace <workspace> doctor --product-id <id> --skill-dir <skill-dir> --expected-cli-version 0.4.4`. `ready` means environment only.
 2. Require explicit candidate KYM revision/profile inputs and source boundaries.
 3. Read [references/tco-contract.md](references/tco-contract.md) when drafting model, Coverage, or project config.
 4. Read [references/tco-modeling-guide.md](references/tco-modeling-guide.md) completely when decomposing M/TSP, preserving Profiles, assigning Coverage, or reviewing gaps. It guides analysis; the contract/CLI remain authoritative.

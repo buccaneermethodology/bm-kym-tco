@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bm-kym-tco"
-version = "0.4.3"
+version = "0.4.4"
 description = "Deterministic KYM revision, approval, TCO coverage, and verification tooling"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -35,3 +35,40 @@ kym_tco = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.setuptools.data-files]
+"share/bm-kym-tco/codex/skills/build-kym" = [
+  ".codex/skills/build-kym/SKILL.md",
+  ".codex/skills/build-kym/distribution.json",
+]
+"share/bm-kym-tco/codex/skills/build-kym/agents" = [
+  ".codex/skills/build-kym/agents/openai.yaml",
+]
+"share/bm-kym-tco/codex/skills/build-kym/references" = [
+  ".codex/skills/build-kym/references/doctor-cli-missing-report.json",
+  ".codex/skills/build-kym/references/kym-analysis-guide.md",
+  ".codex/skills/build-kym/references/kym-contract.md",
+  ".codex/skills/build-kym/references/kym-reader-quality.md",
+  ".codex/skills/build-kym/references/kym-semantic-placement.md",
+  ".codex/skills/build-kym/references/portable-governance.yaml",
+]
+"share/bm-kym-tco/codex/skills/build-kym/scripts" = [
+  ".codex/skills/build-kym/scripts/audit_candidate.py",
+]
+"share/bm-kym-tco/codex/skills/build-tco-coverage" = [
+  ".codex/skills/build-tco-coverage/SKILL.md",
+  ".codex/skills/build-tco-coverage/distribution.json",
+]
+"share/bm-kym-tco/codex/skills/build-tco-coverage/agents" = [
+  ".codex/skills/build-tco-coverage/agents/openai.yaml",
+]
+"share/bm-kym-tco/codex/skills/build-tco-coverage/references" = [
+  ".codex/skills/build-tco-coverage/references/doctor-cli-missing-report.json",
+  ".codex/skills/build-tco-coverage/references/portable-governance.yaml",
+  ".codex/skills/build-tco-coverage/references/tco-contract.md",
+  ".codex/skills/build-tco-coverage/references/tco-modeling-guide.md",
+]
+"share/bm-kym-tco/codex/skills/build-tco-coverage/scripts" = [
+  ".codex/skills/build-tco-coverage/scripts/audit_candidate.py",
+  ".codex/skills/build-tco-coverage/scripts/audit_reader_language.py",
+]

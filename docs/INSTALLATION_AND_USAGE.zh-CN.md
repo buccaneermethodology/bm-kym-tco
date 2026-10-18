@@ -71,6 +71,13 @@ tco --help
 
 如果你需要复现某个历史结果，请使用当时记录的 tag，而不是默认分支。
 
+### v0.4.4 候选版的宿主身份变化
+
+v0.4.4 候选版把 Skill 的源码候选身份与公开发布身份分开：源码中的 `distribution.json` 仍为 `v0.4.4-candidate/unreleased`；本地 public projection 才生成 `v0.4.4/released` manifests。外部宿主严格校验两个 Skill 的版本、状态、manifest、目录树和 `SKILL.md` 字节摘要，混用 v0.4.3、候选身份或改动过的文件会被拒绝。CLI/runtime 版本同步为 0.4.4。
+
+截至该候选材料生成时，v0.4.4 仍未发布。不能把候选 overlay 安装到全局或项目 Skills，也不能据此 push、打 tag 或 release；这些动作必须由绑定最终 public tree 与 rights ledger 的新授权回执明确批准。Skill 生成的 KYM/TCO/Coverage 仍是候选，不会因此自动获得语义批准。
+
+
 ## 安装两个 Skills
 
 两个生成 Skill 是：

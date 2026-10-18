@@ -237,3 +237,10 @@ HTML 不应该是唯一真源。真正的 authority 分散在：
 
 这样既降低使用门槛，也不牺牲 authority 边界。
 
+
+
+## v0.4.4 外部宿主身份
+
+v0.4.4 候选版将两个 Skill 的发布身份放入单独的确定性 overlay。源码 manifests 继续显示 `v0.4.4-candidate/unreleased`，供开发候选使用；本地公开投影将其改为 `v0.4.4/released`，供安装版 CLI 的外部宿主 profile 做精确 digest 匹配。外部项目不需要 kym-tco 源码或内部 registry。
+
+这个身份检查不改变 KYM/TCO/Coverage 的生命周期：候选输出仍需独立验证与人工审阅。overlay、package projection 和 rights ledger 只是本地候选证据，不构成发布权利或 Skill 同步授权。

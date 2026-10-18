@@ -41,24 +41,26 @@ PROFILE_ID = "codex_repo_local_skill_workflow_v1"
 EXTERNAL_PROFILE_ID = "installed_cli_external_workspace_v1"
 EXTERNAL_SKILL_DISTRIBUTIONS = {
     "build-kym": {
-        "distribution_version": "v0.4.3-candidate",
-        "release_status": "unreleased",
-        "skill_byte_digest": "sha256:fa70577202ab83d66282c0a8ee65e88bd5edde756002e9399e5c12db5d67970f",
-        "skill_tree_digest": "sha256:a0fb02ee98a8beec501413a1f7d04af26df2f75ab6bbc83499a72500297b8f0b",
-        "distribution_manifest_digest": "sha256:001600bba6576f25d0c8240261b5953d17ee779f34245fd2eb44f75e248911e9"
+        "distribution_version": "v0.4.4",
+        "release_status": "released",
+        "skill_byte_digest": "sha256:a532a65cb2325040f3b3fa9633cb423105c80a4a7c2ad07f61a754c98d96df25",
+        "skill_tree_digest": "sha256:f2167b557300c63e593e2b9a0a28d2d57f659f38047bb074475319893a92adf5",
+        "distribution_manifest_digest": "sha256:390b89b20e1dad4030b1b1eb50b177d7f77ee377230caf4cf631ae22dd6c927c",
     },
     "build-tco-coverage": {
-        "distribution_version": "v0.4.3-candidate",
-        "release_status": "unreleased",
-        "skill_byte_digest": "sha256:8bcdee6e8a7402c0421a4f0c74e47661ed72837c457e381f33299ee137894744",
-        "skill_tree_digest": "sha256:bf6b2f95b7abd879db1bff0ef2339a6733b98b000ce07874e6af4cf3774309b0",
-        "distribution_manifest_digest": "sha256:45f3bc26e5ca1d7db8d9877da600d49bd79a5cd0abb43c60820309c1642e5395"
-    }
+        "distribution_version": "v0.4.4",
+        "release_status": "released",
+        "skill_byte_digest": "sha256:4846a7af54bd311ef9a6bc8209a966288535a8581b8c8050890e0ec64c6aa984",
+        "skill_tree_digest": "sha256:27704d464eb779fdcc02fd47fbce11ef07adf9e4efaf4a05bf98a6ea477a5118",
+        "distribution_manifest_digest": "sha256:928f56f1042db17ffe9eb31b3a60e336e5276ba364b16c7ca32e71623a85fe37",
+    },
 }
 
 PRODUCTION_ENTRY = "kym_tco.supported_host:materialize_and_validate"
 PROTOCOL = "skill_materialization_pipeline_v1"
-EXPECTED_REGISTRY_DIGEST = "sha256:a34617d19dff67cd472cbaa32fa22b3683083c70d480402014fbd8e55c038475"
+EXPECTED_REGISTRY_DIGEST_V1 = "sha256:40c863309f18428450b0b7540f5e62ce0e6cf0f2fdd380a2c252bcc843d24db0"
+EXPECTED_REGISTRY_DIGEST_V2 = "sha256:65956b08f20f89efb6c0968751d8f31b337c825c7aeee0cea173ccfc1341ee35"
+EXPECTED_REGISTRY_DIGEST = EXPECTED_REGISTRY_DIGEST_V2
 REQUIRED_CAPABILITIES = {
     "workspace_bytes_read", "candidate_materialize", "repo_local_cli_invoke",
     "digest_capture", "durable_evidence_write",
@@ -72,8 +74,15 @@ _THREAD_LOCKS: dict[str, threading.Lock] = {}
 _THREAD_LOCKS_GUARD = threading.Lock()
 
 
-def _schema() -> dict[str, Any]:
-    text = resources.files("kym_tco.schemas").joinpath("supported_host_registry_v1.schema.json").read_text(encoding="utf-8")
+def _schema(schema_id: str) -> dict[str, Any]:
+    schema_files = {
+        "kym_tco.supported_host_registry.v1": "supported_host_registry_v1.schema.json",
+        "kym_tco.supported_host_registry.v2": "supported_host_registry_v2.schema.json",
+    }
+    filename = schema_files.get(schema_id)
+    if filename is None:
+        raise ContractError("unsupported supported-host registry schema")
+    text = resources.files("kym_tco.schemas").joinpath(filename).read_text(encoding="utf-8")
     return json.loads(text)
 
 
@@ -141,13 +150,18 @@ def validate_skill_distribution(document: dict[str, Any], workspace: Path) -> di
 
 
 def validate_supported_host_registry(document: dict[str, Any], source: Path | None = None) -> dict[str, Any]:
-    errors = sorted(Draft202012Validator(_schema()).iter_errors(document), key=lambda error: list(error.path))
+    schema_id = document.get("schema", "")
+    errors = sorted(Draft202012Validator(_schema(schema_id)).iter_errors(document), key=lambda error: list(error.path))
     if errors:
         detail = "; ".join(f"{'.'.join(map(str, error.path)) or '<root>'}: {error.message}" for error in errors)
         raise ContractError(f"{source or 'supported-host registry'}: schema 校验失败: {detail}")
     if document["registry_digest"] != registry_payload_digest(document):
         raise ContractError("supported-host registry_digest 与 canonical payload 不一致")
-    if document["registry_digest"] != EXPECTED_REGISTRY_DIGEST:
+    expected_digest = {
+        "kym_tco.supported_host_registry.v1": EXPECTED_REGISTRY_DIGEST_V1,
+        "kym_tco.supported_host_registry.v2": EXPECTED_REGISTRY_DIGEST_V2,
+    }[schema_id]
+    if document["registry_digest"] != expected_digest:
         raise ContractError("supported-host semantic registry digest 不匹配")
     profiles = document["profiles"]
     ids = [profile["host_profile_id"] for profile in profiles]
@@ -204,7 +218,8 @@ def resolve_skill_distributions(workspace: Path, profile: dict[str, Any]) -> lis
 
 def require_enabled_profile(workspace: Path, registry_path: Path | None = None) -> dict[str, Any]:
     workspace = workspace.resolve()
-    path = registry_path or workspace / "governance/supported_host_registry_v1.json"
+    v2_path = workspace / "governance/supported_host_registry_v2.json"
+    path = registry_path or (v2_path if v2_path.is_file() else workspace / "governance/supported_host_registry_v1.json")
     registry = load_supported_host_registry(path)
     profile = registry["profiles"][0]
     if profile["profile_status"] != "enabled":
@@ -507,6 +522,9 @@ def require_external_profile(profile_id: str, runtime_root: Path, target_workspa
         raise ContractError("unknown_profile")
     root = runtime_root.expanduser().resolve(strict=True)
     workspace = target_workspace.expanduser().resolve(strict=True)
+    runtime_identity = installed_distribution_identity()
+    if runtime_identity.get("version") != "0.4.4":
+        raise ContractError("runtime_version_mismatch")
     package_root = Path(__file__).resolve().parent
     if root != package_root:
         raise ContractError("runtime_root_mismatch")
@@ -517,9 +535,9 @@ def require_external_profile(profile_id: str, runtime_root: Path, target_workspa
         "host_profile_id": EXTERNAL_PROFILE_ID,
         "profile_status": "enabled",
         "pipeline_availability": "available_slice4_nonterminal",
-        "profile_version": "1.0",
+        "profile_version": "2.0",
         "expected_skill_distributions": EXTERNAL_SKILL_DISTRIBUTIONS,
-        "runtime_distribution_identity": installed_distribution_identity(),
+        "runtime_distribution_identity": runtime_identity,
     }
     return {
         **profile_contract,
@@ -1068,7 +1086,7 @@ def external_consume_check(workspace: Path, candidate_ref: str, evidence_ref: st
         host_identity = context.get("supported_host_identity", {})
         if (
             host_identity.get("profile_id") != EXTERNAL_PROFILE_ID
-            or host_identity.get("profile_version") != "1.0"
+            or host_identity.get("profile_version") != "2.0"
             or host_identity.get("target_workspace_realpath") != str(workspace)
         ):
             raise ContractError("host_profile_identity_mismatch")
