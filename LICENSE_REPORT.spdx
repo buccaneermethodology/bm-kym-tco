@@ -1,8 +1,8 @@
 SPDXVersion: SPDX-2.3
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
-DocumentName: bm-kym-tco-v0.4.4-candidate
-DocumentNamespace: https://spdx.org/spdxdocs/bm-kym-tco-v0.4.4-candidate
+DocumentName: bm-kym-tco-v0.4.4-ci-maintenance
+DocumentNamespace: https://spdx.org/spdxdocs/bm-kym-tco-ci-2378970010ae6950f26f900c777cc711c74fcfe4
 FileName: ./.codex/skills/build-kym/SKILL.md
 SPDXID: SPDXRef-File-1
 FileChecksum: SHA256: a532a65cb2325040f3b3fa9633cb423105c80a4a7c2ad07f61a754c98d96df25
@@ -138,7 +138,7 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.github/workflows/ci.yml
 SPDXID: SPDXRef-File-20
-FileChecksum: SHA256: 7a011c293ee71f75828e9ba474002315b96f010f42a3b3ed9be3230829672fe0
+FileChecksum: SHA256: a1e835a3ec45f05c14e4b008a877167785763b9188416d5107cac9defe97124b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -171,16 +171,9 @@ LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
-FileName: ./LICENSE_REPORT.spdx
-SPDXID: SPDXRef-File-25
-FileChecksum: SHA256: 4b8622a3796efb4f0072e0a1e79603c9325ddcc0979c7e3cc75ed38c682644ad
-LicenseConcluded: NOASSERTION
-LicenseInfoInFile: NOASSERTION
-FileCopyrightText: NOASSERTION
-
 FileName: ./MANIFEST.in
 SPDXID: SPDXRef-File-26
-FileChecksum: SHA256: 5137476bf000ace9632a4d6407dd5a75dc60228a1139c7607fcdd47287cb7413
+FileChecksum: SHA256: d9e93774810fe3c845fd5c964a71004ba290dd3ac18057e423c40460e742305f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -213,13 +206,6 @@ LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
-FileName: ./SHA256SUMS
-SPDXID: SPDXRef-File-31
-FileChecksum: SHA256: c3cd244768e3f2a884523124b6eab0ff7a088f094559ada99f492b865e32cf34
-LicenseConcluded: NOASSERTION
-LicenseInfoInFile: NOASSERTION
-FileCopyrightText: NOASSERTION
-
 FileName: ./docs/INSTALLATION_AND_USAGE.zh-CN.md
 SPDXID: SPDXRef-File-32
 FileChecksum: SHA256: 75c19901293bb8c7e3699329ee6329d5df2e31c02197bb49e14707bbe1c14829
@@ -237,13 +223,6 @@ FileCopyrightText: NOASSERTION
 FileName: ./pyproject.toml
 SPDXID: SPDXRef-File-34
 FileChecksum: SHA256: d849646d72db4d7fb392171b54becb26b800504dae9f54e5955fa9502097ab5b
-LicenseConcluded: NOASSERTION
-LicenseInfoInFile: NOASSERTION
-FileCopyrightText: NOASSERTION
-
-FileName: ./release-manifest.json
-SPDXID: SPDXRef-File-35
-FileChecksum: SHA256: 5c124f9ed2adc0c56bafe78a7680e0ebb5affdc23890526a66b5b7bd3c038deb
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -682,8 +661,15 @@ LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
-FileName: ./tools/install_codex_skills.py
+FileName: ./tools/ci_smoke.py
 SPDXID: SPDXRef-File-98
+FileChecksum: SHA256: 546a91550974a625eea74aee7a089432e21d23dcaccf710ecd82ef816276f63d
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+FileName: ./tools/install_codex_skills.py
+SPDXID: SPDXRef-File-99
 FileChecksum: SHA256: fade60d17b135c1522877c638b8ec527a265ecf3181820450b63bc3baab9452c
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
