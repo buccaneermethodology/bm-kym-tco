@@ -5,22 +5,39 @@ on:
   push:
   release:
     types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  validate:
+    name: Validate (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Install kym-tco
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build
+      - name: Build sdist and wheel from sdist
+        run: python -m build
+      - name: Install built wheel
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .
-      - name: Run self-contained product tests
-        run: |
-          KYM_TCO_SKILL_ROOT="$GITHUB_WORKSPACE/.codex/skills" PYTHONPATH=src python -m unittest discover -s tests -v
-      - name: Verify generated KB is current
-        run: |
-          python kb/tools/render_kb.py --check
+          python -m pip install --force-reinstall dist/*.whl
+          python -m pip check
+      - name: Compile distributed Python sources
+        run: PYTHONPYCACHEPREFIX="$RUNNER_TEMP/ci-pycache" python -m compileall -q src tools .codex/skills
+      - name: Verify installed CLIs, schemas, and bundled Skills
+        run: python tools/ci_smoke.py

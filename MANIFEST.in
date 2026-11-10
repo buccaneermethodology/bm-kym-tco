@@ -1,3 +1,5 @@
+include src/kym_tco/schemas/__init__.py
+include tools/ci_smoke.py
 # Exact v0.4.3 public export allowlist; no recursive inclusion.
 include .codex/skills/build-kym/SKILL.md
 include .codex/skills/build-kym/agents/openai.yaml
