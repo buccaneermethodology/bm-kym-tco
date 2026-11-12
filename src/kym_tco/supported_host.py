@@ -21,6 +21,7 @@ import fcntl
 
 from jsonschema import Draft202012Validator
 
+from . import __version__
 from .common import (
     ContractError,
     digest_bytes,
@@ -41,25 +42,25 @@ PROFILE_ID = "codex_repo_local_skill_workflow_v1"
 EXTERNAL_PROFILE_ID = "installed_cli_external_workspace_v1"
 EXTERNAL_SKILL_DISTRIBUTIONS = {
     "build-kym": {
-        "distribution_version": "v0.4.4",
+        "distribution_version": "v0.4.6",
         "release_status": "released",
-        "skill_byte_digest": "sha256:a532a65cb2325040f3b3fa9633cb423105c80a4a7c2ad07f61a754c98d96df25",
-        "skill_tree_digest": "sha256:f2167b557300c63e593e2b9a0a28d2d57f659f38047bb074475319893a92adf5",
-        "distribution_manifest_digest": "sha256:390b89b20e1dad4030b1b1eb50b177d7f77ee377230caf4cf631ae22dd6c927c",
+        "skill_byte_digest": "sha256:d838e71e8ef4053ced2feec7d2b7a4c5a67e849e658f3d4853cb4700c2c4356a",
+        "skill_tree_digest": "sha256:423fba162e4daca559d31ba002a6dbd7ee6516bed270280a754a54d2fc51019c",
+        "distribution_manifest_digest": "sha256:6b188f548f6884cdf332dacf3893f5b74aad832bb8902ff64d2fa1ee915c80b8",
     },
     "build-tco-coverage": {
-        "distribution_version": "v0.4.4",
+        "distribution_version": "v0.4.6",
         "release_status": "released",
-        "skill_byte_digest": "sha256:4846a7af54bd311ef9a6bc8209a966288535a8581b8c8050890e0ec64c6aa984",
-        "skill_tree_digest": "sha256:27704d464eb779fdcc02fd47fbce11ef07adf9e4efaf4a05bf98a6ea477a5118",
-        "distribution_manifest_digest": "sha256:928f56f1042db17ffe9eb31b3a60e336e5276ba364b16c7ca32e71623a85fe37",
+        "skill_byte_digest": "sha256:9e5a796fc6f20a87016b61aed495dac5f33ffc15af4511b84a17a712816b8313",
+        "skill_tree_digest": "sha256:823fa7fda6bad832f04e72a088c71f86d639496bdb2d602cc46758a51faf5e52",
+        "distribution_manifest_digest": "sha256:4c67d0e8139a6dfc2795f21c73826cc3039f442d19f1ecc56a518cc10aea666e",
     },
 }
 
 PRODUCTION_ENTRY = "kym_tco.supported_host:materialize_and_validate"
 PROTOCOL = "skill_materialization_pipeline_v1"
 EXPECTED_REGISTRY_DIGEST_V1 = "sha256:40c863309f18428450b0b7540f5e62ce0e6cf0f2fdd380a2c252bcc843d24db0"
-EXPECTED_REGISTRY_DIGEST_V2 = "sha256:65956b08f20f89efb6c0968751d8f31b337c825c7aeee0cea173ccfc1341ee35"
+EXPECTED_REGISTRY_DIGEST_V2 = "sha256:13c5a26973f43a6b9d9321b0b475eb211750741b16f2e537f18611e618394466"
 EXPECTED_REGISTRY_DIGEST = EXPECTED_REGISTRY_DIGEST_V2
 REQUIRED_CAPABILITIES = {
     "workspace_bytes_read", "candidate_materialize", "repo_local_cli_invoke",
@@ -523,7 +524,7 @@ def require_external_profile(profile_id: str, runtime_root: Path, target_workspa
     root = runtime_root.expanduser().resolve(strict=True)
     workspace = target_workspace.expanduser().resolve(strict=True)
     runtime_identity = installed_distribution_identity()
-    if runtime_identity.get("version") != "0.4.4":
+    if runtime_identity.get("version") != __version__:
         raise ContractError("runtime_version_mismatch")
     package_root = Path(__file__).resolve().parent
     if root != package_root:

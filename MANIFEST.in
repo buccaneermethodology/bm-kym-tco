@@ -1,10 +1,11 @@
 include src/kym_tco/schemas/__init__.py
 include tools/ci_smoke.py
-# Exact v0.4.3 public export allowlist; no recursive inclusion.
+# Exact public export allowlist; no recursive inclusion.
 include .codex/skills/build-kym/SKILL.md
 include .codex/skills/build-kym/agents/openai.yaml
 include .codex/skills/build-kym/distribution.json
 include .codex/skills/build-kym/references/doctor-cli-missing-report.json
+include .codex/skills/build-kym/references/external-workspace-handoff.md
 include .codex/skills/build-kym/references/kym-analysis-guide.md
 include .codex/skills/build-kym/references/kym-contract.md
 include .codex/skills/build-kym/references/kym-reader-quality.md
@@ -20,6 +21,10 @@ include .codex/skills/build-tco-coverage/references/tco-contract.md
 include .codex/skills/build-tco-coverage/references/tco-modeling-guide.md
 include .codex/skills/build-tco-coverage/scripts/audit_candidate.py
 include .codex/skills/build-tco-coverage/scripts/audit_reader_language.py
+include .codex/skills/build-tco-coverage/references/external-workspace.md
+include .codex/skills/build-tco-coverage/references/tco-progress.md
+include .codex/skills/build-tco-coverage/references/tco-progress.schema.json
+include .codex/skills/build-tco-coverage/scripts/progress.py
 include .github/workflows/ci.yml
 include .gitignore
 include CHANGELOG.md

@@ -244,3 +244,12 @@ HTML 不应该是唯一真源。真正的 authority 分散在：
 v0.4.4 候选版将两个 Skill 的发布身份放入单独的确定性 overlay。源码 manifests 继续显示 `v0.4.4-candidate/unreleased`，供开发候选使用；本地公开投影将其改为 `v0.4.4/released`，供安装版 CLI 的外部宿主 profile 做精确 digest 匹配。外部项目不需要 kym-tco 源码或内部 registry。
 
 这个身份检查不改变 KYM/TCO/Coverage 的生命周期：候选输出仍需独立验证与人工审阅。overlay、package projection 和 rights ledger 只是本地候选证据，不构成发布权利或 Skill 同步授权。
+
+
+## 查看任务贡献与阶段进展
+
+完成任务后刷新 TCO 时，在稳定 M1 下记录可验收的推进项及任务贡献。例如合成项目的“验收规格编写”可以完成，而产品能力仍缺运行证据。原 CLI 的候选模型、Coverage 与 `tco-preview.html` 继续负责能力视角，Skill 的 `progress.py` 另生成任务贡献阅读入口。
+
+按实际选中的 build-tco-coverage Skill 中 `references/tco-progress.md` 准备快照，再使用其 `scripts/progress.py validate` 和 `render`。输入以 workspace 内路径与摘要绑定证据、两侧候选及可选 CLI report；连续更新保留上一版与历史事件。无整体报告时显示未知，任务完成不能自动升级 Coverage。预览可按 M1、任务和阶段筛选，且所有结果仍为未批准候选。
+
+这些便携文件可随源码候选包分发；现有 released external-run 仍要求它登记的精确 Skill identity。源码更新不等于新版本已发布或已安装。

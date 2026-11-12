@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bm-kym-tco"
-version = "0.4.4"
+version = "0.4.6"
 description = "Deterministic KYM revision, approval, TCO coverage, and verification tooling"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -19,6 +19,9 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 dependencies = ["jsonschema>=4.18"]
+
+[project.optional-dependencies]
+test = ["PyYAML>=6.0"]
 
 [project.scripts]
 kym = "kym_tco.kym_cli:main"
@@ -46,6 +49,7 @@ testpaths = ["tests"]
 ]
 "share/bm-kym-tco/codex/skills/build-kym/references" = [
   ".codex/skills/build-kym/references/doctor-cli-missing-report.json",
+  ".codex/skills/build-kym/references/external-workspace-handoff.md",
   ".codex/skills/build-kym/references/kym-analysis-guide.md",
   ".codex/skills/build-kym/references/kym-contract.md",
   ".codex/skills/build-kym/references/kym-reader-quality.md",
@@ -67,8 +71,12 @@ testpaths = ["tests"]
   ".codex/skills/build-tco-coverage/references/portable-governance.yaml",
   ".codex/skills/build-tco-coverage/references/tco-contract.md",
   ".codex/skills/build-tco-coverage/references/tco-modeling-guide.md",
+  ".codex/skills/build-tco-coverage/references/external-workspace.md",
+  ".codex/skills/build-tco-coverage/references/tco-progress.md",
+  ".codex/skills/build-tco-coverage/references/tco-progress.schema.json",
 ]
 "share/bm-kym-tco/codex/skills/build-tco-coverage/scripts" = [
   ".codex/skills/build-tco-coverage/scripts/audit_candidate.py",
   ".codex/skills/build-tco-coverage/scripts/audit_reader_language.py",
+  ".codex/skills/build-tco-coverage/scripts/progress.py",
 ]

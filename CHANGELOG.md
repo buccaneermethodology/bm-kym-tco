@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.6] - Prepared for release
+
+- Make default tests reproducible from a clean checkout using explicit synthetic inputs.
+- Preserve strict identity, coverage denominators, tamper checks and candidate-only outputs.
+- Add CI guards against dependence on ignored local runtime data.
+- Align CLI and both bundled Skill identities to 0.4.6.
+
+## [0.4.5] - Prepared for release
+
+- Add portable TCO contribution/progress references and preserve the full original Target Profile set.
+- Repair version-matched test workspaces, archived evidence resolution, and report projection regressions.
+- Replace arbitrary Skill link limits and brittle governance checks with scoped structural checks and synthetic negative fixtures.
+- Keep strict Skill identity pairing and candidate-only KYM/TCO/Coverage semantics.
+- Release preparation and local regression results do not grant redistribution rights or product approval.
+
 ## [0.4.4] - Unreleased candidate
 
 - Add an explicit released-identity overlay for the two Skills while keeping source manifests marked `v0.4.4-candidate/unreleased`.

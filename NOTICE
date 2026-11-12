@@ -9,3 +9,9 @@ history, phase status, runtime state, or approval state from that source.
 The source and redistribution rights for adapted materials remain subject to
 the version-specific rights review. This notice does not itself grant or imply
 permission to redistribute those materials.
+
+Maintainer provenance locator (source repository only):
+  governance/upstream_manifest.json
+This internal review record is not included in the public projection and does
+not itself establish license compliance, source verification, or redistribution
+permission. The version-specific rights review remains required.
