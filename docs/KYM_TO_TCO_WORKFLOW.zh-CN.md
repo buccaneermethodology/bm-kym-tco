@@ -253,3 +253,11 @@ v0.4.4 候选版将两个 Skill 的发布身份放入单独的确定性 overlay�
 按实际选中的 build-tco-coverage Skill 中 `references/tco-progress.md` 准备快照，再使用其 `scripts/progress.py validate` 和 `render`。输入以 workspace 内路径与摘要绑定证据、两侧候选及可选 CLI report；连续更新保留上一版与历史事件。无整体报告时显示未知，任务完成不能自动升级 Coverage。预览可按 M1、任务和阶段筛选，且所有结果仍为未批准候选。
 
 这些便携文件可随源码候选包分发；现有 released external-run 仍要求它登记的精确 Skill identity。源码更新不等于新版本已发布或已安装。
+
+## 引导式生成与固定详细阅读页（v0.4.7）
+
+默认先复用上下文确认用途和关键未知，用户可以选择直接一稿。详细reader按TP→Mc→M展开，保留共享能力、TSP、流程图与IPO、必要Modeling/UI图，以及逐行为的证据适用性和最小下一步。无Coverage保持未评估；候选建议切片单列，不参与Met。
+
+每个Skill自包含 `references/guided-generation.md`、`reader-workflow.md`、`prompt-examples.md` 和 `reader-detail.schema.json`。先用原CLI完成candidate包，再依workflow建立绑定字节的detail，执行 `scripts/audit_reader_quality.py`、`scripts/reader.py validate` 和 `render`。统一输出reader.md/reader.html及来源快照，旧CLI preview和状态不改写。生成器支持Python3.9标准库，随发行固定模板，无CDN；搬移时保留整个输出目录。
+
+简单提示词示例：“用这份KYM生成TCO，先问关键未知；按目标切片查看能力、证据和最小下一步。没有证据则未评估。”明确“不先提问”时直接生成并标假设。

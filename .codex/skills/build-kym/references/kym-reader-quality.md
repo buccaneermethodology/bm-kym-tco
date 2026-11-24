@@ -19,3 +19,5 @@ For controlled experiments, keep effect status, functional/safety/claim acceptan
 Before render, ensure populated nodes answer their question with source-supported text, key Product branches have plain language, verification gaps remain explicit, and Target candidate/approval boundary is visible.
 
 Reader Markdown is renderer-owned: bare ATX headings, ASCII spaces, two-space list indentation, no NBSP/Tab/bold-wrapped headings/trailing double spaces, and byte-identical rerender. A model must not hand-format or post-process the rendered reader.
+
+节点标题使用简短完整的语义短语，不截正文，不重复整句；正文解释条件、行为和必要实例。先检查固定reader质量与源对应，不把byte-identical rerender当语义或阅读通过。

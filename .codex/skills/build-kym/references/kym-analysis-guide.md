@@ -17,7 +17,7 @@ Use one primary branch per Product actor. Customers pay/request/accept; Users di
 - `Info`: reference facts only; future/normative behavior belongs elsewhere.
 - `Naming Conventions`: definitions, distinctions, taxonomy. Remove term name; if remainder still says must/must not/should/when, split to `Business Rules`, `Scope`, or `Exclusions`.
 - `Scope`/`Exclusions`: included vs excluded/later boundary; flag polarity conflicts.
-- `Business Rules`: supported conditions, constraints, behavior, failure boundaries, and coarse value-linked capabilities; not a feature dump, artifact list, or TCO tree. Shared leaves may use a semantic parent/topic groups, not a schema node or M/TSP/Coverage/TCO output.
+- `Business Rules`: supported conditions, constraints, behavior, failure boundaries, and coarse value-linked capabilities; not a feature dump or artifact list. 语义能力组可用M编号和TSP解释；这是KYM组织，不能赋Coverage或直接创建独立TCO model。
 - `Documents`: material identity; `Problems Unsolved`: unresolved domain questions; `Standards`: protocols, policies, formats.
 
 ## Project

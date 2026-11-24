@@ -5,11 +5,13 @@ description: Build or revise source-traceable fixed-template KYM JSON and reader
 
 # Build KYM
 
-Create source-traceable KYM. JSON is truth; Markdown is deterministic. CLI validates/stores, not semantics.
+Create source-traceable KYM. JSON is truth; CLI validates/stores, not semantics.
+
+先读 [引导与用途](references/guided-generation.md)：复用上下文，询问关键未知；用户可选择直接一稿。每次生成按 [固定reader与逐行为质量](references/reader-workflow.md) 交付Markdown/HTML，用户示例见 [prompts](references/prompt-examples.md)。
 
 ## Preconditions
 
-1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.6 [--output <report.json>]`. `ready` is not semantics or approval.
+1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.7 [--output <report.json>]`. `ready` is not semantics or approval.
 2. Choose a stable lowercase `product-id` and workspace.
 3. Read [references/kym-contract.md](references/kym-contract.md) completely before drafting or validating JSON.
 4. Read [references/kym-analysis-guide.md](references/kym-analysis-guide.md) completely for multi-actor, ambiguous, conflicting, inferred, or long-source analysis.
@@ -19,7 +21,7 @@ Create source-traceable KYM. JSON is truth; Markdown is deterministic. CLI valid
 
 ### External business workspace handoff
 
-Before using this Skill in an external repository, read `references/external-workspace-handoff.md` completely. Follow its source-ledger build/verify, actual project/global selection and operator evidence, candidate handoff, host-preflight, external-run and external-consume-check sequence. Use the installed CLI; tool source and an internal registry are unnecessary. A broken project copy blocks; never silently fall back to global. Run the pipeline after both candidate packages exist. Candidate packages and CLI evidence bundles are separate; `consumable=true` binds passing validation to exact bytes, still `candidate_not_approved`. Failed/partial outputs cannot be consumed. Gate success is not approval.
+Read `references/external-workspace-handoff.md` completely for installed-CLI source ledger, actual Skill selection, candidate handoff and external pipeline. Broken project copies block fallback. Only passing exact-byte bundles are consumable; candidate packages and CLI evidence remain separate and unapproved.
 
 ### Internal tool-development repository
 
@@ -39,7 +41,7 @@ When maintainers use this Skill in the tool's own source repository, retain its 
 8. Separate source identity from Product actor: speaker/authority is provenance, not a role. Classify each actor once by its primary role: Customer pays/requests/accepts; Users directly use; Stakeholders govern or are affected/benefit. A supported product-direction decision maker is a Stakeholder; never infer a role from “User”.
 9. Split mixed source text before placement. If one sentence defines a term and states a rule, create separate statements. Apply the remove-term test: if the remainder still says what must, must not, should remain, or when something happens, it is not only a Naming Conventions definition.
 10. Draft complete `kym_model_v1`. Each statement needs stable ID, type, time/support status, authority, exact source refs, and node IDs. Mark non-explicit interpretation `support_status=inferred`; inferred sets need not be identical across runs.
-12. Run the placement gate before topic branches. Put facts in `Info`, definitions/taxonomies in `Naming Conventions`, Target and claim boundaries in `Scope`, explicit non-goals in `Exclusions`, protocols/formats in `Standards`, roadmap/maturity/ordering in `Project/Schedule`, and concrete artifacts in `Deliverables`; keep ambiguous UI/API unresolved. Only implementation-enforced conditions, constraints, behavior, and failure boundaries may enter `Business Rules`. Business Rules are not a feature/artifact list or TCO tree; shared leaves use a source-derived semantic parent, never a title copied from a shipped example.
+12. Run the placement gate before topic branches. Put facts in `Info`, definitions/taxonomies in `Naming Conventions`, Target and claim boundaries in `Scope`, explicit non-goals in `Exclusions`, protocols/formats in `Standards`, roadmap/maturity/ordering in `Project/Schedule`, and concrete artifacts in `Deliverables`; keep ambiguous UI/API unresolved. Only implementation-enforced conditions, constraints, behavior, and failure boundaries may enter `Business Rules`. Business Rules用源支持的语义能力组组织，可用M编号/TSP解释供TCO对应；不是功能清单、Coverage树或复制示例标题。
 13. Preserve conflict and uncertainty as `disputed` or `unresolved`; never invent consensus or treat `unsupported` as baseline.
 14. Keep `target_profiles=[]` unless current source explicitly names an enduring product/user Target or a revision preserves profiles. Goal/trial plan alone does not open Profile generation. Bind every label/objective/requirement to current source; never reuse example labels or paired shapes. Profiles remain candidate data.
 15. 在 `coverage_mode=repo` 且配置 `evidence_roots` 时，于首个 candidate 前运行 `kym ingest-repo --product-id <id> --path <configured-relative-path>`；repo facts 必须保持 `externally_enriched` provenance、不得覆盖用户声明，冲突保持 disputed/unresolved。未配置 roots 才可明确退回 source-only。
@@ -61,8 +63,8 @@ When maintainers use this Skill in the tool's own source repository, retain its 
 ## Hard Boundaries
 
 - Do not call an external Provider or claim CLI-generated semantics.
-- Do not build TCO/M trees, inspect evidence, assign Coverage, or run implementation gates.
-- Do not generate M, TSP, Coverage, or TCO artifacts from Business Rules; KYM parent decomposition never becomes a coverage tree.
+- KYM可在既有树节点表达源支持或显式推断的能力分组与TSP，供TCO详细展开；不得创建独立TCO model、赋Coverage或运行实现gate。
+- KYM分组与TCO默认直接对应，必要拆并说明理由；父级分解不成为Coverage分母。
 - Draft, render, scheduled run, or passing gate is not accepted state. Do not create accepted-state artifacts from this Skill.
 - Do not treat omitted optional inference as a defect; never label inference `source_supported`.
 - Do not fabricate Why content, duplicate an actor to fill role branches, turn Business Rules into a feature list, or treat a capability as a concrete Deliverable.

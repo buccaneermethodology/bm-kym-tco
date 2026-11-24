@@ -14,6 +14,12 @@ TSP is the human explanation, not an implementation shorthand. Each M1 Topic use
 
 TSP excludes implementation state, tests, gaps, dates and planning. Run observations belong in `tco_execution_result.v1`; v4 structured fields feed `coverage_requirements`. `decision_outputs` lists classifications; only runtime-proven execution-terminal outcomes enter current v4 `terminal_outcomes`. Avoid unscoped `reject/rejected`, outcome `candidate_input`, P06 metadata artifacts and policy-as-capability.
 
+### v4 字段引用的确定性规则
+
+`coverage_requirements[].ref` 不是裸 ID：input 用 `inputs.<实际input.id>`，output 用 `outputs.<实际output.id>`，outcome 用 `decision_semantics.terminal_outcomes.<实际token>`，failure 用 `decision_semantics.failure_outcomes.<实际token>`，metadata 用 `metadata_requirements.<实际id>`。引用必须实际存在，不能为消除错误虚构输出或运行证据。Policy 使用 metadata 类别、`policy_requirements.<id>`，其 requirement.id 必须为 `metadata.<id>`。
+
+`decision_semantics` 的 decision_inputs、decision_outputs、terminal_outcomes、failure_outcomes 使用 canonical ID token：符合 `^[a-z][a-z0-9_.-]*$` 且小写、连字符/空格归一为下划线后仍与原值相等。优先使用小写字母、数字、下划线或点；对实际输入/输出的引用仍须对应存在的对象。Schema 检查不能替代 CLI 的引用与语义门禁。此处解释既有 wire 合同，不改变字段或创建事实。
+
 `excluded_outputs` is not non-goals. High-risk M1s need source-backed `claim_exclusions` or not-applicable rationale; examples are not enforcement unless implemented.
 
 Separate candidate synthesis, review readiness, honest outcome and P06/Formal authority. `review_ready != P06 eligible != Formal M1`. Provider configuration evolution/comparability is not attempt metadata. MC children must share lifecycle, owner and acceptance ladder or provide `grouping_rationale`; regrouping never changes IDs, mappings, Coverage or approval.
@@ -52,3 +58,7 @@ The tool is read-only, writes JSON to stdout, never writes a workspace or accept
 Review: Profile/M deletion; duplicate/group mappings; placeholder evidence; M1-external witness/NF; copied owner; source/semantic mismatch; missing claim exclusions; lane-authority mismatch; configuration evolution as identity freeze; MC mix without `grouping_rationale`; vision Profile as executable closeout; mixed-config breadth without comparability/immutable alias; taxonomy collapsed into outcome/routing; generation with maturity/authority outputs; incomplete readiness M1; Coverage vocabulary in TSP; direct state hiding weak mandatory rows; advanced state with weak evidence/unbounded claim; cross-axis values; multi-repo without identity matrix; maintained/deprecated missing refs.
 
 Model validation, audit success, verification, preview rendering or Profile comparison does not create accepted state.
+
+## 详细阅读与决策支持
+
+按TP→Mc→M投影共享定义，追溯KYM规则分支；TSP/流程/IPO按references/reader-workflow.md展开。逐行为assessment分别说明证据实际支持点、版本适用性、主要缺口和最小动作；共享证据需不同支持解释。本M缺口与同TP其他M缺口分开。不要把所有M固定成input/output两行，或将evidence binding缺失推导为缺实现。

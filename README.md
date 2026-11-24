@@ -301,3 +301,7 @@ Projects may add states or change labels, but cannot change reserved IDs, ranks,
 Verification commands are registered in project config as `argv`, restricted cwd, timeout, node IDs, and allowed environment names. `argv[0]` must be an absolute executable path; the child receives only environment variables named by `allowed_env`, with no implicit host `PATH`. Coverage JSON cannot inject shell commands.
 
 No scheduled automation is included in v1. Automation may rerun `tco verify`, `tco render`, and emit change reports. It must stop for semantic model changes, Target changes, Coverage proposals, authorization changes, or governance-checkout drift. It may create an approval receipt only when `--approval-source authorized_system` is paired with a workspace-local, pre-existing authorization that binds the system principal, Goal, product, scope, Targets, expiry, and approval-reference prefix; the receipt records that binding and is never labeled `human`.
+
+### v0.4.7 详细阅读交付
+
+两项构建Skill支持可选择的用途引导、TP/Mc/共享M详细展开与固定离线HTML/Markdown，逐行为解释证据适用性和最小下一步。见 [阅读流程](docs/KYM_TO_TCO_WORKFLOW.zh-CN.md)。候选检查与阅读质量通过不创建语义批准。

@@ -193,7 +193,10 @@ ACTOR_RE = re.compile(
 # 产品事实或批准依据。Target 触发必须同时出现 A/B 两条明确标签，避免
 # 普通文档中的 ``Target A`` profile 或 calibration 文字造成误报。
 EXPLICIT_TARGET_AUTHORITY_RE = re.compile(
-    r"\btarget(?:\s+profiles?)?\b|目标画像|目标档案|目标配置",
+    r"\btarget(?:\s+profiles?)?\b|目标画像|目标档案|目标配置|"
+    r"明确目标\s*TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_])|"
+    r"(?:沿用|采用|设定|划分|确认)[^。\n]{0,24}"
+    r"(?<![A-Za-z0-9_])TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_])",
     re.IGNORECASE,
 )
 NEGATED_TARGET_AUTHORITY_RE = re.compile(
@@ -201,7 +204,18 @@ NEGATED_TARGET_AUTHORITY_RE = re.compile(
     r"\b(?:no|do\s+not|don't|must\s+not|shall\s+not|should\s+not|never)\b[^\n]{0,40}\btarget(?:\s+profiles?)?\b|"
     r"\btarget(?:\s+profiles?)?\b[^\n]*(?:is|are)\s+not\b|"
     r"(?:不是|并非|不得作为|不构成|不属于|非)(?:[^\n]{0,12})(?:Target|目标画像|目标档案|目标配置)|"
-    r"(?:不要|不得|禁止|无需|不应|不可)[^\n]{0,24}(?:Target|目标画像|目标档案|目标配置)",
+    r"(?:不要|不得|禁止|无需|不应|不可)[^\n]{0,24}(?:Target|目标画像|目标档案|目标配置)|"
+    r"(?:不是|并非|不得作为|不构成|不属于|不要|不得|禁止|无需|不应|不可)"
+    r"[^。\n]{0,24}(?<![A-Za-z0-9_])TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_])|"
+    r"(?:不|未|暂不|尚未|暂未|并未|未经|没有|尚无|无意|无须|待|尚待|建议|考虑|是否|能否|要不要)"
+    r"[^，,。；;\n]{0,12}(?:明确目标|沿用|采用|设定|划分|确认)"
+    r"[^，,。；;\n]{0,24}(?<![A-Za-z0-9_])TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_])|"
+    r"(?:明确目标|沿用|采用|设定|划分|确认)[^，,。；;\n]{0,24}"
+    r"(?<![A-Za-z0-9_])TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_])[^。；;\n]{0,12}[?？]|"
+    r"(?:明确目标|沿用|采用|设定|划分|确认)[^，,。；;\n]{0,24}"
+    r"(?<![A-Za-z0-9_])TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_])"
+    r"[^。；;\n]*(?:待|尚待|未|尚未|没有)[^。；;\n]{0,8}(?:确认|确定|决定|批准)|"
+    r"\b(?:not|never|no|don't|must\s+not)\b[^\n]{0,40}\bTP(?:-[A-Za-z0-9]+)?\b",
     re.IGNORECASE,
 )
 PRODUCT_INSTRUCTION_CAPABILITY_RE = re.compile(
@@ -225,7 +239,7 @@ GENERIC_SPEAKER_RE = re.compile(
     re.IGNORECASE,
 )
 PSEUDO_TCO_RE = re.compile(
-    r"(?:^|[-_\s])(m\d{1,3}|tsp|tco|coverage(?:[-_\s]?(?:tree|model|state|proposal))?)(?:$|[-_\s])",
+    r"(?:^|[-_\s])(tco|coverage(?:[-_\s]?(?:tree|model|state|proposal))?)(?:$|[-_\s])",
     re.IGNORECASE,
 )
 HOST_EXECUTION_PATTERNS = {
@@ -256,7 +270,7 @@ SHIPPED_EXAMPLE_MARKERS = (
 )
 
 
-def _source_corpus(document: dict[str, Any], root: Path) -> str:
+def _source_documents(document: dict[str, Any], root: Path) -> list[str]:
     """读取当前 candidate 已登记 source snapshot；不把候选自身当成来源。"""
 
     texts: list[str] = []
@@ -275,7 +289,78 @@ def _source_corpus(document: dict[str, Any], root: Path) -> str:
                 texts.append(snapshot_bytes.decode("utf-8"))
         except (ContractError, OSError, ValueError):
             continue
-    return "\n".join(texts)
+    return texts
+
+
+def _source_corpus(document: dict[str, Any], root: Path) -> str:
+    return "\n".join(_source_documents(document, root))
+
+
+def _target_authority_units(text: str) -> list[str]:
+    # 保留“采用TP-A，待确认”为一个语境；遇到下一条TP声明才在逗号处拆分。
+    units = [unit.strip() for unit in re.split(
+        r"(?<=[。；;])|\n|[，,](?=[^，,。；;\n]{0,24}(?<![A-Za-z0-9_])TP(?:-[A-Za-z0-9]+)?(?![A-Za-z0-9_]))",
+        text, flags=re.IGNORECASE,
+    ) if unit.strip()]
+    pending_only = re.compile(r"^(?:(?:该目标|此目标|该TP|以上)\s*)?(?:待确认|未确认|尚未确认|pending|unconfirmed)\s*[。.!？?]?$", re.IGNORECASE)
+    last_declaration: int | None = None
+    for index, unit in enumerate(units):
+        if EXPLICIT_TARGET_AUTHORITY_RE.search(unit):
+            last_declaration = index
+        elif last_declaration is not None and pending_only.fullmatch(unit):
+            units[last_declaration] = units[last_declaration].rstrip("。；; \t") + "，待确认"
+    return units
+
+
+def _profile_label_declared(unit: str, label: str) -> bool:
+    """名称须在声明标题/冒号后的名称位置，不能借用另一目标正文中的同词。"""
+    match = EXPLICIT_TARGET_AUTHORITY_RE.search(unit)
+    if not match:
+        return False
+    head = re.split(r"[:：，,]", unit, maxsplit=1)[0]
+    if label in _normalize_text(head):
+        return True
+    tail = unit[match.end():].lstrip(' \t:：\"\'“「（([')
+    normalized = _normalize_text(tail)
+    return normalized.startswith(label) and (len(normalized) == len(label)
+        or normalized[len(label)] in ' \t:：，,。；;\"\'”」）)]')
+
+
+def _profile_source_authority(profile: dict[str, Any], sources: list[str]) -> bool:
+    """每个目标必须关联自己的肯定来源；关键词或另一目标不能代授。"""
+    label = _normalize_text(str(profile.get("label", "")))
+    objective = _normalize_text(str(profile.get("objective", "")))
+    if not label:
+        return False
+    units = [unit for source in sources for unit in _target_authority_units(source)]
+    # 逐声明判断；不能用TP-A的肯定替代TP-B。既有疑问随后获得自己的明确
+    # 确认时仍可生成候选；来源冲突与最终有效性仍须原冲突流程和独立语义审查。
+    if any(_profile_label_declared(unit, label)
+           and not NEGATED_TARGET_AUTHORITY_RE.search(unit) for unit in units):
+        return True
+
+    # 保留既有合法“# Target Profile\n名称\n目标...”格式，但严格限于同一来源的标题块。
+    generic = re.compile(r"^(?:target\s+profiles?|目标画像|目标档案|目标配置)\s*[:：]?\s*$", re.IGNORECASE)
+    pending = re.compile(r"^\s*(?:待确认|尚未确认|未确认|pending|unconfirmed)\s*[。.!]?\s*$", re.IGNORECASE)
+    for source in sources:
+        lines = source.splitlines()
+        for index, line in enumerate(lines):
+            heading = re.match(r"^\s*(#{1,6})\s+(.+)$", line)
+            if not heading or not generic.fullmatch(heading.group(2).strip()):
+                continue
+            level = len(heading.group(1))
+            end = index + 1
+            while end < len(lines):
+                next_heading = re.match(r"^\s*(#{1,6})\s+", lines[end])
+                if next_heading and len(next_heading.group(1)) <= level:
+                    break
+                end += 1
+            block_lines = lines[index + 1:end]
+            block = _normalize_text("\n".join(block_lines))
+            if label in block and objective and objective in block and not any(pending.fullmatch(row) for row in block_lines) \
+                    and not any(NEGATED_TARGET_AUTHORITY_RE.search(unit) for unit in _target_authority_units("\n".join(block_lines))):
+                return True
+    return False
 
 
 def _audit_kym_cross_project_isolation(document: dict[str, Any], root: Path) -> list[Finding]:
@@ -419,6 +504,7 @@ def _audit_kym_target_profiles(
 ) -> list[Finding]:
     findings: list[Finding] = []
     source_corpus = _source_corpus(document, root)
+    source_documents = _source_documents(document, root) or [source_corpus]
     normalized_source = _normalize_text(source_corpus)
     statement_ids = {item["id"] for item in document.get("statements", [])}
     statements = _statement_by_id(document)
@@ -438,13 +524,7 @@ def _audit_kym_target_profiles(
         if profile_id in base_profiles and profile == base_profiles[profile_id]:
             continue
         unsupported_fields: list[str] = []
-        target_authority_lines = [
-            line
-            for line in source_corpus.splitlines()
-            if EXPLICIT_TARGET_AUTHORITY_RE.search(line)
-            and not NEGATED_TARGET_AUTHORITY_RE.search(line)
-        ]
-        if not target_authority_lines:
+        if not _profile_source_authority(profile, source_documents):
             unsupported_fields.append("target_authority")
         for field in ("label", "objective"):
             value = str(profile.get(field, "")).strip()
@@ -569,8 +649,8 @@ def _audit_kym_business_rules_shape(document: dict[str, Any]) -> list[Finding]:
     if branch is None:
         return findings
 
-    # 只对节点标题/id 中明确的 TCO/M/TSP/Coverage 形状报警，避免规则正文
-    # 讨论“不得生成 TCO”时被误报。
+    # M编号/TSP是允许的源语义阅读组织；仅对独立TCO/Coverage形状报警，
+    # 也避免规则正文讨论“不得生成TCO”时被误报。
     for node in _walk_kym_tree(branch):
         if node is branch:
             continue
@@ -584,7 +664,7 @@ def _audit_kym_business_rules_shape(document: dict[str, Any]) -> list[Finding]:
                 "kym",
                 f"/tree/business_rules/{node['id']}",
                 [node["id"]],
-                "Business Rules 节点看起来像 M/TSP/Coverage/TCO artifact，不应替代 TCO model。",
+                "Business Rules 节点看起来像 Coverage/TCO artifact，不应替代独立 TCO model；M编号/TSP阅读组织本身允许。",
                 {"node_id": node["id"], "title": node.get("title", "")},
                 confidence="high",
                 current_node_ids=[node["id"]],

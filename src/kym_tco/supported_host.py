@@ -42,25 +42,25 @@ PROFILE_ID = "codex_repo_local_skill_workflow_v1"
 EXTERNAL_PROFILE_ID = "installed_cli_external_workspace_v1"
 EXTERNAL_SKILL_DISTRIBUTIONS = {
     "build-kym": {
-        "distribution_version": "v0.4.6",
+        "distribution_version": "v0.4.7",
         "release_status": "released",
-        "skill_byte_digest": "sha256:d838e71e8ef4053ced2feec7d2b7a4c5a67e849e658f3d4853cb4700c2c4356a",
-        "skill_tree_digest": "sha256:423fba162e4daca559d31ba002a6dbd7ee6516bed270280a754a54d2fc51019c",
-        "distribution_manifest_digest": "sha256:6b188f548f6884cdf332dacf3893f5b74aad832bb8902ff64d2fa1ee915c80b8",
+        "skill_byte_digest": "sha256:bb9eb35ae7cd1a8a5b039d133747a31913e98884a617a5eb29f6234a707c21f2",
+        "skill_tree_digest": "sha256:9540b352d2d21e5e373bed683fae16c13dad9f29ebbbf59c64e9458f12d08afd",
+        "distribution_manifest_digest": "sha256:67ea83e495df0f49eccb49cc3b38ad12241f534f4533d3b9f8426173fcd03fce",
     },
     "build-tco-coverage": {
-        "distribution_version": "v0.4.6",
+        "distribution_version": "v0.4.7",
         "release_status": "released",
-        "skill_byte_digest": "sha256:9e5a796fc6f20a87016b61aed495dac5f33ffc15af4511b84a17a712816b8313",
-        "skill_tree_digest": "sha256:823fa7fda6bad832f04e72a088c71f86d639496bdb2d602cc46758a51faf5e52",
-        "distribution_manifest_digest": "sha256:4c67d0e8139a6dfc2795f21c73826cc3039f442d19f1ecc56a518cc10aea666e",
+        "skill_byte_digest": "sha256:cb5ca1b98a7a8d05d255a9f577641a1afcf740fb378b78b5c9a3b228cfcfb253",
+        "skill_tree_digest": "sha256:b22a98d2ac2e7a74ce3607fd61af5cd190c98291092907a54305e653f88487c7",
+        "distribution_manifest_digest": "sha256:3022ebce0a37c169c34293167c5bf8891a3a597a5c736c38f2622c9c98bdedec",
     },
 }
 
 PRODUCTION_ENTRY = "kym_tco.supported_host:materialize_and_validate"
 PROTOCOL = "skill_materialization_pipeline_v1"
 EXPECTED_REGISTRY_DIGEST_V1 = "sha256:40c863309f18428450b0b7540f5e62ce0e6cf0f2fdd380a2c252bcc843d24db0"
-EXPECTED_REGISTRY_DIGEST_V2 = "sha256:13c5a26973f43a6b9d9321b0b475eb211750741b16f2e537f18611e618394466"
+EXPECTED_REGISTRY_DIGEST_V2 = "sha256:9e6c782280524f6aa685e530aab7ea73dfec7f6806f398203bed7280701d2047"
 EXPECTED_REGISTRY_DIGEST = EXPECTED_REGISTRY_DIGEST_V2
 REQUIRED_CAPABILITIES = {
     "workspace_bytes_read", "candidate_materialize", "repo_local_cli_invoke",

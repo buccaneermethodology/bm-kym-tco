@@ -30,7 +30,7 @@ Place a statement in Business Rules only when it describes a condition, constrai
 
 Default routing: maturity/roadmap/phase/level go to `Project / Schedule`; lane/discovery/stabilization state to `Info` or `Scope`; Observation Envelope, Trial Record, Artifact Package, failure taxonomy, and Candidate/Formal M1 terms to `Naming Conventions`; field protocols to `Standards`; enforceable rejection/threshold/authority rules to `Business Rules` or `Scope`; Target Lane definitions to `Scope` or `Target Profiles`, not Business Rules merely because they are important.
 
-Business Rules may use a semantic parent and topic groups for shared leaves. Parent grouping is KYM organization only; do not generate M, TSP, Coverage, or TCO artifacts.
+Business Rules may use a semantic parent and topic groups for shared leaves. 语义能力组可有M编号/TSP阅读说明；独立TCO model、Coverage与实现证据仍属于后续skill，分组不能成为Coverage分母。
 
 ## Target Gate
 

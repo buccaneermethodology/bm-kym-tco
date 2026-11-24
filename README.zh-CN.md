@@ -316,3 +316,7 @@ unknown < not_started < design_only < schema_validator < test_bound < bounded_ru
 Verification 命令以 `argv`、受限 cwd、timeout、node ID 和允许的环境变量名注册在项目配置中。`argv[0]` 必须是可执行文件的绝对路径；子进程只接收 `allowed_env` 明确列出的环境变量，不会隐式继承宿主机 `PATH`。Coverage JSON 不能注入 shell 命令。
 
 v1 不包含定时自动化。自动化可重新运行 `tco verify`、`tco render` 并输出变化报告；遇到语义模型、Target、Coverage proposal、authorization 或 governance checkout 漂移时必须停止并 rebaseline。只有同时提供 `--approval-source authorized_system`、系统主体和 workspace 内预先存在的授权文件，且该授权绑定 Goal、产品、scope、Target、有效期与 approval reference 前缀时，才可创建系统 receipt；CLI 不创建该授权文件，系统 receipt 绝不标为 `human`。
+
+### v0.4.7 详细阅读交付
+
+两项构建Skill支持可选择的用途引导、TP/Mc/共享M详细展开与固定离线HTML/Markdown，逐行为解释证据适用性和最小下一步。见 [阅读流程](docs/KYM_TO_TCO_WORKFLOW.zh-CN.md)。候选检查与阅读质量通过不创建语义批准。

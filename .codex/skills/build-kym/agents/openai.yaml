@@ -1,6 +1,6 @@
 interface:
   display_name: "Build KYM"
   short_description: "Build a fixed-template KYM candidate with source and repo provenance"
-  default_prompt: "Use $build-kym to create a provenance-bound KYM v1 draft; where configured, ingest repository evidence before r001 without overwriting user intent; follow the host project's own governance for persistent changes."
+  default_prompt: "Use $build-kym to clarify the reading purpose, offer guided questions or a direct draft, and create a provenance-bound KYM with the fixed offline reader; preserve candidate authority and the host project's governance."
 policy:
   allow_implicit_invocation: true

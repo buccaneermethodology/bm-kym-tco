@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.7
+
+- 两个构建 Skill 支持用途引导或直接候选、共享 TP/Mc/M 对应、固定离线详细阅读器。
+- TSP、同源流程/IPO、必要设计图、逐行为证据适用性与最小下一步；新增已知低质量模式审计。
+- 保留已有 CLI、模型 schema、workspace wire 与候选 authority；原始 CLI preview 继续提供。
+
 ## [0.4.6] - Prepared for release
 
 - Make default tests reproducible from a clean checkout using explicit synthetic inputs.

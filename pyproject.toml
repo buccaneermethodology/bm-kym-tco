@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bm-kym-tco"
-version = "0.4.6"
+version = "0.4.7"
 description = "Deterministic KYM revision, approval, TCO coverage, and verification tooling"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -48,6 +48,10 @@ testpaths = ["tests"]
   ".codex/skills/build-kym/agents/openai.yaml",
 ]
 "share/bm-kym-tco/codex/skills/build-kym/references" = [
+  ".codex/skills/build-kym/references/guided-generation.md",
+  ".codex/skills/build-kym/references/reader-workflow.md",
+  ".codex/skills/build-kym/references/prompt-examples.md",
+  ".codex/skills/build-kym/references/reader-detail.schema.json",
   ".codex/skills/build-kym/references/doctor-cli-missing-report.json",
   ".codex/skills/build-kym/references/external-workspace-handoff.md",
   ".codex/skills/build-kym/references/kym-analysis-guide.md",
@@ -57,6 +61,8 @@ testpaths = ["tests"]
   ".codex/skills/build-kym/references/portable-governance.yaml",
 ]
 "share/bm-kym-tco/codex/skills/build-kym/scripts" = [
+  ".codex/skills/build-kym/scripts/reader.py",
+  ".codex/skills/build-kym/scripts/audit_reader_quality.py",
   ".codex/skills/build-kym/scripts/audit_candidate.py",
 ]
 "share/bm-kym-tco/codex/skills/build-tco-coverage" = [
@@ -67,6 +73,10 @@ testpaths = ["tests"]
   ".codex/skills/build-tco-coverage/agents/openai.yaml",
 ]
 "share/bm-kym-tco/codex/skills/build-tco-coverage/references" = [
+  ".codex/skills/build-tco-coverage/references/guided-generation.md",
+  ".codex/skills/build-tco-coverage/references/reader-workflow.md",
+  ".codex/skills/build-tco-coverage/references/prompt-examples.md",
+  ".codex/skills/build-tco-coverage/references/reader-detail.schema.json",
   ".codex/skills/build-tco-coverage/references/doctor-cli-missing-report.json",
   ".codex/skills/build-tco-coverage/references/portable-governance.yaml",
   ".codex/skills/build-tco-coverage/references/tco-contract.md",
@@ -76,7 +86,19 @@ testpaths = ["tests"]
   ".codex/skills/build-tco-coverage/references/tco-progress.schema.json",
 ]
 "share/bm-kym-tco/codex/skills/build-tco-coverage/scripts" = [
+  ".codex/skills/build-tco-coverage/scripts/reader.py",
+  ".codex/skills/build-tco-coverage/scripts/audit_reader_quality.py",
   ".codex/skills/build-tco-coverage/scripts/audit_candidate.py",
   ".codex/skills/build-tco-coverage/scripts/audit_reader_language.py",
   ".codex/skills/build-tco-coverage/scripts/progress.py",
+]
+
+"share/bm-kym-tco/codex/skills/build-kym/assets" = [
+  ".codex/skills/build-kym/assets/reader.css",
+  ".codex/skills/build-kym/assets/reader.js",
+]
+
+"share/bm-kym-tco/codex/skills/build-tco-coverage/assets" = [
+  ".codex/skills/build-tco-coverage/assets/reader.css",
+  ".codex/skills/build-tco-coverage/assets/reader.js",
 ]

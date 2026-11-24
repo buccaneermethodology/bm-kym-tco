@@ -118,3 +118,21 @@ prune .codex/skills/exploration-dashboard-synthesizer
 prune .codex/skills/kym-tco-governed-checkpoints
 prune .codex/skills/llm-artifact-evaluator
 global-exclude __pycache__ *.py[cod] .DS_Store *.egg-info
+
+# Fixed standalone reader payload
+include .codex/skills/build-kym/references/guided-generation.md
+include .codex/skills/build-kym/references/reader-workflow.md
+include .codex/skills/build-kym/references/prompt-examples.md
+include .codex/skills/build-kym/references/reader-detail.schema.json
+include .codex/skills/build-kym/scripts/reader.py
+include .codex/skills/build-kym/scripts/audit_reader_quality.py
+include .codex/skills/build-kym/assets/reader.css
+include .codex/skills/build-kym/assets/reader.js
+include .codex/skills/build-tco-coverage/references/guided-generation.md
+include .codex/skills/build-tco-coverage/references/reader-workflow.md
+include .codex/skills/build-tco-coverage/references/prompt-examples.md
+include .codex/skills/build-tco-coverage/references/reader-detail.schema.json
+include .codex/skills/build-tco-coverage/scripts/reader.py
+include .codex/skills/build-tco-coverage/scripts/audit_reader_quality.py
+include .codex/skills/build-tco-coverage/assets/reader.css
+include .codex/skills/build-tco-coverage/assets/reader.js

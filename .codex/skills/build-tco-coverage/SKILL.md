@@ -5,11 +5,13 @@ description: Build or revise candidate-only TCO models, Target Profiles, Coverag
 
 # Build TCO Coverage
 
-The agent performs semantic decomposition; `tco` deterministically validates, verifies, compares, and renders candidates.
+The agent performs semantic decomposition; `tco` validates candidate data.
+
+先读 [引导与用途](references/guided-generation.md)，复用KYM阶段答案；关键未知先交流，用户可选择直接一稿。默认按 [固定详细reader](references/reader-workflow.md) 交付TP→Mc→M、详细TSP/流程/IPO及逐行为证据判断表；用户示例见 [prompts](references/prompt-examples.md)。
 
 ## Preconditions
 
-1. Run `tco --help`. Missing: fill `references/doctor-cli-missing-report.json` and print stdout; no semantic verdict. Available: run `tco --workspace <workspace> doctor --product-id <id> --skill-dir <skill-dir> --expected-cli-version 0.4.6`. `ready` means environment only.
+1. Run `tco --help`. Missing: fill `references/doctor-cli-missing-report.json` and print stdout; no semantic verdict. Available: run `tco --workspace <workspace> doctor --product-id <id> --skill-dir <skill-dir> --expected-cli-version 0.4.7`. `ready` means environment only.
 2. Require explicit candidate KYM revision/profile inputs and source boundaries.
 3. Read [references/tco-contract.md](references/tco-contract.md) when drafting model, Coverage, or project config.
 4. Read [references/tco-modeling-guide.md](references/tco-modeling-guide.md) completely when decomposing M/TSP, preserving Profiles, assigning Coverage, or reviewing gaps. It guides analysis; the contract/CLI remain authoritative.
@@ -20,7 +22,7 @@ The agent performs semantic decomposition; `tco` deterministically validates, ve
 
 Use the installed CLI in external business workspaces. Read [references/external-workspace.md](references/external-workspace.md) for exact source-ledger build and source-ledger verify, selection-record, host-preflight, external-run and external-consume-check calls. Business repositories need no tool source or internal registry. The pipeline is explicit; arbitrary platforms do not automatically invoke it. Project Skill selection takes precedence; broken/incompatible project copies block rather than fall back. An operator_confirmed selection is an operator assertion, not host resolver attestation. The CLI bundle_ref names the validation evidence bundle, not a candidate package; consumable=true only binds passing deterministic evidence to candidate_not_approved bytes.
 
-Source Skill changes remain unreleased candidates. A released CLI pins released Skill identity; adding progress tools does not authorize bypassing that check or claim the new source Skill works with the pinned external-run profile. Direct progress companion use needs only Python and workspace inputs.
+Source Skills remain unreleased; released CLI/Skill identities must match. Progress/reader companions do not bypass external-run checks.
 
 ### Task contributions and stage progress
 
@@ -35,7 +37,7 @@ When maintainers use this Skill in the tool's own source repository, retain its 
 1. Initialize or reuse `.kym-tco/<product-id>/`.
 2. Read the candidate KYM revision and selected candidate Target only. Do not load the original long conversation unless a provenance dispute requires it.
 3. Draft a stable TCO v4 model with a Capability Projection Ledger (`Business Rule → capability → M1/Mc/Policy`). Keep materialization, readiness and honest outcome separate; use v2/v3 only for migration. `mc` organizes domains, `policy` is a rule, and `m1` is one independently testable owned ability. Freeze `execution_semantics` (`compare|execute|ingest|package|render|synthesize|validate`) before Coverage; each output is exactly one of `materialized_output_ids|validated_output_ids|unresolved_output_ids`, and unresolved output blocks `bounded_runtime`.
-4. Write reader-facing Topic/Scope/Purpose and run `scripts/audit_reader_language.py --model <model.json>`. Keep v4 scope as boundary only; use separate input/output/decision fields and `coverage_requirements` with `category/ref/mandatory`. Preserve prior Profiles, bind each Target requirement once to non-group M nodes, and never let repository evidence invent a Target requirement. Keep lifecycle, validation, Coverage, breadth and resolution axes orthogonal; cite source-backed claim exclusions.
+4. 从KYM规则语义组建立可追溯direct/split/merge映射，保持共享M唯一；按可独立观察的行为拆要求，不统一套两条I/O。Write reader-facing Topic/Scope/Purpose and run `scripts/audit_reader_language.py --model <model.json>`. Keep v4 scope as boundary only; use separate input/output/decision fields and `coverage_requirements` with `category/ref/mandatory`. Preserve prior Profiles, bind each Target requirement once to non-group M nodes, and never let repository evidence invent a Target requirement. Keep lifecycle, validation, Coverage, breadth and resolution axes orthogonal; cite source-backed claim exclusions.
 5. Draft proposal-only Coverage from trusted evidence, never `candidate_evidence`; one row per requirement, mandatory misses block Met. `bounded_runtime` requires matching node/operation/output/effect and a workspace artifact whose bytes match `artifact_digest`; missing or stale witnesses fail closed. Use `tco verify` for registered checks. Register verification with absolute `argv[0]`, cwd, timeout, node IDs and allowed env; no shell.
 6. Run:
 
