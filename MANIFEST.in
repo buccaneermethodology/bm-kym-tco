@@ -125,6 +125,7 @@ include .codex/skills/build-kym/references/reader-workflow.md
 include .codex/skills/build-kym/references/prompt-examples.md
 include .codex/skills/build-kym/references/reader-detail.schema.json
 include .codex/skills/build-kym/scripts/reader.py
+include .codex/skills/build-kym/scripts/reader_full.py
 include .codex/skills/build-kym/scripts/audit_reader_quality.py
 include .codex/skills/build-kym/assets/reader.css
 include .codex/skills/build-kym/assets/reader.js
@@ -133,6 +134,12 @@ include .codex/skills/build-tco-coverage/references/reader-workflow.md
 include .codex/skills/build-tco-coverage/references/prompt-examples.md
 include .codex/skills/build-tco-coverage/references/reader-detail.schema.json
 include .codex/skills/build-tco-coverage/scripts/reader.py
+include .codex/skills/build-tco-coverage/scripts/reader_full.py
 include .codex/skills/build-tco-coverage/scripts/audit_reader_quality.py
 include .codex/skills/build-tco-coverage/assets/reader.css
 include .codex/skills/build-tco-coverage/assets/reader.js
+
+# E/C/Q optional companion payload
+include .codex/skills/build-tco-coverage/references/ecq-assessment.schema.json
+include .codex/skills/build-tco-coverage/references/ecq-assessment.md
+include .codex/skills/build-tco-coverage/scripts/ecq.py

@@ -305,3 +305,16 @@ No scheduled automation is included in v1. Automation may rerun `tco verify`, `t
 ### v0.4.7 详细阅读交付
 
 两项构建Skill支持可选择的用途引导、TP/Mc/共享M详细展开与固定离线HTML/Markdown，逐行为解释证据适用性和最小下一步。见 [阅读流程](docs/KYM_TO_TCO_WORKFLOW.zh-CN.md)。候选检查与阅读质量通过不创建语义批准。
+
+
+### 每M的努力、功能实现与质量（v0.4.9）
+
+统一reader用三卡回答“做过什么、功能实现到多少、质量怎样、下一步做什么”：
+
+- E：有证据的Session与具体贡献；同Session跨多个M时全局去重，计划不算已执行。
+- C：按原始业务要求估计功能实现份额，未知保留未知；TP运行目标单列，拆验收点不增加权重，回归可以下调估计。
+- Q：本M关键要求的适用验证、问题与风险，区分观察、报告、未运行和过期；默认不给综合质量分。
+
+可沿用有明确完整绑定依据的旧观察，优先核对适用性；共享结果只支持其实际覆盖的职责。每M有逐要求、前后变化、来源及候选下一步，已移除M的历史贡献仍可查。固定离线样式与UTF-8安全来源阅读页保持一致，原Coverage与状态字段在详情中追溯。
+
+使用当前版本配套的build-tco-coverage，按其[E／C／Q合同](.codex/skills/build-tco-coverage/references/ecq-assessment.md)准备候选输入，再见[reader工作流](.codex/skills/build-tco-coverage/references/reader-workflow.md)。这些是只读候选投影，不自动执行建议或创建业务批准。

@@ -1,11 +1,11 @@
 SPDXVersion: SPDX-2.3
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
-DocumentName: bm-kym-tco-v0.4.7-candidate
-DocumentNamespace: https://spdx.org/spdxdocs/bm-kym-tco-v0.4.7-candidate
+DocumentName: bm-kym-tco-v0.4.9-candidate
+DocumentNamespace: https://spdx.org/spdxdocs/bm-kym-tco-v0.4.9-candidate
 FileName: ./.codex/skills/build-kym/SKILL.md
 SPDXID: SPDXRef-File-1
-FileChecksum: SHA256: bb9eb35ae7cd1a8a5b039d133747a31913e98884a617a5eb29f6234a707c21f2
+FileChecksum: SHA256: fb4a89ddb16705e4243844be0778e494aae2f81933722eafd57d2eb6c035dd61
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -19,7 +19,7 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/assets/reader.css
 SPDXID: SPDXRef-File-3
-FileChecksum: SHA256: 228a8e58d4a8d9325ff9ab51257281227f73a9f9adb29f8873aff734809d4443
+FileChecksum: SHA256: fc108ab15d492c2a41a58be0419e4e17407ffb60baea901cc697ebb40ed23bfe
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -33,7 +33,7 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/distribution.json
 SPDXID: SPDXRef-File-5
-FileChecksum: SHA256: 67ea83e495df0f49eccb49cc3b38ad12241f534f4533d3b9f8426173fcd03fce
+FileChecksum: SHA256: b604697b3c609505a940d4625e34056640aaee215360a7a5f3d57533ff442b18
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -47,7 +47,7 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/references/external-workspace-handoff.md
 SPDXID: SPDXRef-File-7
-FileChecksum: SHA256: 765188d94840512025a7ce798111b535cacae00bdf2d186499322766add2e9bb
+FileChecksum: SHA256: ef199a7d86722ea4a0af7cfd9fc23ad9685e98b5d4f685a5990844bd41d072f3
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -68,7 +68,7 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/references/kym-contract.md
 SPDXID: SPDXRef-File-10
-FileChecksum: SHA256: 3db3f256347b8307ecafdb253258f598b5b920940692445209bf2f754493361c
+FileChecksum: SHA256: ac7da87fb9f38a5f19c873bca9f3bee34e04ad2dafd22cab05466561701ed752
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -96,21 +96,21 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/references/prompt-examples.md
 SPDXID: SPDXRef-File-14
-FileChecksum: SHA256: 828984f0278c29c86fcabd597b8417e3bd3bf5e6652d67763e2a31b69d07dd34
+FileChecksum: SHA256: c9bdfd2fe8f6b69f14917a46bd2d6b7a082ba9f0ed789c142fe3ac8bb67ed4ef
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/references/reader-detail.schema.json
 SPDXID: SPDXRef-File-15
-FileChecksum: SHA256: 9d1f91a885de734b44b2af83ee02f01f5ff7183a9cc55fa034a69a8380bbe63e
+FileChecksum: SHA256: d98284b2f1c9aca3b197580b75a12e7e235e78f9fe31c59b9969f1700bb815e2
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/references/reader-workflow.md
 SPDXID: SPDXRef-File-16
-FileChecksum: SHA256: f23c6c41a182697d38e81c47296371affb48310de3202d06f3bd99adf876dc96
+FileChecksum: SHA256: f5dd56f31e7fef4779b68df0679a4b2428d39045eb33728f826c66315dadb0a3
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
@@ -131,720 +131,734 @@ FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-kym/scripts/reader.py
 SPDXID: SPDXRef-File-19
-FileChecksum: SHA256: 21edb74de92e741c0e7107c8cc3dd0096b3a53a6fe37a85adbd61c0e2ed97724
+FileChecksum: SHA256: 70a9275302c50a78317aa761eeda791710d5f425d514b1ec7d1c2423b49cbf71
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+FileName: ./.codex/skills/build-kym/scripts/reader_full.py
+SPDXID: SPDXRef-File-20
+FileChecksum: SHA256: a91d285731bb9c334724ac533b2009d6bc69f12a7c39a0e9f60ca0533845a0ad
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/SKILL.md
-SPDXID: SPDXRef-File-20
-FileChecksum: SHA256: cb5ca1b98a7a8d05d255a9f577641a1afcf740fb378b78b5c9a3b228cfcfb253
+SPDXID: SPDXRef-File-21
+FileChecksum: SHA256: 019ba1b397b756e9cb941dde47a4679052c2e103d77d979dc6a1902fa2e4347b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/agents/openai.yaml
-SPDXID: SPDXRef-File-21
-FileChecksum: SHA256: 0f34ebe27db340ab0e15a92fc28f1f869cc56f6ac09a32ac030634f56e0c8992
+SPDXID: SPDXRef-File-22
+FileChecksum: SHA256: e23e2728e31c087c60f6c1c761d8948b147ec2e8088ded115b2c9c733fe9f80f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/assets/reader.css
-SPDXID: SPDXRef-File-22
-FileChecksum: SHA256: 228a8e58d4a8d9325ff9ab51257281227f73a9f9adb29f8873aff734809d4443
+SPDXID: SPDXRef-File-23
+FileChecksum: SHA256: fc108ab15d492c2a41a58be0419e4e17407ffb60baea901cc697ebb40ed23bfe
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/assets/reader.js
-SPDXID: SPDXRef-File-23
+SPDXID: SPDXRef-File-24
 FileChecksum: SHA256: 989f180f1af23fd97aacf5fd935be935cb1fe042a02ebb8ad519c671ed566987
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/distribution.json
-SPDXID: SPDXRef-File-24
-FileChecksum: SHA256: 3022ebce0a37c169c34293167c5bf8891a3a597a5c736c38f2622c9c98bdedec
+SPDXID: SPDXRef-File-25
+FileChecksum: SHA256: 48b8eb2b357c8fbf5e0116fc3931e950637a77aaa20c3e0ef180243aad115bec
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/doctor-cli-missing-report.json
-SPDXID: SPDXRef-File-25
+SPDXID: SPDXRef-File-26
 FileChecksum: SHA256: 12279abb3df417dba1579a85e9cf9d454f7f5514044dffa52767a1c1a95b84b9
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
+FileName: ./.codex/skills/build-tco-coverage/references/ecq-assessment.md
+SPDXID: SPDXRef-File-27
+FileChecksum: SHA256: b4b9fa0159e5f8485258670a99bd5bb2848253595a0d0feee571ff35c46c96c6
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+FileName: ./.codex/skills/build-tco-coverage/references/ecq-assessment.schema.json
+SPDXID: SPDXRef-File-28
+FileChecksum: SHA256: 72ea6c2e9db5c42d7fce1124d5ee8c355a67c0fc37fcba64f05ae6c06d69eeb3
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
 FileName: ./.codex/skills/build-tco-coverage/references/external-workspace.md
-SPDXID: SPDXRef-File-26
-FileChecksum: SHA256: c877856befd6c79aaeb323c40a84851eedfce8aa4fabea6f6b9b185e5a9957c1
+SPDXID: SPDXRef-File-29
+FileChecksum: SHA256: 9ceb93cc5ec5ef402f145e13cb2fa094921e22ce336cbda343e365fd32c893ec
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/guided-generation.md
-SPDXID: SPDXRef-File-27
-FileChecksum: SHA256: dcabb129b595dc6527222233a35ee7e3ebd149f79eaf5d0437d93f38d4ce34a9
+SPDXID: SPDXRef-File-30
+FileChecksum: SHA256: 05cf3be5aaebca2ad77ce28b61a11fdebe3722c21357a84385ba043c9cc6a9ce
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/portable-governance.yaml
-SPDXID: SPDXRef-File-28
+SPDXID: SPDXRef-File-31
 FileChecksum: SHA256: a9f6af692b5f3b14699d26d5f3f24aa5adc222a4fa4f8d9c2474e31cef3d1ee5
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/prompt-examples.md
-SPDXID: SPDXRef-File-29
-FileChecksum: SHA256: 8dff2e0a34bfb2b9b4a05af2cbea68db0d87d4edfdc761c86b10fd28db5d6170
+SPDXID: SPDXRef-File-32
+FileChecksum: SHA256: 59536cb547c01a49a9902b2aa076fc636e02a890f7a39080d4a7d0230be4c30e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/reader-detail.schema.json
-SPDXID: SPDXRef-File-30
-FileChecksum: SHA256: 9d1f91a885de734b44b2af83ee02f01f5ff7183a9cc55fa034a69a8380bbe63e
+SPDXID: SPDXRef-File-33
+FileChecksum: SHA256: d98284b2f1c9aca3b197580b75a12e7e235e78f9fe31c59b9969f1700bb815e2
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/reader-workflow.md
-SPDXID: SPDXRef-File-31
-FileChecksum: SHA256: f23c6c41a182697d38e81c47296371affb48310de3202d06f3bd99adf876dc96
+SPDXID: SPDXRef-File-34
+FileChecksum: SHA256: f5dd56f31e7fef4779b68df0679a4b2428d39045eb33728f826c66315dadb0a3
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/tco-contract.md
-SPDXID: SPDXRef-File-32
-FileChecksum: SHA256: a945c0fe11b5d6d9f9c8dc22afa39099c1235ad3cfcd86ffd679917178429261
+SPDXID: SPDXRef-File-35
+FileChecksum: SHA256: e3a43d95a90f7bf0e43a00359ea2b3c827e4ef64cb0c23111bed72d9500f153f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/tco-modeling-guide.md
-SPDXID: SPDXRef-File-33
-FileChecksum: SHA256: 3fb3f21422eb1c5aedc41c03c922058d83b58315ec497f35de12ede2ecd7ef40
+SPDXID: SPDXRef-File-36
+FileChecksum: SHA256: 6fb4dca50e1e47d4d7dffa9dd6c01d7c05c50593fc85938911fe0e70908443cd
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/tco-progress.md
-SPDXID: SPDXRef-File-34
-FileChecksum: SHA256: 065df9977e56b00f427fc11fb456cdb8a4842cdcfb8426d37789950ecc6a9c38
+SPDXID: SPDXRef-File-37
+FileChecksum: SHA256: 3b476e96751c21615a616bb7d7d6bea8a526ae7a8620faf4a6d1f5a403d1075a
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/references/tco-progress.schema.json
-SPDXID: SPDXRef-File-35
+SPDXID: SPDXRef-File-38
 FileChecksum: SHA256: 33ccbd52bb3e6262a2b02615260318cfddeea051675839c36234753c9dba4bf5
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/scripts/audit_candidate.py
-SPDXID: SPDXRef-File-36
+SPDXID: SPDXRef-File-39
 FileChecksum: SHA256: c3fb1faa2c0ff3945467f8dd6ba2f5d43fe93ef23c4a3fe02107f4227dd9deba
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/scripts/audit_reader_language.py
-SPDXID: SPDXRef-File-37
-FileChecksum: SHA256: 1f068494e3e6be7d9e270e1ecd6dd30e662c4433edeb6e8a1e54cbdb0f97890b
+SPDXID: SPDXRef-File-40
+FileChecksum: SHA256: b61b74a6c0629590cc820530b118113ad14dbeb7ea632d4d474f456b69977237
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/scripts/audit_reader_quality.py
-SPDXID: SPDXRef-File-38
+SPDXID: SPDXRef-File-41
 FileChecksum: SHA256: 7afa79e50debf16356f2ed696c393e4a0b760ac46aaf71505ffc8fbb21f56d34
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
+FileName: ./.codex/skills/build-tco-coverage/scripts/ecq.py
+SPDXID: SPDXRef-File-42
+FileChecksum: SHA256: 1b8be4712e9f9ac4498c324c0cdb38544b50fc26019ccd9f17c543065e23e6a4
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
 FileName: ./.codex/skills/build-tco-coverage/scripts/progress.py
-SPDXID: SPDXRef-File-39
-FileChecksum: SHA256: 3b8ddddb5d8481d2547c64de448ce9ddbdc2185fff96c7578698417063eb892e
+SPDXID: SPDXRef-File-43
+FileChecksum: SHA256: c0186d2b3f71c9b98304ee4acfb3e23c736de0b48514116814bdc3782c75147b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.codex/skills/build-tco-coverage/scripts/reader.py
-SPDXID: SPDXRef-File-40
-FileChecksum: SHA256: 21edb74de92e741c0e7107c8cc3dd0096b3a53a6fe37a85adbd61c0e2ed97724
+SPDXID: SPDXRef-File-44
+FileChecksum: SHA256: 70a9275302c50a78317aa761eeda791710d5f425d514b1ec7d1c2423b49cbf71
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+FileName: ./.codex/skills/build-tco-coverage/scripts/reader_full.py
+SPDXID: SPDXRef-File-45
+FileChecksum: SHA256: a91d285731bb9c334724ac533b2009d6bc69f12a7c39a0e9f60ca0533845a0ad
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.github/workflows/ci.yml
-SPDXID: SPDXRef-File-41
-FileChecksum: SHA256: a1e835a3ec45f05c14e4b008a877167785763b9188416d5107cac9defe97124b
+SPDXID: SPDXRef-File-46
+FileChecksum: SHA256: 399dfc5730ed1dffdbaee0d1734d2df641a9b93673fb6ae8c48d84d00716400a
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./.gitignore
-SPDXID: SPDXRef-File-42
+SPDXID: SPDXRef-File-47
 FileChecksum: SHA256: fef31fc72fed27b1549200d2f01e01c1931af6c43a4d5f399a95273f183c98ca
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./CHANGELOG.md
-SPDXID: SPDXRef-File-43
-FileChecksum: SHA256: 8cdb314e137d9b3f9b8f59fabfde0b2c90f14d642bbbf068e5d53851ac8f7d6c
+SPDXID: SPDXRef-File-48
+FileChecksum: SHA256: 2be488334409295b18c5444aecbf609d9c47161d9574ff5dfe9b9bfcc63bd9b8
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./CONTRIBUTING.md
-SPDXID: SPDXRef-File-44
+SPDXID: SPDXRef-File-49
 FileChecksum: SHA256: 83d930dc5f26fc173ae5c53469f7a5cf5bba1f9392baed6293bd0cefb78dc30a
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./LICENSE
-SPDXID: SPDXRef-File-45
+SPDXID: SPDXRef-File-50
 FileChecksum: SHA256: c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
-FileName: ./LICENSE_REPORT.spdx
-SPDXID: SPDXRef-File-46
-FileChecksum: SHA256: 4b8622a3796efb4f0072e0a1e79603c9325ddcc0979c7e3cc75ed38c682644ad
-LicenseConcluded: NOASSERTION
-LicenseInfoInFile: NOASSERTION
-FileCopyrightText: NOASSERTION
-
 FileName: ./MANIFEST.in
-SPDXID: SPDXRef-File-47
-FileChecksum: SHA256: 44d0d7ffb24a929c206458e7e9d13000e88e93d35bf47b248351e79ebb1ed3bd
+SPDXID: SPDXRef-File-51
+FileChecksum: SHA256: 8ba6727d117ff4c1d300c3386c48a127f953f2473896aa14b9094f120bd55923
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./NOTICE
-SPDXID: SPDXRef-File-48
+SPDXID: SPDXRef-File-52
 FileChecksum: SHA256: 0bba20a4009f163213896aa257328e6a8e9df03e11bf6a1561e1b813f43b7960
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./README.md
-SPDXID: SPDXRef-File-49
-FileChecksum: SHA256: 147f0f654eaaf11204c9370085ce0c5f15008584cb4ab526ec1b7eaee3449d19
+SPDXID: SPDXRef-File-53
+FileChecksum: SHA256: 844d5aa7f6a7bb21687df95e8e5926d6a81a5d459373cd3c1df1b4ac3bed1c66
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./README.zh-CN.md
-SPDXID: SPDXRef-File-50
-FileChecksum: SHA256: c808e394aef610b324dc0835b1ea75e09ebcd27bd0638689eabe8bf8937bd18b
+SPDXID: SPDXRef-File-54
+FileChecksum: SHA256: d3a6c5416f3a3b636b8de3eb3d0a932f27cbc79cb78a0a8d4bcee8b197e5910e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./SECURITY.md
-SPDXID: SPDXRef-File-51
+SPDXID: SPDXRef-File-55
 FileChecksum: SHA256: 1bf9b82e34421466dc37bff90a45d33804d5c650d192785cd7470814e3594d49
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
-FileName: ./SHA256SUMS
-SPDXID: SPDXRef-File-52
-FileChecksum: SHA256: c3cd244768e3f2a884523124b6eab0ff7a088f094559ada99f492b865e32cf34
-LicenseConcluded: NOASSERTION
-LicenseInfoInFile: NOASSERTION
-FileCopyrightText: NOASSERTION
-
 FileName: ./docs/INSTALLATION_AND_USAGE.zh-CN.md
-SPDXID: SPDXRef-File-53
+SPDXID: SPDXRef-File-56
 FileChecksum: SHA256: 75c19901293bb8c7e3699329ee6329d5df2e31c02197bb49e14707bbe1c14829
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./docs/KYM_TO_TCO_WORKFLOW.zh-CN.md
-SPDXID: SPDXRef-File-54
-FileChecksum: SHA256: 114c1c44d0513d88a45d05324b9fad0f3c1edbd5597cccb52966a5153d875587
+SPDXID: SPDXRef-File-57
+FileChecksum: SHA256: 4252086f3ea8e1630043ffe56cc37326a9abb101f01b71ee4bf566b23d39011a
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./pyproject.toml
-SPDXID: SPDXRef-File-55
-FileChecksum: SHA256: 6c1d29bd15e580aa0214025dd1e30e8028f040a4b66cdb6f4f4649fdc61815dd
-LicenseConcluded: NOASSERTION
-LicenseInfoInFile: NOASSERTION
-FileCopyrightText: NOASSERTION
-
-FileName: ./release-manifest.json
-SPDXID: SPDXRef-File-56
-FileChecksum: SHA256: 5c124f9ed2adc0c56bafe78a7680e0ebb5affdc23890526a66b5b7bd3c038deb
+SPDXID: SPDXRef-File-58
+FileChecksum: SHA256: bc21fcb2d9d1bfc8a5c6b21e5949d542b3854966114f859557e7d204853acf7d
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/__init__.py
-SPDXID: SPDXRef-File-57
-FileChecksum: SHA256: a392519a786f51db4c4f7dd21dc2978c5bbdd32c2f38207fe91f49068651403c
+SPDXID: SPDXRef-File-59
+FileChecksum: SHA256: 62b7e895aab60c3cf65526c9d1d74ae6937fb4067852cae3a90af123cb51ca15
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/approval_authorization.py
-SPDXID: SPDXRef-File-58
+SPDXID: SPDXRef-File-60
 FileChecksum: SHA256: 3f00976148307fca3fc72771cf7d8575fd354ba18438dc51936c370f64f10c76
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/capability_claims.py
-SPDXID: SPDXRef-File-59
+SPDXID: SPDXRef-File-61
 FileChecksum: SHA256: 641a303440d106b772ced7e9ff5a96122cc496be6903abc2ba0d5512ec4ce914
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/common.py
-SPDXID: SPDXRef-File-60
+SPDXID: SPDXRef-File-62
 FileChecksum: SHA256: 053859a6c6c92036bd92066d2e3f5db8ca386cf5d48231a4e8b140660e85ea08
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/dashboard_observer.py
-SPDXID: SPDXRef-File-61
+SPDXID: SPDXRef-File-63
 FileChecksum: SHA256: 03ead7c8ea720b56990678ea6ae39dc8bb7438b1c5633a1f58b1d8ad4655033b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/doctor.py
-SPDXID: SPDXRef-File-62
+SPDXID: SPDXRef-File-64
 FileChecksum: SHA256: 6d437c766075d380e0342a9ef1a67cb94b02ee9f49bf54830f8a70ec64efb792
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/evidence_hub.py
-SPDXID: SPDXRef-File-63
+SPDXID: SPDXRef-File-65
 FileChecksum: SHA256: ac9fce5b619133a81b415a4d330824c63f281762fa58596344b539b223fabe59
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/gate_registry.py
-SPDXID: SPDXRef-File-64
+SPDXID: SPDXRef-File-66
 FileChecksum: SHA256: 673362893f741402f4974fee7145667eeb7135c00157003319aca317cbc29cf9
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/git_freshness.py
-SPDXID: SPDXRef-File-65
+SPDXID: SPDXRef-File-67
 FileChecksum: SHA256: dc8bbcb1547d6cec6f3d99a982d5d8e2c2fd33b3e57042147f0ca59b11eabd5d
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/kym_cli.py
-SPDXID: SPDXRef-File-66
+SPDXID: SPDXRef-File-68
 FileChecksum: SHA256: 31bfe63b286d62927f6f213a80199660b7b379f76b19cd0bd68c3454d007b9a3
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/kym_ops.py
-SPDXID: SPDXRef-File-67
+SPDXID: SPDXRef-File-69
 FileChecksum: SHA256: 849f56918083b6ce7a1041a7ec5789cbe179d587c7d69cc024150a2371f73153
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/kym_package.py
-SPDXID: SPDXRef-File-68
+SPDXID: SPDXRef-File-70
 FileChecksum: SHA256: b7a06fa95530af19ffd862b24ac74bdb38017b641faf6b2925790f615e3ebb4f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/post_generation_pipeline.py
-SPDXID: SPDXRef-File-69
+SPDXID: SPDXRef-File-71
 FileChecksum: SHA256: 10a93c62dca4fe4b33569b697f6c22fba21607ce24d184e2de48f9629ef53ea6
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/reader_language.py
-SPDXID: SPDXRef-File-70
-FileChecksum: SHA256: 1ed06de48fc41584bb61a42d1627a38245c4dd4dc46ad5afb9404d80335650c3
+SPDXID: SPDXRef-File-72
+FileChecksum: SHA256: 59b636d6fcfa7a32f64a1e12a19a5df51b31273972df37577b7e815ff266df04
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/reader_markdown.py
-SPDXID: SPDXRef-File-71
+SPDXID: SPDXRef-File-73
 FileChecksum: SHA256: 1d67667709cf9b68ce1abb0e666c3206655269e42eb0d6c9760719f67b494b42
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/__init__.py
-SPDXID: SPDXRef-File-72
+SPDXID: SPDXRef-File-74
 FileChecksum: SHA256: 0da91d85ae6b9afade6e1168d2983ae1131965fb467213a4b1562833dd22c8d5
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/approval_receipt_v1.schema.json
-SPDXID: SPDXRef-File-73
+SPDXID: SPDXRef-File-75
 FileChecksum: SHA256: 272079927aa09e9832849c9f4f0854f0edd857185cfaaafe152b60811c61d749
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/authorized_system_authorization_v1.schema.json
-SPDXID: SPDXRef-File-74
+SPDXID: SPDXRef-File-76
 FileChecksum: SHA256: 8ad6667b09a1bfde7e2ac7a4510df80a6316d5d3942efb7ed8ff66053af0c31b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/doctor_report_v1.schema.json
-SPDXID: SPDXRef-File-75
+SPDXID: SPDXRef-File-77
 FileChecksum: SHA256: 4d00bc8f368c3cda05e0aabda543931c090084af4d4a503329c3df14b8921b82
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/evidence_hub_integrity_v1.schema.json
-SPDXID: SPDXRef-File-76
+SPDXID: SPDXRef-File-78
 FileChecksum: SHA256: 1c5c8cdd082d3279b016f3e3fe12666833f1a63fd736799f6ea277fc9ea0b366
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/executable_package_cases_v1.schema.json
-SPDXID: SPDXRef-File-77
+SPDXID: SPDXRef-File-79
 FileChecksum: SHA256: 932069cb44df19875b06f98f29b9eb313ec7dad9829f30c7621afbe8837e0af1
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/executable_package_contract_v1.schema.json
-SPDXID: SPDXRef-File-78
+SPDXID: SPDXRef-File-80
 FileChecksum: SHA256: 882c0ae5a72cc5503110e9d0d39132d8bac340f65ce3ec20648c695611ddd01b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/external_host_failure_v2.schema.json
-SPDXID: SPDXRef-File-79
+SPDXID: SPDXRef-File-81
 FileChecksum: SHA256: fce72975bcbd5e4a959d2720fcbe137c6e984ba2ec317518891bca61bd5e92de
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/external_partial_output_disposition_v1.schema.json
-SPDXID: SPDXRef-File-80
+SPDXID: SPDXRef-File-82
 FileChecksum: SHA256: 9118abe7d62c53e4bfbcda7d07066417632119a6fd79a01ea886ad53ea7dfdc2
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/gate_registry_v1.json
-SPDXID: SPDXRef-File-81
+SPDXID: SPDXRef-File-83
 FileChecksum: SHA256: 82bfc7b0cd7f9a6c26c0d812d81014afceeac3aacaa2d41fbd169c51b57f95ff
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/gate_registry_v1.schema.json
-SPDXID: SPDXRef-File-82
+SPDXID: SPDXRef-File-84
 FileChecksum: SHA256: 7dbac0fdce26452ef0a437b443e29df8d7fb615a8f4e99dec0c4feea930dd608
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/kym_delta_v1.schema.json
-SPDXID: SPDXRef-File-83
+SPDXID: SPDXRef-File-85
 FileChecksum: SHA256: 128b724155e799ba6ab468e31e7ba68df7cfae47516872e9fe93c0ab8d127f0f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/kym_model_v1.schema.json
-SPDXID: SPDXRef-File-84
+SPDXID: SPDXRef-File-86
 FileChecksum: SHA256: d9af08c623b89f9ee732e0a30a86cdc647fdd165c065525c0bf03784d4d3e682
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/kym_package_artifact_index_v1.schema.json
-SPDXID: SPDXRef-File-85
+SPDXID: SPDXRef-File-87
 FileChecksum: SHA256: 3334114296b0e5bd5728e10b4fbe7a75bd22ceecde95a237c59c51b05da6c4c5
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/kym_package_lineage_v1.schema.json
-SPDXID: SPDXRef-File-86
+SPDXID: SPDXRef-File-88
 FileChecksum: SHA256: 683f237810e155f07a045d5af1b65fffeab67643c83b73d2ca1bb95f1f62f345
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/kym_package_manifest_v1.schema.json
-SPDXID: SPDXRef-File-87
+SPDXID: SPDXRef-File-89
 FileChecksum: SHA256: 061256daf0ff49e09fc0f39ad4cd8cc3b476cd941fe468553fc1971386fe8caf
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/normalized_source_ledger_v1.schema.json
-SPDXID: SPDXRef-File-88
+SPDXID: SPDXRef-File-90
 FileChecksum: SHA256: 6399139e90597110ce4e4c093044c2adf7c9509bdc39aae53df346392692c296
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/partial_output_disposition_v2.schema.json
-SPDXID: SPDXRef-File-89
+SPDXID: SPDXRef-File-91
 FileChecksum: SHA256: 0d1f8c4998d209c29df19e99fe05ac0a81897d66bc0927ee0f8bed77c19d05d8
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/post_generation_validation_bundle_v1.schema.json
-SPDXID: SPDXRef-File-90
+SPDXID: SPDXRef-File-92
 FileChecksum: SHA256: 0cb9bffa75e99df1d9eb0ffc4b1d6ce56a1c25799f7360bbad9847255394cb78
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/project_config_v1.schema.json
-SPDXID: SPDXRef-File-91
+SPDXID: SPDXRef-File-93
 FileChecksum: SHA256: 3c73ed9fbd280674d587063cbfaaa687f10acb0f4831aaa1c7f5698d8297cc14
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/source_input_manifest_v1.schema.json
-SPDXID: SPDXRef-File-92
+SPDXID: SPDXRef-File-94
 FileChecksum: SHA256: 303df44ab779d3ddeb9a41d3fe3f8726bf877d63c978f274d3d5a14fc82f61cb
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/source_manifest_v1.schema.json
-SPDXID: SPDXRef-File-93
+SPDXID: SPDXRef-File-95
 FileChecksum: SHA256: 74b227fe85103be47bcbfe81f899044f7b18ea359e1bfaf0bcdfc53eeaf82b66
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/source_manifest_v2.schema.json
-SPDXID: SPDXRef-File-94
+SPDXID: SPDXRef-File-96
 FileChecksum: SHA256: 10d86eaf6b27ef6013b5aebbb28fc17a665834574e91905a805b4136a0a50481
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/supported_host_registry_v1.schema.json
-SPDXID: SPDXRef-File-95
+SPDXID: SPDXRef-File-97
 FileChecksum: SHA256: fb45d5ef5c138ce14f52114746e4d448fa1366dac5e0376bbfe3bae153fc85bb
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/supported_host_registry_v2.schema.json
-SPDXID: SPDXRef-File-96
-FileChecksum: SHA256: bde87a3a11f32672accb69b6dbe2057d50f1e2d8bf269d1531c7809d2c1e1094
+SPDXID: SPDXRef-File-98
+FileChecksum: SHA256: 76ceb6a74bf5d98c06d728f103076e05922e7adf1c2df6e0f28d0cf11155c4bb
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/target_fragment_v1.schema.json
-SPDXID: SPDXRef-File-97
+SPDXID: SPDXRef-File-99
 FileChecksum: SHA256: c4975c7cbe50fdeeda5c6fa78222adf735fffd44e436b8ffca6dcad01ccaadce
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_coverage_model_v1.schema.json
-SPDXID: SPDXRef-File-98
+SPDXID: SPDXRef-File-100
 FileChecksum: SHA256: 46824cde496d9b5e3f1721358cae174fbc814e9e403b20ec3a9f6155265c16e7
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_coverage_model_v2.schema.json
-SPDXID: SPDXRef-File-99
+SPDXID: SPDXRef-File-101
 FileChecksum: SHA256: 3b5e01d853c81c8f97f3346a056e160d4c221196276e9222cee0dabb3f58dfbb
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_coverage_model_v3.schema.json
-SPDXID: SPDXRef-File-100
+SPDXID: SPDXRef-File-102
 FileChecksum: SHA256: 42e6b882fda16cd92d0b881dc5d4ed513833acc8feb4279aaabd3eae6917c52b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_coverage_report_v2.schema.json
-SPDXID: SPDXRef-File-101
+SPDXID: SPDXRef-File-103
 FileChecksum: SHA256: d35735467d5fcb3bf7e4d63506d56d61fa820e7d34eacf7e20563279344d2350
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_coverage_report_v3.schema.json
-SPDXID: SPDXRef-File-102
+SPDXID: SPDXRef-File-104
 FileChecksum: SHA256: 025982ff512238bd07c2f576395f5ff144c5f48fd9d23c2d7ca9a81d56cf5071
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_execution_result_v1.schema.json
-SPDXID: SPDXRef-File-103
+SPDXID: SPDXRef-File-105
 FileChecksum: SHA256: 5c676fa33548bae5e05d52c3972e98202f5d049fc30bb57a79d19ff6118a46f0
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_model_v1.schema.json
-SPDXID: SPDXRef-File-104
+SPDXID: SPDXRef-File-106
 FileChecksum: SHA256: df85b6f5ffdb1c144c7ab243cdb3091df8306072b2b09e9657e9ab7ab482258d
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_model_v2.schema.json
-SPDXID: SPDXRef-File-105
+SPDXID: SPDXRef-File-107
 FileChecksum: SHA256: 1b8a78659c53e6e00c7c361708727006aac69c78e22eeffc28a93839e8568be6
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_model_v3.schema.json
-SPDXID: SPDXRef-File-106
+SPDXID: SPDXRef-File-108
 FileChecksum: SHA256: 90acaf99dd4dc4b8da22a4c76d7c7aa2cf3501a5a5dfa71f6fd322eabf76d0a2
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_model_v4.schema.json
-SPDXID: SPDXRef-File-107
+SPDXID: SPDXRef-File-109
 FileChecksum: SHA256: eecfed5bf960e8c98f8f38ac1013891f55f2322f046f5362f11fcee11b2cf68b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_multi_input_package_manifest_v1.schema.json
-SPDXID: SPDXRef-File-108
+SPDXID: SPDXRef-File-110
 FileChecksum: SHA256: ef5ac685b37bf5cacbe9d9d2a6fb3e94fa9a9ce1c9d4387f45cf79419a43d9cd
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_package_artifact_index_v1.schema.json
-SPDXID: SPDXRef-File-109
+SPDXID: SPDXRef-File-111
 FileChecksum: SHA256: 1db23cbaffe5fe6559a587f049defa2afc1167d0536fcb8608ffa27d0962951f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/schemas/tco_package_manifest_v1.schema.json
-SPDXID: SPDXRef-File-110
+SPDXID: SPDXRef-File-112
 FileChecksum: SHA256: 6546b8516e447057d4ffaca47310358e2939c323076c436b0bd8c3434d3df3b5
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/semantic_risk.py
-SPDXID: SPDXRef-File-111
-FileChecksum: SHA256: 378af1d3485d81bce1e0e5bd324eae57add3f2f028863fde4ef601a64fa963d9
+SPDXID: SPDXRef-File-113
+FileChecksum: SHA256: df8a81095a8efdecaccbe97c693f99b58f2d653705e465712d01242a9a9b8f09
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/source_adapters.py
-SPDXID: SPDXRef-File-112
+SPDXID: SPDXRef-File-114
 FileChecksum: SHA256: 8b67d04528088c0f466dad926f8ff7f820daf10c4b25be2aa57d600943401c30
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/supported_host.py
-SPDXID: SPDXRef-File-113
-FileChecksum: SHA256: a194a01f17c98574adf9b82963563c14bb04db62e8972345d2635ddab1a99974
+SPDXID: SPDXRef-File-115
+FileChecksum: SHA256: ca23036112ba7fe9a000784e76dd72281aebb6974375424fc8d52d0516fb13dc
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/tco_cli.py
-SPDXID: SPDXRef-File-114
+SPDXID: SPDXRef-File-116
 FileChecksum: SHA256: cc371c5aa6a0d1b9e205432772e500b3b236e481e59862998fc33b2e890c89b0
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/tco_multi_input.py
-SPDXID: SPDXRef-File-115
+SPDXID: SPDXRef-File-117
 FileChecksum: SHA256: 8a020f3babaf847c86cc849a5239d1ef6840f03e3691c3e97b81c0a5b08bddc9
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/tco_ops.py
-SPDXID: SPDXRef-File-116
+SPDXID: SPDXRef-File-118
 FileChecksum: SHA256: 07b8e78ebb7059dfa09d3c5efcc871e1b125b783b9cc863b4606ae38739a5f90
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/tco_package.py
-SPDXID: SPDXRef-File-117
+SPDXID: SPDXRef-File-119
 FileChecksum: SHA256: c22609105842f3e15dccb53db8333ea1bc3cedd9ca684cb46c8dce56cf5d7ddc
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/validation.py
-SPDXID: SPDXRef-File-118
+SPDXID: SPDXRef-File-120
 FileChecksum: SHA256: 8628109f6bde773701d1992c85e8b6cdecb4d3aab9e879b2e2f5d0daa081e3e3
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./src/kym_tco/workspace.py
-SPDXID: SPDXRef-File-119
+SPDXID: SPDXRef-File-121
 FileChecksum: SHA256: f2f38f60dac9608436372667b1849a3fc7994988021e06d5a047d15a204a8267
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./tools/ci_smoke.py
-SPDXID: SPDXRef-File-120
-FileChecksum: SHA256: 546a91550974a625eea74aee7a089432e21d23dcaccf710ecd82ef816276f63d
+SPDXID: SPDXRef-File-122
+FileChecksum: SHA256: b681126c5ee313bdcf869929cc0eef98117b3a42c86f6eef29251b2f6036b11e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
 
 FileName: ./tools/install_codex_skills.py
-SPDXID: SPDXRef-File-121
+SPDXID: SPDXRef-File-123
 FileChecksum: SHA256: fade60d17b135c1522877c638b8ec527a265ecf3181820450b63bc3baab9452c
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION

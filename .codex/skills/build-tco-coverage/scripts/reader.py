@@ -6,15 +6,21 @@ import base64
 import hashlib
 import html
 import json
+import mimetypes
 from pathlib import Path, PurePosixPath
 import re
 import sys
+import types
 from urllib.parse import quote, unquote, urlsplit
 
-VERSION = 'reader-v1.0.0'
+VERSION = 'reader-v1.1.0'
 SKILL = Path(__file__).resolve().parents[1]
 GAPS = {'implementation': '实现缺口', 'verification': '验证缺口', 'version_applicability': '版本适用性缺口', 'evidence_binding': '证据绑定缺口', 'business_question': '业务待确认', 'not_evaluated': '未评估', 'none': '未报告主要缺口（不是批准）'}
 
+
+_FULL = types.ModuleType('_reader_full')
+_FULL.__file__ = str(SKILL / 'scripts/reader_full.py')
+exec(compile(Path(_FULL.__file__).read_bytes(), _FULL.__file__, 'exec'), _FULL.__dict__)
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
@@ -149,6 +155,65 @@ def load_inputs(args):
         if coverage.get('source_tco_model_digest') != 'sha256:' + digest(json.dumps(data['model'], ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')):
             raise ValueError('Coverage 的模型摘要漂移')
     return workspace, paths, data
+
+
+def load_ecq(workspace, paths, data, assessment):
+    if 'model' not in data:
+        raise ValueError('KYM-only 不接受 --ecq；E/C/Q 仅用于 TCO 能力阅读')
+    assessment_path = local_path(workspace, assessment)
+    engine_path = local_path(SKILL, 'scripts/ecq.py', must_exist=False)
+    if not engine_path.is_file():
+        raise ValueError('本 Skill 未携带 ECQ 引擎；请使用同包 build-tco-coverage 的 reader，不从全局 Skill 补载')
+    module = types.ModuleType('_reader_ecq')
+    module.__file__ = str(engine_path)
+    try:
+        exec(compile(engine_path.read_bytes(), str(engine_path), 'exec'), module.__dict__)
+    except ImportError as exc:
+        raise ValueError('可选 ECQ 路径缺少已声明依赖：' + exc.name) from exc
+    projection = module.evaluate(workspace, assessment)
+    if not isinstance(projection, dict) or projection.get('schema') != 'ecq.projection.v1' or projection.get('lifecycle') != 'candidate_not_approved':
+        raise ValueError('ECQ 返回的投影 schema 或候选边界不匹配')
+    if projection.get('product_id') != data['model']['product_id']:
+        raise ValueError('ECQ 与 reader 产品不一致')
+    consumed = {}
+    for binding in projection['bindings']:
+        base, value = binding.get('base'), binding.get('path')
+        if base not in {'workspace', 'skill'}:
+            raise ValueError('ECQ binding 必须显式声明 workspace 或 skill namespace')
+        target = local_path(workspace if base == 'workspace' else SKILL, value)
+        payload = target.read_bytes()
+        if digest(payload) != binding.get('sha256'):
+            raise ValueError('ECQ 消费来源摘要漂移：' + base + '/' + value)
+        identity = (base, value)
+        if identity in consumed and consumed[identity] != payload:
+            raise ValueError('ECQ 重复来源绑定冲突：' + value)
+        consumed[identity] = payload
+    mandatory = [('skill', 'scripts/ecq.py'), ('skill', 'references/ecq-assessment.schema.json'), ('workspace', assessment)]
+    if any(identity not in consumed for identity in mandatory):
+        raise ValueError('ECQ 未绑定当前引擎、schema 或 assessment 原字节')
+    if consumed[('workspace', assessment)] != assessment_path.read_bytes():
+        raise ValueError('ECQ assessment 在计算后漂移')
+    for context in projection.get('source_contexts', []):
+        binding = context['assessment']
+        if binding.get('base') != 'workspace' or ('workspace', binding.get('path')) not in consumed or digest(consumed[('workspace', binding['path'])]) != binding.get('sha256'):
+            raise ValueError('ECQ 快照来源上下文没有绑定正确 assessment 原字节')
+    sources = {source['id']: source for source in projection['sources']}
+    for kind, field in [('model', 'current_model_source_id'), ('coverage', 'current_coverage_source_id')]:
+        source_id = projection['scope'].get(field)
+        source = sources.get(source_id, {})
+        if kind not in data:
+            disconnected = (kind == 'coverage' and source.get('kind') == 'coverage'
+                            and source.get('availability') == 'not_connected' and source.get('binding') is None)
+            if source_id is not None and not disconnected:
+                raise ValueError('ECQ 绑定了 reader 未提供的当前 ' + kind)
+            continue
+        binding = source.get('binding') or {}
+        identity = ('workspace', binding.get('path'))
+        if source.get('kind') != kind or identity not in consumed or consumed[identity] != data['_input_bytes'][kind]:
+            raise ValueError('ECQ 当前 ' + kind + ' 与 reader 实际输入原字节不一致')
+    data['_ecq'] = projection
+    data['_ecq_bytes'] = consumed
+    data['_ecq_assessment'] = assessment
 
 
 def has_rule_statements(node):
@@ -313,7 +378,9 @@ def audit(workspace, paths, data):
             finding('UNMAPPED_MANDATORY', 'mandatory requirement 未映射：' + ', '.join(sorted(mandatory - mapped)), key)
     if detail['intake']['status'] != 'answered':
         finding('INTAKE_PENDING', '目的和范围含假设或待确认，阅读结果不等于人类回答', severity='warning')
-    return findings, nodes, capabilities, evidence_paths, records, tree, statements
+    result = findings, nodes, capabilities, evidence_paths, records, tree, statements
+    _FULL.audit(data, result, data.get('_require_full', False))
+    return result
 
 
 def items(values):
@@ -385,12 +452,341 @@ def capability_identity(data, nodes, records, key):
 
 def capability_gaps(detail, findings, key):
     gaps = [f['message'] for f in findings if f['subject_id'] == key and f['severity'] == 'error']
-    gaps += [GAPS[r['gap_kind']] for r in detail['capabilities'].get(key, {}).get('assessment', []) if r['gap_kind'] != 'none']
-    return '；'.join(gaps) or '未报告主要缺口（仍须核对证据适用性）'
+    gaps += [('尚未做覆盖评估' if r['gap_kind'] == 'not_evaluated' else GAPS[r['gap_kind']]) for r in detail['capabilities'].get(key, {}).get('assessment', []) if r['gap_kind'] != 'none']
+    return '；'.join(dict.fromkeys(gaps)) or '未报告主要缺口（仍须核对证据适用性）'
+
+
+def coverage_note(data, records, key):
+    if 'model' not in data:
+        return '本页只解释 KYM 业务规则，不评定 TCO 能力的覆盖状态。'
+    coverage = data.get('coverage')
+    if '_ecq' in data:
+        if coverage is None:
+            return '原 Coverage 文件未提供；E/C/Q 使用另行绑定的资料，不补写原 Coverage。'
+        if coverage.get('coverage_mode') == 'not_evaluated':
+            return '原 Coverage 文件标记为 not_evaluated（未评估）；这只说明原文件，E/C/Q 的独立已知资料仍保留。'
+        if key not in records:
+            return '原 Coverage 文件没有本 M 的记录；E/C/Q 另按其绑定资料呈现，不替原文件补造记录。'
+        return ''
+    if coverage is None:
+        return '本次未提供 Coverage 文件，尚不能判断本 M 已实现、运行或验证到哪一步。'
+    if coverage.get('coverage_mode') == 'not_evaluated':
+        return '本次 Coverage 文件明确标记为 not_evaluated（未评估）；尚不能判断本 M 已实现、运行或验证到哪一步。'
+    if key not in records:
+        return '已提供 Coverage 文件，但缺少本 M 的评估记录；本 M 的当前进展未知，不能据此认定未实现或已覆盖。'
+    return ''
+
+
+def assessment_context(data, records, key, rows):
+    """只提取同一 M 内逐字相同、出现多次的说明，不跨 M 合并。"""
+    shared = {}
+    for field in ('evidence_summary', 'applicability'):
+        values = [row[field] for row in rows]
+        label = '共用证据说明' if field == 'evidence_summary' else '共用适用边界'
+        shared[field] = {value: label + str(index + 1) for index, value in enumerate(dict.fromkeys(value for value in values if values.count(value) > 1))}
+    evaluated = 'coverage' in data and data['coverage'].get('coverage_mode') != 'not_evaluated'
+    states = {r.get('requirement_id'): r.get('coverage_state', 'not_evaluated') for r in records.get(key, {}).get('requirement_coverage', [])}
+    return shared, evaluated, states
+
+
+def assessment_mapping(row, evaluated, states):
+    if not row['requirement_ids']:
+        return '缺少要求对应，不能视为已覆盖。' if evaluated else ''
+    if not evaluated:
+        return '要求对应（尚未评估）：' + '；'.join(req + ('（候选原值：' + str(states[req]) + '）' if req in states else '') for req in row['requirement_ids'])
+    return '候选逐要求状态：' + '；'.join(req + ': ' + str(states.get(req, '缺少本要求的评估记录')) for req in row['requirement_ids'])
+
+
+def rule_mapping(tree, projection):
+    source = projection['kym_node_id']
+    title = tree.get(source, {}).get('title', '来源业务规则待确认')
+    relation = {'direct': '直接对应', 'split': '拆分对应', 'merge': '合并对应'}[projection['relation']]
+    return '对应 KYM 业务规则：' + title + '（' + relation + '）'
+
+
+def source_text(payload, name):
+    if payload.startswith((b'%PDF-', b'%!PS', b'PK\x03\x04', b'GIF87a', b'GIF89a', b'\x89PNG', b'\xff\xd8\xff', b'RIFF', b'\x7fELF')):
+        return None
+    mime = mimetypes.guess_type(name)[0]
+    if mime and not (mime.startswith('text/') or mime in {'application/json', 'application/xml', 'application/javascript', 'image/svg+xml'} or mime.endswith('+json') or mime.endswith('+xml')):
+        return None
+    try:
+        text = payload.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        return None
+    if any(ord(ch) < 32 and ch not in '\r\n\t' for ch in text):
+        return None
+    return text
+
+
+def source_page(name, text, raw_relative, payload):
+    """固定风格的纯文本阅读页；源内容只进入转义后的 pre。"""
+    css = (SKILL / 'assets/reader.css').read_text(encoding='utf-8')
+    return ('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'
+            '<title>' + esc(name) + ' · 来源阅读</title><style>' + css + '</style></head><body><header><h1>来源阅读</h1><p>' + esc(name) + '</p></header><main><section>'
+            '<p>以下按纯文本展示，保留原内容；阅读页不执行来源中的代码。</p><p>原文件摘要：sha256:' + digest(payload) + '</p><p><a href="' + esc(raw_relative) + '" download>下载原文件（保留原始字节）</a></p>'
+            '<pre style="white-space:pre-wrap;overflow-wrap:anywhere">' + esc(text) + '</pre></section></main></body></html>')
+
+
+ECQ_LABELS = {
+    'acceptance_blocked': '有验收阻断', 'insufficient_evidence': '证据不足',
+    'pending_verification': '待验证', 'no_blocker_observed': '本范围未发现阻断',
+    'observed_pass': '实际观察通过', 'reported_pass': '仅报告通过', 'failed': '失败',
+    'blocked': '受阻', 'not_run': '未运行', 'unknown': '未知',
+    'not_evaluated': '未评估', 'met': '已达目标', 'gaps': '仍有缺口', 'stale': '原证据当前不适用',
+    'design': '设计', 'implementation': '实现', 'verification': '验证', 'integration': '集成',
+    'evidence': '补证据', 'done': '已完成', 'doing': '进行中',
+    'completed': '已完成', 'forward': '推进', 'regression': '回归', 'rework': '返工',
+    'design_only': '已有设计', 'code_bound': '已有代码绑定', 'test_bound': '已有测试绑定',
+    'bounded_runtime': '有限范围真实运行', 'contract_defined': '合同已定义',
+    'implemented': '已实现', 'maintained': '持续维护', 'producer_checked': '作者已检查',
+    'independently_validated': '已经独立验证',
+    'complete': '完整', 'partial': '部分', 'connected': '已接入', 'unavailable': '未接入',
+}
+
+
+def ecq_value(value):
+    if value is None:
+        return '未知'
+    if value is True:
+        return '是'
+    if value is False:
+        return '否'
+    if isinstance(value, (dict, list)):
+        return _FULL.text(value)
+    return str(value)
+
+
+def ecq_label(value):
+    return ECQ_LABELS.get(value, value) if isinstance(value, str) else ecq_value(value)
+
+
+def ecq_title(value, fallback):
+    if isinstance(value, dict):
+        return value.get('title') or value.get('text') or value.get('label') or fallback
+    return value if isinstance(value, str) else fallback
+
+
+def ecq_c_text(metric):
+    return metric.get('display', {}).get('text', '未知')
+
+
+def ecq_q_text(metric):
+    observed = metric.get('observed')
+    if observed is not None and observed[1] == 0:
+        return '本范围尚无可计数的关键验收要求，不输出验证比例'
+    return (' / '.join(str(v) for v in observed) + ' 条关键要求已获适用观察验证' if observed is not None else '关键要求验证情况未知')
+
+
+def ecq_writer(markdown):
+    """两种阅读输出使用同一业务投影与同一段落/表格顺序。"""
+    out = []
+    fmt = md_text if markdown else esc
+    def p(value):
+        out.append(fmt(value) + '\n' if markdown else '<p>' + fmt(value) + '</p>')
+    def heading(value, level=4):
+        out.append('#' * level + ' ' + fmt(value) + '\n' if markdown else '<h' + str(level) + '>' + fmt(value) + '</h' + str(level) + '>')
+    def table(headers, rows, role=None, row_ids=None):
+        if markdown:
+            out.append('| ' + ' | '.join(fmt(v) for v in headers) + ' |\n| ' + ' | '.join('---' for _ in headers) + ' |')
+            out.extend('| ' + ' | '.join(fmt(v) for v in row) + ' |' for row in rows)
+            out.append('')
+        else:
+            out.append('<div class="table-scroll"><table' + (' data-ecq-table="' + esc(role) + '"' if role else '') + '><thead><tr>' + ''.join('<th>' + fmt(v) + '</th>' for v in headers) + '</tr></thead><tbody>' + ''.join('<tr' + (' data-requirement-id="' + esc(row_ids[index]) + '"' if row_ids is not None else '') + '>' + ''.join('<td>' + fmt(v) + '</td>' for v in row) + '</tr>' for index, row in enumerate(rows)) + '</tbody></table></div>')
+    def details(title, value):
+        out.append('<details><summary>' + esc(title) + '</summary>')
+        def rows(item, prefix=''):
+            if isinstance(item, dict):
+                return [row for k, v in item.items() for row in rows(v, prefix + (' / ' if prefix else '') + str(k))]
+            if isinstance(item, list):
+                return [row for i, v in enumerate(item) for row in rows(v, prefix + ' · ' + str(i + 1))] or [[prefix, '未列条目']]
+            return [[prefix, ecq_value(item)]]
+        table(['字段', '来源值'], rows(value))
+        out.append('</details>\n')
+    def link(label, href):
+        out.append('[' + fmt(label) + '](' + href + ')\n' if markdown else '<p><a href="' + esc(href) + '">' + esc(label) + '</a></p>')
+    return out, p, heading, table, details, link
+
+
+def ecq_reference(projection, ref, link, links, label='查看来源', snapshot_id=None):
+    if not isinstance(ref, dict) or not ref.get('source_id'):
+        return
+    snapshot_id = snapshot_id or projection['snapshot_id']
+    context = next((c for c in projection.get('source_contexts', []) if c['snapshot_id'] == snapshot_id), None)
+    sources = context['sources'] if context else (projection['sources'] if snapshot_id == projection['snapshot_id'] else [])
+    source = next((s for s in sources if s['id'] == ref['source_id']), None)
+    binding = (source or {}).get('binding') or {}
+    href = links.get(('ecq', 'workspace', binding.get('path')))
+    if href:
+        link(label + ' · ' + ref['source_id'] + ' ' + ref.get('pointer', ''), href)
+
+
+def ecq_capability(data, key, links, markdown=False, tps=(), historical=False):
+    out, p, heading, table, details, link = ecq_writer(markdown)
+    projection = data.get('_ecq')
+    cap = next((c for c in (projection or {}).get('capabilities', []) if c['m1_id'] == key), None)
+    if projection:
+        scope = projection['scope']
+        p('E/C/Q 统计范围：' + '、'.join(scope['tp_ids']) + '；截止：' + projection['cutoff'] + '。切换目标筛选不会重新计算。')
+        if tps and not set(tps).issubset(scope['tp_ids']):
+            p('当前展示目标未纳入这份 E/C/Q 统计范围；以下仅供查看原统计范围资料，不能作为当前目标达成结论。')
+    if not markdown:
+        out.append('<div class="ecq-cards">')
+    for axis, title in [('E', 'E · 已做工作'), ('C', 'C · 功能实现覆盖'), ('Q', 'Q · 验证与问题')]:
+        if not markdown:
+            out.append('<article class="ecq-card" data-ecq-axis="' + axis + '">')
+        heading(title)
+        if not cap:
+            p({'E': '真实 Session 与贡献尚未整理，数量未知。', 'C': '功能实现程度未知，尚无本范围的可信估算。', 'Q': '关键要求验证及问题资料尚未整理。'}[axis])
+        elif axis == 'E':
+            metric = cap['E']
+            p(('实际参与的 Session 数：' + str(metric['count'])) if metric['count'] is not None else '真实 Session 历史未完整接入，数量未知；不把计划当成执行。')
+            p('Session 历史完整性：' + ecq_label(metric.get('history_completeness', 'unknown')) + '；部分或未知时，上述数量只代表已接入的已知贡献。')
+            p('已完成：' + ecq_value(metric.get('completed_session_count')) + '；进行中：' + ecq_value(metric.get('doing_session_count')) + '；完成分类未知：' + ecq_value(metric.get('classification_unknown_count')))
+            p('贡献事件：' + ecq_value(metric.get('event_count')) + '；同一 Session 的多项贡献不会增加 Session 数。')
+            p('贡献结果：' + '；'.join(ecq_label(name) + ' ' + str(count) for name, count in metric['outcome_counts'].items()))
+        elif axis == 'C':
+            metric = cap['C']
+            p('当前 C 不适用：本 M 已移出当前范围。' if historical else ecq_c_text(metric))
+            p(metric['scope_label'] + '；原业务要求数：' + ecq_value(metric['requirement_count']) + '；权重分母：' + ecq_value(metric['denominator_weight']) + '；未知要求：' + ecq_value(metric['unknown_count']))
+            core_text = metric['display'].get('core_text')
+            if core_text and core_text != ecq_c_text(metric):
+                p(core_text)
+            elif not core_text:
+                p('核心行为：' + {'available': '已具备', 'unavailable': '未具备', 'unknown': '待确认'}.get(metric['core_behavior'], '待确认'))
+            if not metric['whole_M_claim_allowed']:
+                p('只描述已整理范围，不能代表整个 M。')
+            details('C 数值区间与完整口径', {'区间原显示': metric['display']['detail_text'], '原始指标': metric})
+        else:
+            metric = cap['Q']
+            p(('历史质量资料，不作当前验收结论。' if historical else '') + ecq_q_text(metric))
+            p(ecq_label(metric['status']) + '；问题数：' + ecq_value(metric.get('issue_count')) + '。这是逐要求判断，不是综合质量分。')
+        if not markdown:
+            out.append('</article>')
+    if not markdown:
+        out.append('</div>')
+    if not cap:
+        p('尚未接入本 M 的 E/C/Q 评估；不从原 Coverage 状态推算比例或质量。')
+        return '\n'.join(out)
+    heading('实际 Session 与贡献时间线')
+    table(['Session', '工作类别', '当前分类', '原记录'], [[s['session_id'], ecq_label(s.get('category')), ecq_label(s.get('classification')), ecq_value(s.get('source_values'))] for s in cap['E']['sessions']])
+    for session in cap['E']['sessions']:
+        ecq_reference(projection, session.get('record_ref'), link, links, 'Session 原记录')
+    table(['Session', '贡献时间', '发生了什么', '结果'], [[event['session_id'], event['event'].get('observed_at', '未提供'), event['event'].get('summary', '未提供'), ecq_label(event['event'].get('outcome', 'unknown'))] for event in cap['E']['events']])
+    details('贡献事件、分类与技术来源详情', cap['E'])
+    heading('质量问题与主要缺口')
+    for issue in cap['Q'].get('issues', []):
+        p(_FULL.text(issue))
+    seen_gaps = set()
+    for condition in cap['Q'].get('conditions', []):
+        gap_text = _FULL.text(condition['gaps']) if condition.get('gaps') else ''
+        if gap_text and gap_text not in seen_gaps:
+            seen_gaps.add(gap_text)
+            p('待补证据（相同缺口共用此说明）：' + gap_text)
+    heading('推进前建议先做什么')
+    if not cap['next_step_ids']:
+        p('本次没有登记本 M 的候选动作；不自动创建或执行 Session。')
+    for step_id in cap['next_step_ids']:
+        step = next(step for step in projection['next_steps'] if step['id'] == step_id)
+        link(('候选 Session：' if step['kind'] == 'session' else '最小动作：') + step['title'], '#' + anchor('ecq-step/' + step_id))
+    return '\n'.join(out)
+
+
+def ecq_overview(data, links, markdown=False):
+    projection = data.get('_ecq')
+    if not projection:
+        return ''
+    out, p, heading, table, details, link = ecq_writer(markdown)
+    heading('E/C/Q 资料范围与历史', 2)
+    p('这份评估是候选阅读资料，不创建业务批准。截止：' + projection['cutoff'] + '；统计目标：' + '、'.join(projection['scope']['tp_ids']))
+    p('全范围实际 Session：' + ecq_value(projection['global']['E']['count']) + '；同一 Session 跨 M 只在全范围计一次。')
+    heading('来源已有的未执行计划：不计入已做工作', 3)
+    table(['计划 Session', '原工作类别', '原计划状态'], [[s['session_id'], ecq_label(s.get('category')), ecq_label(s['source_values'].get('status'))] for s in projection['global']['E'].get('planned_sessions', [])])
+    for session in projection['global']['E'].get('planned_sessions', []):
+        ecq_reference(projection, session.get('record_ref'), link, links, '未执行计划原记录')
+    p('全范围 C：' + ecq_c_text(projection['global']['C']) + '；权重分母：' + ecq_value(projection['global']['C']['denominator_weight']))
+    target = projection.get('tp_target', 'unknown')
+    p('目标门槛是否达成：' + (ecq_label(target) if isinstance(target, str) else '见绑定目标报告原文') + '。应查看目标报告，不能从 C 功能份额推定目标达成。')
+    table(['资料', '是否接入', '完整性', '抽取可信'], [[s['id'], ecq_label(s['availability']), ecq_label(s['completeness']), ecq_value(s.get('trusted'))] for s in projection['sources']])
+    details('范围、版本与警告详情', {'scope': projection['scope'], 'warnings': projection['warnings']})
+    for warning in projection['warnings']:
+        p('来源提醒：' + warning['message'])
+    table(['历史快照', '截止', '当时的 M', '全范围 C', '全范围实际 Session'], [[h['snapshot_id'], h['cutoff'], '、'.join(h['current_m1_ids']), ecq_c_text(h['global_C']), ecq_value(h['global_E']['count'])] for h in projection['history']])
+    if isinstance(target, dict):
+        table(['目标', '原报告状态'], [[pid, ecq_label(row.get('status', 'unknown'))] for pid, row in target.items()])
+    for history in projection['history']:
+        link('查看历史快照及其当时来源 · ' + history['snapshot_id'], '#' + anchor('ecq-context/' + history['snapshot_id']))
+    for report in projection.get('source_validation_reports', []):
+        heading('原工具检查报告：保留原结论', 3)
+        original = report['report'] if isinstance(report['report'], dict) else {}
+        summary = []
+        for key, label in [('status', '检查状态'), ('result', '检查结果'), ('exit_code', '退出码')]:
+            if key in original and not isinstance(original[key], (dict, list)):
+                value = original[key]
+                displayed = str(ecq_label(value))
+                if isinstance(value, str) and displayed != value:
+                    displayed += ' (' + value + ')'
+                summary.append([label, displayed])
+        if summary:
+            table(['原报告项目', '原报告值'], summary)
+        p('完整结论、逐项结果和技术字段保留在原报告中；本页只读展示，不创建新的运行或批准。')
+        binding = report.get('binding') or {}
+        href = links.get(('ecq', 'workspace', binding.get('path')))
+        if href:
+            link('查看原工具报告原文', href)
+    historical = [c for c in projection['capabilities'] if not c['current']]
+    if historical:
+        heading('历史 M：不进入当前唯一能力与 C 分母', 2)
+        for cap in historical:
+            heading(ecq_title(cap.get('definition'), cap['m1_id']), 3)
+            out.append(ecq_capability(data, cap['m1_id'], links, markdown, historical=True))
+    heading('候选下一步：共享卡只保存一份', 2)
+    p('先核对和复用已有证据；这些是建议，不触发执行、不进入 E，也不承诺 C 增长。')
+    for step in projection['next_steps']:
+        out.append('<a id="' + anchor('ecq-step/' + step['id']) + '"></a>')
+        heading(('候选 Session：' if step['kind'] == 'session' else '最小动作：') + step['title'], 3)
+        p('建议理由：' + step['reason'])
+        for label, field in [('预期产出', 'expected_outputs'), ('怎样算完成', 'acceptance_criteria'), ('依赖候选', 'dependencies'), ('外部阻断', 'blockers')]:
+            p(label + '：' + ('；'.join(step[field]) or '未登记'))
+        p('投入估算：' + ecq_value(step['effort']))
+        for ref in step['input_refs']:
+            ecq_reference(projection, ref, link, links, '建议依据')
+        details('共享候选的技术对应', {'id': step['id'], 'mapping_ids': step['mapping_ids']})
+    heading('E/C/Q 来源、规则与核对材料', 2)
+    for context in projection.get('source_contexts', []):
+        out.append('<a id="' + anchor('ecq-context/' + context['snapshot_id']) + '"></a>')
+        out.append('<details><summary>' + esc('来源快照 · ' + context['snapshot_id']) + '</summary>')
+        binding = context['assessment']
+        link('该快照的评估伴随原文', links[('ecq', binding['base'], binding['path'])])
+        for source in context['sources']:
+            binding = source.get('binding') or {}
+            href = links.get(('ecq', 'workspace', binding.get('path')))
+            if href:
+                link('该快照来源 · ' + source['id'], href)
+        out.append('</details>\n')
+    for binding in projection['bindings']:
+        href = links[('ecq', binding['base'], binding['path'])]
+        link(binding['base'] + '/' + binding['path'], href)
+        p('sha256:' + binding['sha256'])
+    link('评估伴随原文', links[('ecq', 'workspace', data['_ecq_assessment'])])
+    link('引擎投影原文', links[('generated', 'ecq')])
+    return '\n'.join(out)
+
+
+def target_contract(profile, markdown=False):
+    out, p, heading, table, details, _ = ecq_writer(markdown)
+    out.append('<details><summary>本目标的门槛与原字段详情</summary>')
+    p('目标门槛与功能实现份额 C 分开；更严的运行目标不代表功能实现倒退，也不代表目标已达成。')
+    goals = {'contract': '合同目标', 'implementation': '实现目标', 'runtime': '运行目标'}
+    table(['目标', '覆盖门槛', '生命周期门槛', '验证门槛'], [[goals.get(g['id'], g['id']), ecq_label(g.get('minimum_coverage_state', '未设置')), ecq_label(g.get('minimum_lifecycle_state', '未设置')), ecq_label(g.get('required_validation_posture', '未设置'))] for g in profile.get('coverage_goals', [])])
+    details('目标原始要求与适用范围', profile)
+    out.append('</details>\n')
+    return '\n'.join(out)
 
 
 def markdown_page(data, report, audited, links):
-    findings, nodes, caps, _, records, _, statements = audited
+    findings, nodes, caps, _, records, tree, statements = audited
     detail, kym, model = data['detail'], data['kym'], data.get('model')
     profiles, membership, group_for = reader_structure(data, nodes, caps)
     out = ['# ' + md_text(kym.get('product_id', '候选')) + ' · ' + ('TCO' if model else 'KYM') + ' 详细阅读',
@@ -407,6 +803,7 @@ def markdown_page(data, report, audited, links):
     add('## 阅读质量与证据边界\n')
     add('错误 ' + str(report['error_count']) + '；提醒 ' + str(report['warning_count']) + '。伴随检查不替代候选包 schema/语义门禁。\n')
     bullets([f['code'] + ' · ' + f['subject_id'] + ' · ' + f['message'] for f in findings], '未发现伴随结构错误；业务语义仍须独立审查。')
+    add(_FULL.readings(data, markdown=True, links=links))
     add('## 目标 TP → 分组 Mc → 共享能力 M\n')
     add('TP 数 ' + str(len(profiles)) + '；唯一 M/规则数 ' + str(len(caps)) + '。Mc 只分组，不作为覆盖分母；此处不计算覆盖率。\n')
     if not profiles:
@@ -423,16 +820,22 @@ def markdown_page(data, report, audited, links):
         add('共享 M/规则：' + md_text(key) + '；定义摘要：' + capability_identity(data, nodes, records, key) + '\n')
         add('本 M：' + md_text(capability_gaps(detail, findings, key)) + '\n')
         add('分组：' + md_text(group_for(key)) + '\n')
+        add(_FULL.readings(data, markdown=True, links=links, select=('model' if model else 'kym', key)))
         if model:
-            add('**Topic（主题）：** ' + md_text(node.get('topic', '未提供')) + '\n')
+            add(ecq_capability(data, key, links, markdown=True, tps=[namespace.split('/')[1]] if namespace.startswith('tp/') else []))
+        if model:
+            add('**Topic（主题）：** ' + md_text(_FULL.text(node.get('topic', '未提供'))) + '\n')
             add('**Scope（范围）：**\n')
             for label, values in scope_sections(node):
                 add(label + '：\n')
                 bullets(values)
-            add('**Purpose（目的）：** ' + md_text(node.get('purpose', '未提供')) + '\n')
+            add('**Purpose（目的）：** ' + md_text(_FULL.text(node.get('purpose', '未提供'))) + '\n')
             for projection in detail['projections']:
                 if key in projection['tco_node_ids']:
-                    add('KYM 追溯：' + md_text(projection['kym_node_id']) + ' → ' + md_text(projection['relation']) + '；理由：' + md_text(projection['rationale']) + '\n')
+                    add(md_text(rule_mapping(tree, projection)) + '\n')
+                    add('<details><summary>对应关系详情</summary>\n')
+                    add('来源节点 ID：' + md_text(projection['kym_node_id']) + '；关系原值：' + md_text(projection['relation']) + '；说明：' + md_text(projection['rationale']) + '\n')
+                    add('</details>\n')
         else:
             add('#' * (level + 1) + ' 来源业务规则、TSP 子树与支持状态\n')
             def source_lines(branch, depth=0):
@@ -444,7 +847,12 @@ def markdown_page(data, report, audited, links):
                     source_lines(child, depth + 1)
             source_lines(node)
             add('')
+        if model:
+            add('<details><summary>原 Coverage 状态与字段详情</summary>\n')
         add('#' * (level + 1) + ' 候选 Coverage 原始状态\n')
+        note = coverage_note(data, records, key)
+        if note:
+            add(md_text(note) + '\n')
         record = records.get(key)
         if record:
             add('| 独立状态轴 | 候选原始值 |\n| --- | --- |')
@@ -459,59 +867,37 @@ def markdown_page(data, report, audited, links):
                     add('| ' + md_text(row['scope']) + ' | ' + md_text(row['coverage_state']) + ' | ' + md_text(row['notes']) + ' |')
                 add('\n旧版 missing_scope_items（原始缺失范围）：\n')
                 bullets(record.get('missing_scope_items', []), '来源记录未列缺失范围；不能据此批准覆盖。')
-        else:
-            add('not_evaluated（未评估）：未提供本 M 的 Coverage；KYM 不赋覆盖状态。\n')
+        if model:
+            add('</details>\n')
         cap = detail['capabilities'].get(key)
         if not cap:
             add('详细内容缺失；未评估，不能推导已覆盖。\n')
             return
         add('#' * (level + 1) + ' 输入 Input\n')
         bullets(cap['inputs'])
-        add('#' * (level + 1) + ' 流程图（与 Process 同源）\n')
-        add('```mermaid\nflowchart TD')
-        for step in cap['process']:
-            node_id = 'n' + anchor(view_key + '/' + step['id'])[2:]
-            add('  ' + node_id + '["' + mermaid_label(step['label']) + '"]')
-            for edge in step['transitions']:
-                add('  ' + node_id + ' -->|"' + mermaid_label(edge['condition']) + '"| n' + anchor(view_key + '/' + edge['to'])[2:])
-        add('```\n')
-        add('#' * (level + 1) + ' 处理 Process\n')
-        for index, step in enumerate(cap['process'], 1):
-            add(str(index) + '. <a id="' + anchor(view_key + '/' + step['id']) + '"></a> **' + md_text(step['label']) + '**：' + md_text(step['description']))
-            if step['transitions']:
-                out.extend('   - ' + md_text(edge['condition'] + ' → ' + edge['to']) for edge in step['transitions'])
-            else:
-                add('   - 终止步骤，无后继转移。')
-        add('')
+        add('#' * (level + 1) + ' 流程图与详细步骤\n')
+        add(_FULL.flow(cap, view_key, markdown=True))
         add('#' * (level + 1) + ' 输出 Output\n')
         bullets(cap['outputs'])
         add('#' * (level + 1) + ' 代表例子\n')
         bullets(cap['examples'])
-        for index, diagram in enumerate(cap['diagrams']):
-            add('#' * (level + 1) + ' ' + md_text(diagram['title']) + ('（模型图）' if diagram['kind'] == 'modeling' else '（界面区块图）') + '\n')
-            add('```mermaid\nflowchart TD')
-            serial = 0
-            for line in diagram['content'].splitlines():
-                if not line.strip():
-                    continue
-                chunks = line.split('->') if diagram['kind'] == 'modeling' else [line]
-                ids = []
-                for chunk in chunks:
-                    diagram_id = 'd' + anchor(view_key + '/diagram/' + str(index) + '/' + str(serial))[2:]
-                    serial += 1
-                    add('  ' + diagram_id + '["' + mermaid_label(chunk.strip()) + '"]')
-                    ids.append(diagram_id)
-                for left, right in zip(ids, ids[1:]):
-                    add('  ' + left + ' --> ' + right)
-            add('```\n')
+        for diagram in cap['diagrams']:
+            add(('（模型图）' if diagram['kind'] == 'modeling' else '（界面区块图）') + diagram_html(diagram))
         add('#' * (level + 1) + ' 本 M 逐行为判断\n')
-        add('主要下一步分类不覆盖全部轴；结合适用边界与证据说明保留其他同时存在的缺口。建议动作不产生调度、测试义务或状态提升。\n')
+        add('下方建议先说明最优先的一步；其余待满足条件仍列在状态与证据中。怎样算完成，见每行验收条件。\n')
+        shared, evaluated, states = assessment_context(data, records, key, cap['assessment'])
+        if not evaluated:
+            add('本次尚未进行逐要求覆盖评估，不能据此认定已覆盖。下表保留各行为的证据、建议与验收条件。\n')
+        for field, values in shared.items():
+            for value, label in values.items():
+                add('**' + label + '：** ' + md_text(value) + '\n')
         add('| 应证明的行为 / requirement | 已有证据与适用边界 | 主要缺口 | 最小建议动作 / 验收判据 |\n| --- | --- | --- | --- |')
-        states = {r.get('requirement_id'): r.get('coverage_state', 'not_evaluated') for r in records.get(key, {}).get('requirement_coverage', [])}
         for row in cap['assessment']:
-            row_states = '；'.join(req + ': ' + str(states.get(req, 'not_evaluated（未评估）')) for req in row['requirement_ids']) or 'unmapped（未映射）'
+            mapping = assessment_mapping(row, evaluated, states)
             refs = ['[' + md_text(ref) + '](' + links[ref] + ')' if ref in links else md_text(ref) for ref in row['evidence_refs']]
-            add('| ' + md_text(row['behavior']) + '<br>' + md_text(', '.join(row['requirement_ids']) or 'unmapped（未映射，不能视为已覆盖）') + ' | ' + md_text(row['evidence_summary']) + '<br>适用边界：' + md_text(row['applicability']) + '<br>候选逐 requirement 状态：' + md_text(row_states) + '<br>' + '<br>'.join(refs) + ' | ' + md_text(GAPS[row['gap_kind']]) + ' | ' + md_text(row['next_action']) + '<br>验收：' + md_text(row['acceptance']) + ' |')
+            evidence = shared['evidence_summary'].get(row['evidence_summary'])
+            applicability = shared['applicability'].get(row['applicability'])
+            add('| ' + md_text(row['behavior']) + ('<br>' + md_text(mapping) if mapping else '') + ' | ' + md_text('见' + evidence if evidence else row['evidence_summary']) + '<br>适用边界：' + md_text('见' + applicability if applicability else row['applicability']) + '<br>' + '<br>'.join(refs) + ' | ' + md_text(GAPS[row['gap_kind']]) + ' | ' + md_text(row['next_action']) + '<br>验收：' + md_text(row['acceptance']) + ' |')
         add('')
         add('#' * (level + 1) + ' 本 M 业务问题\n')
         bullets(cap['questions'], '本 M 未记录业务问题。')
@@ -519,6 +905,8 @@ def markdown_page(data, report, audited, links):
         add('### ' + md_text(profile['label']) + '\n')
         add(md_text(profile.get('objective', profile.get('description', ''))) + '\n')
         add('声明上限：' + md_text(profile.get('claim_ceiling', '未提供')) + '\n')
+        if model:
+            add(target_contract(profile, markdown=True))
         groups = {}
         for key in membership[profile['id']]:
             groups.setdefault(group_for(key), []).append(key)
@@ -535,6 +923,7 @@ def markdown_page(data, report, audited, links):
             render_capability(key, 'unassigned', 3)
     add('## 全局问题（不归入任一 TP/M）\n')
     bullets(detail['global_questions'] + [q['summary'] for q in kym.get('unresolved_questions', []) if q.get('status') == 'open'], '未记录全局问题。')
+    add(ecq_overview(data, links, markdown=True))
     add('## 建议目标切片（候选，未写入 canonical TP）\n')
     for profile in detail['intake']['proposed_profiles']:
         add('### ' + md_text(profile['label']) + '\n')
@@ -544,12 +933,12 @@ def markdown_page(data, report, audited, links):
     add(md_text(VERSION) + '；模板摘要：' + report['template_sha256'] + '\n')
     for key, binding in detail['bindings'].items():
         add('- [' + md_text(key + ': ' + binding['path']) + '](' + links[binding['path']] + ') · sha256:' + binding['sha256'])
-    add('\n详细伴随：[reader-detail.json](sources/reader-detail.json)；检查：[reader-report.json](reader-report.json)。\n')
+    add('\n详细伴随：[reader-detail.json](' + links[('generated', 'detail')] + ')；检查：[reader-report.json](' + links[('generated', 'report')] + ')。\n')
     return '\n'.join(out)
 
 
 def render_page(data, report, audited, links):
-    findings, nodes, caps, _, records, _, statements = audited
+    findings, nodes, caps, _, records, tree, statements = audited
     detail, kym, model = data['detail'], data['kym'], data.get('model')
     profiles, membership, group_for = reader_structure(data, nodes, caps)
     css = (SKILL / 'assets/reader.css').read_text(encoding='utf-8')
@@ -563,6 +952,7 @@ def render_page(data, report, audited, links):
     intake = detail['intake']
     add('<section><h2>阅读目的与范围</h2><p>' + esc(intake['purpose']) + '</p><p>读者：' + esc(intake['audience']) + '；模式：' + esc(intake['mode']) + '；回答状态：' + esc(intake['status']) + '（answered=已回答；assumed=假设；pending=待确认）。</p><h3>假设</h3>' + items(intake['assumptions']) + '</section>')
     add('<section><h2>阅读质量与证据边界</h2><p>错误 ' + str(report['error_count']) + '；提醒 ' + str(report['warning_count']) + '。伴随检查不替代候选包 schema/语义门禁。</p>' + (items([f['code'] + ' · ' + f['subject_id'] + ' · ' + f['message'] for f in findings]) if findings else '<p>未发现伴随结构错误；业务语义仍须独立审查。</p>') + '</section>')
+    add(_FULL.readings(data, links=links))
     add('<section><h2>查找与筛选</h2><label>全文搜索 <input id="search" type="search" placeholder="能力、行为、证据"></label><label>目标 TP <select id="tp-filter"><option value="">全部目标</option>' + ''.join('<option value="' + esc(p['id']) + '">' + esc(p['label']) + '</option>' for p in profiles) + '</select></label><label>能力 M <select id="m-filter"><option value="">全部能力</option>' + ''.join('<option value="' + esc(k) + '">' + esc(n.get('title', k)) + '</option>' for k, n in sorted(caps.items())) + '</select></label><button id="expand" type="button">展开当前能力</button><p id="filter-count" aria-live="polite"></p></section>')
     add('<section><h2>目标 TP → 分组 Mc → 共享能力 M</h2><p>TP 数 ' + str(len(profiles)) + '；唯一 M/规则数 ' + str(len(caps)) + '。Mc 只分组，不作为覆盖分母；此处不计算覆盖率。</p>')
     if not profiles:
@@ -575,18 +965,26 @@ def render_page(data, report, audited, links):
         view_key = namespace + '/' + key
         cap = detail['capabilities'].get(key)
         add('<details class="capability" id="' + anchor(view_key) + '" data-m="' + esc(key) + '" data-tps="' + esc(json.dumps(tps, ensure_ascii=False)) + '" data-context="' + esc(namespace) + '" data-definition-sha256="' + capability_identity(data, nodes, records, key) + '"><summary>' + esc(node.get('title', key)) + ' · ' + esc(key) + '</summary><p>分组：' + esc(group_for(key)) + '</p>')
+        add(_FULL.readings(data, links=links, select=('model' if model else 'kym', key)))
         add('<p class="local-gaps">本 M：' + esc(capability_gaps(detail, findings, key)) + '</p>')
         if model:
-            add('<dl><dt>Topic（主题）</dt><dd>' + esc(node.get('topic', '未提供')) + '</dd><dt>Scope（范围）</dt><dd>' + ''.join('<h4>' + esc(label) + '</h4>' + items(values) for label, values in scope_sections(node)) + '</dd><dt>Purpose（目的）</dt><dd>' + esc(node.get('purpose', '未提供')) + '</dd></dl>')
+            add(ecq_capability(data, key, links, tps=tps))
+        if model:
+            add('<dl><dt>Topic（主题）</dt><dd>' + esc(_FULL.text(node.get('topic', '未提供'))) + '</dd><dt>Scope（范围）</dt><dd>' + ''.join('<h4>' + esc(label) + '</h4>' + items(values) for label, values in scope_sections(node)) + '</dd><dt>Purpose（目的）</dt><dd>' + esc(_FULL.text(node.get('purpose', '未提供'))) + '</dd></dl>')
             for mapping in detail['projections']:
                 if key in mapping['tco_node_ids']:
-                    add('<p>KYM 追溯：' + esc(mapping['kym_node_id']) + ' → ' + esc(mapping['relation']) + '；理由：' + esc(mapping['rationale']) + '</p>')
+                    add('<p>' + esc(rule_mapping(tree, mapping)) + '</p><details><summary>对应关系详情</summary><p>来源节点 ID：' + esc(mapping['kym_node_id']) + '；关系原值：' + esc(mapping['relation']) + '；说明：' + esc(mapping['rationale']) + '</p></details>')
         else:
             def source_tree(branch):
                 texts = [statements[r]['text'] + ' · ' + statements[r].get('support_status', '未提供') for r in branch.get('statement_refs', []) if r in statements]
                 return '<details open><summary>' + esc(branch.get('title', branch['id'])) + '</summary>' + (items(texts) if texts else '') + ''.join(source_tree(child) for child in branch.get('children', [])) + '</details>'
             add('<h3>来源业务规则、TSP 子树与支持状态</h3>' + source_tree(node))
+        if model:
+            add('<details><summary>原 Coverage 状态与字段详情</summary>')
         add('<h3>候选 Coverage 原始状态</h3>')
+        note = coverage_note(data, records, key)
+        if note:
+            add('<p class="notice">' + esc(note) + '</p>')
         record = records.get(key)
         if record:
             fields = [f for f in ['coverage_state', 'evidence_peak_state', 'effective_state', 'claim_state', 'capability_lifecycle_state', 'validation_posture', 'resolution_status', 'claim_ceiling'] if f in record]
@@ -594,31 +992,33 @@ def render_page(data, report, audited, links):
             if 'scope_coverage' in record or 'missing_scope_items' in record:
                 add('<h4>旧版 Scope Coverage（原始候选记录，不转换为 v4 requirement 或迁移状态）</h4><div class="table-scroll"><table><thead><tr><th>Scope 原文</th><th>候选覆盖状态</th><th>原始说明</th></tr></thead><tbody>' + ''.join('<tr><td>' + esc(row['scope']) + '</td><td>' + esc(row['coverage_state']) + '</td><td>' + esc(row['notes']) + '</td></tr>' for row in record.get('scope_coverage', [])) + '</tbody></table></div>')
                 add('<h4>旧版 missing_scope_items（原始缺失范围）</h4>' + (items(record['missing_scope_items']) if record.get('missing_scope_items') else '<p>来源记录未列缺失范围；不能据此批准覆盖。</p>'))
-        else:
-            add('<p class="notice">not_evaluated（未评估）：未提供本 M 的 Coverage；KYM 不赋覆盖状态。</p>')
+        if model:
+            add('</details>')
         if not cap:
             add('<p class="notice">详细内容缺失；未评估，不能推导已覆盖。</p></details>')
             return
-        add('<h3>输入 Input</h3>' + items(cap['inputs']) + '<h3>流程图（点击步骤跳至 Process）</h3><div class="flow">')
-        for step in cap['process']:
-            add('<div class="flow-step"><a href="#' + anchor(view_key + '/' + step['id']) + '">' + esc(step['label']) + '</a>')
-            for edge in step['transitions']:
-                label = next((s['label'] for s in cap['process'] if s['id'] == edge['to']), edge['to'])
-                add('<div class="edge">' + esc(edge['condition']) + ' → <a href="#' + anchor(view_key + '/' + edge['to']) + '">' + esc(label) + '</a></div>')
-            add('</div>')
-        add('</div><h3>处理 Process</h3><ol>')
-        for step in cap['process']:
-            add('<li id="' + anchor(view_key + '/' + step['id']) + '"><strong>' + esc(step['label']) + '</strong><p>' + esc(step['description']) + '</p>' + (items([e['condition'] + ' → ' + e['to'] for e in step['transitions']]) if step['transitions'] else '<p>终止步骤，无后继转移。</p>') + '</li>')
-        add('</ol><h3>输出 Output</h3>' + items(cap['outputs']) + '<h3>代表例子</h3>' + items(cap['examples']) + ''.join(diagram_html(d) for d in cap['diagrams']))
-        add('<h3>本 M 逐行为判断</h3><p>主要下一步分类不覆盖全部轴；结合适用边界与证据说明保留其他同时存在的缺口。建议动作不产生调度、测试义务或状态提升。</p><div class="table-scroll"><table><thead><tr><th>应证明的行为 / requirement</th><th>已有证据与适用边界</th><th>主要缺口</th><th>最小建议动作 / 验收判据</th></tr></thead><tbody>')
+        add('<h3>输入 Input</h3>' + items(cap['inputs']) + '<h3>流程图与详细步骤</h3>')
+        add(_FULL.flow(cap, view_key))
+        add('<h3>输出 Output</h3>' + items(cap['outputs']) + '<h3>代表例子</h3>' + items(cap['examples']) + ''.join(diagram_html(d) for d in cap['diagrams']))
+        add('<h3>本 M 逐行为判断</h3><p>下方建议先说明最优先的一步；其余待满足条件仍列在状态与证据中。怎样算完成，见每行验收条件。</p>')
+        shared, evaluated, states = assessment_context(data, records, key, cap['assessment'])
+        if not evaluated:
+            add('<p>本次尚未进行逐要求覆盖评估，不能据此认定已覆盖。下表保留各行为的证据、建议与验收条件。</p>')
+        for field, values in shared.items():
+            for value, label in values.items():
+                add('<p><strong>' + esc(label) + '：</strong>' + esc(value) + '</p>')
+        add('<div class="table-scroll"><table><thead><tr><th>应证明的行为 / requirement</th><th>已有证据与适用边界</th><th>主要缺口</th><th>最小建议动作 / 验收判据</th></tr></thead><tbody>')
         for row in cap['assessment']:
             refs = ['<a href="' + esc(links[r]) + '">' + esc(r) + '</a>' if r in links else esc(r) for r in row['evidence_refs']]
-            requirement_states = {r.get('requirement_id'): r.get('coverage_state', 'not_evaluated') for r in records.get(key, {}).get('requirement_coverage', [])}
-            row_states = '；'.join(req + ': ' + str(requirement_states.get(req, 'not_evaluated（未评估）')) for req in row['requirement_ids']) or 'unmapped（未映射）'
-            add('<tr><td><strong>' + esc(row['behavior']) + '</strong><p>' + esc(', '.join(row['requirement_ids']) or 'unmapped（未映射，不能视为已覆盖）') + '</p></td><td>' + esc(row['evidence_summary']) + '<p>适用边界：' + esc(row['applicability']) + '</p><p>候选逐 requirement 状态：' + esc(row_states) + '</p>' + '<br>'.join(refs) + '</td><td>' + esc(GAPS[row['gap_kind']]) + '</td><td>' + esc(row['next_action']) + '<p>验收：' + esc(row['acceptance']) + '</p></td></tr>')
+            mapping = assessment_mapping(row, evaluated, states)
+            evidence = shared['evidence_summary'].get(row['evidence_summary'])
+            applicability = shared['applicability'].get(row['applicability'])
+            add('<tr><td><strong>' + esc(row['behavior']) + '</strong>' + ('<p>' + esc(mapping) + '</p>' if mapping else '') + '</td><td>' + esc('见' + evidence if evidence else row['evidence_summary']) + '<p>适用边界：' + esc('见' + applicability if applicability else row['applicability']) + '</p>' + '<br>'.join(refs) + '</td><td>' + esc(GAPS[row['gap_kind']]) + '</td><td>' + esc(row['next_action']) + '<p>验收：' + esc(row['acceptance']) + '</p></td></tr>')
         add('</tbody></table></div><h3>本 M 业务问题</h3>' + items(cap['questions']) + '</details>')
     for profile in profiles:
         add('<details class="profile" data-profile="' + esc(profile['id']) + '" open><summary>' + esc(profile['label']) + '</summary><p>' + esc(profile.get('objective', profile.get('description', ''))) + '</p><p>声明上限：' + esc(profile.get('claim_ceiling', '未提供')) + '</p>')
+        if model:
+            add(target_contract(profile))
         groups = {}
         for key in membership[profile['id']]:
             groups.setdefault(group_for(key), []).append(key)
@@ -636,10 +1036,12 @@ def render_page(data, report, audited, links):
     add('</section><section id="global-questions"><h2>全局问题（不归入任一 TP/M）</h2>' + items(detail['global_questions'] + [q['summary'] for q in kym.get('unresolved_questions', []) if q.get('status') == 'open']) + '</section><section><h2>建议目标切片（候选，未写入 canonical TP）</h2>')
     for p in intake['proposed_profiles']:
         add('<article><h3>' + esc(p['label']) + '</h3><p>' + esc(p['objective']) + '</p><p>推荐理由：' + esc(p['rationale']) + '</p></article>')
+    if '_ecq' in data:
+        add('</section><section class="ecq-overview">' + ecq_overview(data, links))
     add('</section><section><h2>来源与模板摘要</h2><p>' + esc(VERSION) + '；模板摘要：' + esc(report['template_sha256']) + '</p><ul>')
     for key, binding in detail['bindings'].items():
         add('<li><a href="' + esc(links[binding['path']]) + '">' + esc(key + ': ' + binding['path']) + '</a> · sha256:' + esc(binding['sha256']) + '</li>')
-    add('</ul><p>详细伴随：<a href="sources/reader-detail.json">reader-detail.json</a>；检查：<a href="reader-report.json">reader-report.json</a>。</p></section></main><script>' + js + '</script></body></html>')
+    add('</ul><p>详细伴随：<a href="' + esc(links[('generated', 'detail')]) + '">reader-detail.json</a>；检查：<a href="' + esc(links[('generated', 'report')]) + '">reader-report.json</a>。</p></section></main><script>' + js + '</script></body></html>')
     return ''.join(out)
 
 
@@ -650,15 +1052,20 @@ def main(argv=None):
     parser.add_argument('--kym', required=True, help='工作区相对路径')
     parser.add_argument('--model', help='省略为仅 KYM；提供则为 TCO')
     parser.add_argument('--coverage')
+    parser.add_argument('--ecq', help='可选 ECQ assessment；工作区相对路径，需当前 Skill 随包引擎')
     parser.add_argument('--detail', required=True)
     parser.add_argument('--output-dir', type=Path)
+    parser.add_argument('--require-full', action='store_true', help='要求完整阅读 profile 和全量结构门禁')
     args = parser.parse_args(argv)
     try:
         workspace, paths, data = load_inputs(args)
+        if args.ecq:
+            load_ecq(workspace, paths, data, args.ecq)
+        data['_require_full'] = args.require_full
         audited = audit(workspace, paths, data)
         findings = audited[0]
         evidence_bytes = {ref: path.read_bytes() for ref, path in audited[3].items()}
-        assets = [SKILL / 'assets/reader.css', SKILL / 'assets/reader.js', Path(__file__).resolve()]
+        assets = [SKILL / 'assets/reader.css', SKILL / 'assets/reader.js', Path(__file__).resolve(), SKILL / 'scripts/reader_full.py', SKILL / 'references/reader-detail.schema.json']
         report = {'schema': 'kym_tco.reader_report.v1', 'candidate_only': True, 'reader_version': VERSION,
                   'template_sha256': digest(b''.join(p.read_bytes() for p in assets)),
                   'error_count': sum(f['severity'] == 'error' for f in findings),
@@ -666,7 +1073,15 @@ def main(argv=None):
                   'input_sha256': {k: digest(payload) for k, payload in data['_input_bytes'].items()},
                   'evidence_sha256': {k: digest(payload) for k, payload in evidence_bytes.items()},
                   'authority_note': '伴随检查不替代候选包验证，不创建批准、覆盖接受态或运行保证。'}
+        if '_ecq' in data:
+            report['ecq'] = {'schema': data['_ecq']['schema'], 'snapshot_id': data['_ecq']['snapshot_id'], 'cutoff': data['_ecq']['cutoff'], 'scope': data['_ecq']['scope'], 'bindings': data['_ecq']['bindings']}
+        report['reading_profile'] = data['detail'].get('reading_profile', 'legacy')
+        report['full_detail_checked'] = data['detail'].get('reading_profile') == _FULL.PROFILE and not report['error_count']
+        report['semantic_review'] = 'not_observed'
         if args.command == 'render':
+            if report['error_count'] and (args.require_full or data['detail'].get('reading_profile') == _FULL.PROFILE):
+                print(json.dumps(report, ensure_ascii=False, indent=2))
+                return 1
             if args.output_dir is None:
                 raise ValueError('render 必须提供 --output-dir')
             output = (workspace / args.output_dir).resolve()
@@ -677,31 +1092,64 @@ def main(argv=None):
             if any(f['code'] == 'UNSAFE_LINK' for f in findings):
                 raise ValueError('发现不安全证据链接，拒绝渲染')
             links, copies = {}, {}
+            def add_source(key, rel, payload, name):
+                if rel in copies and copies[rel] != payload:
+                    raise ValueError('来源复制路径冲突：' + rel)
+                copies[rel] = payload
+                text = source_text(payload, name)
+                if text is None:
+                    links[key] = quote(rel, safe='/')
+                else:
+                    reader_rel = 'readable/' + digest(rel.encode('utf-8')) + '.html'
+                    copies[reader_rel] = source_page(name, text, '../' + quote(rel, safe='/'), payload).encode('utf-8')
+                    links[key] = quote(reader_rel, safe='/')
             for key, binding in data['detail']['bindings'].items():
                 rel = 'sources/inputs/' + binding['path']
                 if paths[key].suffix.lower() in {'.html', '.htm', '.svg', '.js', '.xml', '.xhtml'}:
                     rel += '.txt'
-                links[binding['path']], copies[rel] = quote(rel, safe='/'), data['_input_bytes'][key]
+                add_source(binding['path'], rel, data['_input_bytes'][key], binding['path'])
             for ref, path in audited[3].items():
                 rel = 'sources/evidence/' + ref
                 if path.suffix.lower() in {'.html', '.htm', '.svg', '.js', '.xml', '.xhtml'}:
                     rel += '.txt'
-                links[ref], copies[rel] = quote(rel, safe='/'), evidence_bytes[ref]
+                add_source(ref, rel, evidence_bytes[ref], ref)
+            add_source(('generated', 'detail'), 'sources/reader-detail.json', data['_input_bytes']['detail'], 'reader-detail.json')
+            if '_ecq' in data:
+                for (base, value), payload in data['_ecq_bytes'].items():
+                    root = workspace if base == 'workspace' else SKILL
+                    if local_path(root, value).read_bytes() != payload:
+                        raise ValueError('ECQ 来源在复制前漂移：' + base + '/' + value)
+                    rel = 'sources/ecq/' + base + '/' + value
+                    if Path(value).suffix.lower() in {'.html', '.htm', '.svg', '.js', '.xml', '.xhtml'}:
+                        rel += '.txt'
+                    add_source(('ecq', base, value), rel, payload, base + '/' + value)
+                projection_bytes = (json.dumps(data['_ecq'], ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + '\n').encode('utf-8')
+                add_source(('generated', 'ecq'), 'sources/ecq-projection.json', projection_bytes, 'ecq-projection.json')
+            report_bytes = (json.dumps(report, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
+            add_source(('generated', 'report'), 'reader-report.json', report_bytes, 'reader-report.json')
             page = render_page(data, report, audited, links)
             markdown = markdown_page(data, report, audited, links)
+            profiles, membership, group_for = reader_structure(data, audited[1], audited[2])
+            views = [(key, 'tp/' + profile['id'] + '/mc/' + group_for(key)) for profile in profiles for key in membership[profile['id']]]
+            assigned = {key for key, namespace in views}
+            views.extend((key, 'unassigned') for key in sorted(audited[2].keys() - assigned))
+            for key, namespace in views:
+                cap = data['detail']['capabilities'].get(key)
+                if cap:
+                    view = namespace + '/' + key
+                    copies['diagrams/' + anchor(view) + '.svg'] = _FULL.graph(cap, view, '../reader.html').encode('utf-8')
             output.mkdir(parents=True, exist_ok=True)
             for rel, payload in copies.items():
                 target = output / rel
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(payload)
-            (output / 'sources/reader-detail.json').write_bytes(data['_input_bytes']['detail'])
             (output / 'reader.html').write_text(page, encoding='utf-8')
             (output / 'reader.md').write_text(markdown, encoding='utf-8')
-            (output / 'reader-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 1 if report['error_count'] else 0
-    except (OSError, ValueError, KeyError, TypeError, RecursionError) as exc:
-        print(json.dumps({'candidate_only': True, 'error_count': 1, 'findings': [{'code': 'READER_INPUT_ERROR', 'severity': 'error', 'message': str(exc)}], 'authority_note': '输入错误不创建接受态。'}, ensure_ascii=False, indent=2))
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, RecursionError) as exc:
+        message = str(exc).replace(str(args.workspace.resolve()), '[workspace]').replace(str(SKILL), '[skill]')
+        print(json.dumps({'candidate_only': True, 'error_count': 1, 'findings': [{'code': getattr(exc, 'code', 'READER_INPUT_ERROR'), 'severity': 'error', 'message': message}], 'authority_note': '输入错误不创建接受态。'}, ensure_ascii=False, indent=2))
         return 2
 
 

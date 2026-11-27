@@ -1,0 +1,1837 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "lifecycle",
+    "product_id",
+    "snapshot_id",
+    "cutoff",
+    "base_assessment",
+    "sources",
+    "scope",
+    "ruleset",
+    "capability_catalog",
+    "business_requirements",
+    "mappings",
+    "estimates",
+    "session_links",
+    "contributions",
+    "quality_checks",
+    "issues",
+    "contract_revision",
+    "next_steps"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ecq_assessment.v1"
+    },
+    "lifecycle": {
+      "const": "candidate_not_approved"
+    },
+    "product_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cutoff": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_assessment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/binding"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "minItems": 1
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "ruleset": {
+      "$ref": "#/$defs/ruleset"
+    },
+    "capability_catalog": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/capability"
+      },
+      "minItems": 0
+    },
+    "business_requirements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirement"
+      },
+      "minItems": 0
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mapping"
+      },
+      "minItems": 0
+    },
+    "estimates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/estimate"
+      },
+      "minItems": 0
+    },
+    "session_links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/session_link"
+      },
+      "minItems": 0
+    },
+    "contributions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contribution"
+      },
+      "minItems": 0
+    },
+    "quality_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "minItems": 0
+    },
+    "issues": {
+      "$ref": "#/$defs/issues"
+    },
+    "contract_revision": {
+      "const": "r3"
+    },
+    "next_steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/next_step"
+      },
+      "minItems": 0
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kym-tco.example/schemas/ecq-assessment.v1.json",
+  "title": "E／C／Q候选评估伴随数据合同",
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "pointer"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pointer": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        }
+      }
+    },
+    "derivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origins",
+        "extraction_rule_id",
+        "extraction_rule_version",
+        "mode",
+        "producer",
+        "extracted_at",
+        "verification_ref",
+        "extraction_rule_ref"
+      ],
+      "properties": {
+        "origins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "binding",
+              "selector_kind",
+              "selector"
+            ],
+            "properties": {
+              "binding": {
+                "$ref": "#/$defs/binding"
+              },
+              "selector_kind": {
+                "enum": [
+                  "json_pointer",
+                  "line_range",
+                  "utf8_byte_range"
+                ]
+              },
+              "selector": {
+                "type": "string"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "extraction_rule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extraction_rule_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "deterministic",
+            "manual"
+          ]
+        },
+        "producer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extracted_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/binding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extraction_rule_ref": {
+          "$ref": "#/$defs/binding"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "availability",
+        "completeness",
+        "binding",
+        "derivation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "model",
+            "coverage",
+            "progress",
+            "sessions",
+            "quality",
+            "issues",
+            "business_requirements",
+            "assessment_basis",
+            "scope_change",
+            "validation_report",
+            "evidence"
+          ]
+        },
+        "availability": {
+          "enum": [
+            "connected",
+            "not_connected",
+            "unavailable"
+          ]
+        },
+        "completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/binding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/derivation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "m1_id",
+        "definition_ref"
+      ],
+      "properties": {
+        "m1_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition_ref": {
+          "$ref": "#/$defs/locator"
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "definition_ref",
+        "weight",
+        "critical",
+        "required_condition_refs",
+        "combination",
+        "mapping_ids",
+        "shared_acceptance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "required_condition_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/locator"
+          },
+          "minItems": 1
+        },
+        "combination": {
+          "enum": [
+            "all_of",
+            "any_of",
+            "unresolved"
+          ]
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "shared_acceptance": {
+          "$ref": "#/$defs/shared_acceptance"
+        }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "business_requirement_id",
+        "m1_id",
+        "responsibility",
+        "resolution",
+        "mapping_note",
+        "relation",
+        "tp_requirement_refs",
+        "coverage_requirement_ids",
+        "atomic_requirement_refs",
+        "progress_item_refs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "business_requirement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "m1_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "responsibility": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resolution": {
+          "enum": [
+            "exact",
+            "unknown",
+            "not_connected"
+          ]
+        },
+        "mapping_note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relation": {
+          "enum": [
+            "direct",
+            "supporting",
+            "boundary",
+            "unknown"
+          ]
+        },
+        "tp_requirement_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/locator"
+          },
+          "minItems": 0
+        },
+        "coverage_requirement_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "atomic_requirement_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/locator"
+          },
+          "minItems": 0
+        },
+        "progress_item_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/locator"
+          },
+          "minItems": 0
+        }
+      }
+    },
+    "estimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mapping_id",
+        "low",
+        "high",
+        "method",
+        "basis_kind",
+        "basis_ref",
+        "assessor",
+        "assessed_at",
+        "applies_to_version",
+        "core_behavior",
+        "reason"
+      ],
+      "properties": {
+        "mapping_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "low": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "high": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method": {
+          "enum": [
+            "acceptance_share",
+            "reasoned_interval",
+            "unknown"
+          ]
+        },
+        "basis_kind": {
+          "enum": [
+            "reviewed_acceptance",
+            "code_inspection",
+            "demonstration",
+            "producer_report",
+            "expert_estimate",
+            "unknown"
+          ]
+        },
+        "basis_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assessor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assessed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "applies_to_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "core_behavior": {
+          "enum": [
+            "known_available",
+            "known_unavailable",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "session_fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "category",
+        "started_at",
+        "status_as_of",
+        "completed_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status_as_of": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "session_link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "session_id",
+        "record_ref",
+        "fields"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "fields": {
+          "$ref": "#/$defs/session_fields"
+        }
+      }
+    },
+    "contribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "event_ref",
+        "item_ref",
+        "mapping_ids",
+        "kind",
+        "before_estimate_ref",
+        "after_estimate_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "event_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "item_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "kind": {
+          "enum": [
+            "implementation",
+            "design",
+            "verification",
+            "requirements",
+            "investigation"
+          ]
+        },
+        "before_estimate_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "after_estimate_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "check_fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition_id",
+        "status",
+        "version",
+        "environment",
+        "observed_at",
+        "observer",
+        "independent",
+        "expires_at"
+      ],
+      "properties": {
+        "condition_id": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "environment": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "observer": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "independent": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "expires_at": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "business_requirement_id",
+        "condition_ref",
+        "result_ref",
+        "fields",
+        "mapping_ids",
+        "applicability_ref",
+        "reuse_applicability_ref"
+      ],
+      "properties": {
+        "business_requirement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fields": {
+          "$ref": "#/$defs/check_fields"
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "applicability_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reuse_applicability_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "issue_fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "severity",
+        "blocking",
+        "m1_ids",
+        "business_requirement_ids",
+        "invalidates_implementation",
+        "observed_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "severity": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "blocking": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "m1_ids": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "business_requirement_ids": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "invalidates_implementation": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        }
+      }
+    },
+    "issues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "record_pointers",
+        "fields"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_pointers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+          },
+          "minItems": 0
+        },
+        "fields": {
+          "$ref": "#/$defs/issue_fields"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goal_id",
+        "stage_ids",
+        "tp_ids",
+        "definition_ref",
+        "current_model_source_id",
+        "current_coverage_source_id",
+        "current_report_source_id",
+        "product_version",
+        "environment",
+        "requirement_ids",
+        "requirements_completeness",
+        "session_history_completeness",
+        "checks_completeness",
+        "issues_completeness",
+        "weight_policy",
+        "weight_version",
+        "scope_change_ref"
+      ],
+      "properties": {
+        "goal_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "tp_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "definition_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "current_model_source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_coverage_source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_report_source_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "product_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requirement_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "requirements_completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "session_history_completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "checks_completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "issues_completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "weight_policy": {
+          "enum": [
+            "equal_original_requirements",
+            "explicit_business_weights"
+          ]
+        },
+        "weight_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_change_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ruleset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "wide_interval_threshold_pp",
+        "max_percentage_decimals",
+        "core_display_guard",
+        "shared_combination",
+        "rounding",
+        "history_adapter"
+      ],
+      "properties": {
+        "id": {
+          "const": "ecq.rules.r3"
+        },
+        "wide_interval_threshold_pp": {
+          "const": 25
+        },
+        "max_percentage_decimals": {
+          "const": 1
+        },
+        "core_display_guard": {
+          "const": "core_unavailable_no_main_percent"
+        },
+        "shared_combination": {
+          "const": "source_all_roles_or_whole_path"
+        },
+        "rounding": {
+          "const": "decimal_half_up_display_only"
+        },
+        "history_adapter": {
+          "const": "strict_event_archive_v1"
+        }
+      }
+    },
+    "shared_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "business_requirement_id",
+        "plan_version",
+        "combination",
+        "mapping_ids",
+        "points",
+        "selection_unit"
+      ],
+      "properties": {
+        "business_requirement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plan_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "combination": {
+          "enum": [
+            "all_of",
+            "any_of"
+          ]
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "share",
+              "criterion"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "share": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1
+              },
+              "criterion": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "selection_unit": {
+          "enum": [
+            "all_roles_per_point",
+            "whole_mapping_path"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "combination": {
+                "const": "all_of"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "selection_unit": {
+                "const": "all_roles_per_point"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "selection_unit": {
+                "const": "whole_mapping_path"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "shared_point_estimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mapping_id",
+        "point_id",
+        "implemented",
+        "basis_ref",
+        "basis_kind",
+        "assessor",
+        "assessed_at",
+        "applies_to_version",
+        "reason"
+      ],
+      "properties": {
+        "mapping_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "point_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "implemented": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "basis_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assessor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assessed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "applies_to_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "shared_acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_ref",
+        "point_estimate_refs"
+      ],
+      "properties": {
+        "plan_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "point_estimate_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/locator"
+          },
+          "minItems": 0
+        }
+      }
+    },
+    "next_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "title",
+        "reason",
+        "mapping_ids",
+        "input_refs",
+        "expected_outputs",
+        "acceptance_criteria",
+        "dependencies",
+        "blockers",
+        "effort"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "action",
+            "session"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "input_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/locator"
+          },
+          "minItems": 1
+        },
+        "expected_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "effort": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "low",
+                "high",
+                "unit",
+                "basis_ref"
+              ],
+              "properties": {
+                "low": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "high": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "unit": {
+                  "enum": [
+                    "person_hours",
+                    "person_days"
+                  ]
+                },
+                "basis_ref": {
+                  "$ref": "#/$defs/locator"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "extraction_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "id",
+        "version",
+        "format",
+        "origins",
+        "fields"
+      ],
+      "properties": {
+        "schema": {
+          "const": "ecq.extraction_rule.v1"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "format": {
+          "enum": [
+            "line_json_literal.v1",
+            "controlled_records.v1"
+          ]
+        },
+        "origins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/binding"
+          },
+          "minItems": 1
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "target_pointer",
+                  "origin_index",
+                  "line",
+                  "prefix"
+                ],
+                "properties": {
+                  "target_pointer": {
+                    "type": "string",
+                    "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+                  },
+                  "origin_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "target_pointer",
+                  "origin_index",
+                  "line",
+                  "prefix",
+                  "syntax"
+                ],
+                "properties": {
+                  "target_pointer": {
+                    "type": "string",
+                    "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+                  },
+                  "origin_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "syntax": {
+                    "const": "line_json_literal"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "target_pointer",
+                  "origin_index",
+                  "line",
+                  "syntax",
+                  "header_line",
+                  "separator_line",
+                  "headers",
+                  "key_column",
+                  "key_value",
+                  "column",
+                  "value_type"
+                ],
+                "properties": {
+                  "target_pointer": {
+                    "type": "string",
+                    "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+                  },
+                  "origin_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "syntax": {
+                    "const": "markdown_table"
+                  },
+                  "header_line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "separator_line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "headers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  },
+                  "key_column": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "key_value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "column": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "value_type": {
+                    "enum": [
+                      "string",
+                      "boolean",
+                      "null",
+                      "string_or_null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "target_pointer",
+                  "origin_index",
+                  "line",
+                  "syntax",
+                  "prefix",
+                  "value_type"
+                ],
+                "properties": {
+                  "target_pointer": {
+                    "type": "string",
+                    "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+                  },
+                  "origin_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "syntax": {
+                    "const": "key_value_line"
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "value_type": {
+                    "enum": [
+                      "string",
+                      "boolean",
+                      "null",
+                      "string_or_null"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "extraction_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "rule",
+        "output",
+        "origins",
+        "field_checks",
+        "reviewer",
+        "reviewed_at"
+      ],
+      "properties": {
+        "schema": {
+          "const": "ecq.extraction_verification.v1"
+        },
+        "rule": {
+          "$ref": "#/$defs/binding"
+        },
+        "output": {
+          "$ref": "#/$defs/binding"
+        },
+        "origins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/binding"
+          },
+          "minItems": 1
+        },
+        "field_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "target_pointer",
+              "origin_index",
+              "line",
+              "value_sha256"
+            ],
+            "properties": {
+              "target_pointer": {
+                "type": "string",
+                "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+              },
+              "origin_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "value_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewed_at": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "quality_applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "business_requirement_id",
+        "condition_id",
+        "result_ref",
+        "mapping_ids",
+        "reason"
+      ],
+      "properties": {
+        "business_requirement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "artifact_closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "environment",
+        "mapping_ids",
+        "condition_ids",
+        "boundary_id",
+        "artifacts"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mapping_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "condition_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "boundary_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/binding"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "reuse_applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_ref",
+        "original_product_version",
+        "target_product_version",
+        "original_environment",
+        "target_environment",
+        "original_closure_ref",
+        "current_closure_ref",
+        "closure_completeness",
+        "reviewer",
+        "reviewed_at",
+        "reason",
+        "original_result_closure_pointer"
+      ],
+      "properties": {
+        "result_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "original_product_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_product_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_closure_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "current_closure_ref": {
+          "$ref": "#/$defs/locator"
+        },
+        "closure_completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_result_closure_pointer": {
+          "type": "string",
+          "pattern": "^/(?:[^~/]|~[01])+(?:/(?:[^~/]|~[01])*)*$"
+        }
+      }
+    }
+  }
+}

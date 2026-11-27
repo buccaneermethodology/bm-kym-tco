@@ -31,7 +31,28 @@ Validation posture is separate from lifecycle and Coverage: `not_validated < pro
 
 Breadth is separate: `single_trial`, `single_repo`, `known_family`, `multi_repo`, `cross_language`, `arbitrary_attempt`. Advanced breadth must bind sample identity; `multi_repo` needs an identity-bound repo matrix and does not follow from bounded runtime.
 
-Profiles use implementation=`bounded_runtime`, or implementation=`test_bound` plus runtime=`bounded_runtime`; validation is `producer_checked/independently_validated/independently_validated`.
+### v4 Profile 的精确目标字段
+
+`target_profiles[].coverage_goals` 是目标门槛，不是当前 M 的状态。每项必须有 `id`、`minimum_coverage_state`、`minimum_lifecycle_state`、`required_validation_posture` 四字段。`id` 不重复；只允许下列双目标或三目标组合。coverage 使用以下精确保留 ID，不能按当前进展试填别的词。
+
+双目标形式（兼容既有运行门槛）：
+
+| id | minimum_coverage_state | minimum_lifecycle_state | required_validation_posture |
+| --- | --- | --- | --- |
+| contract | design_only | contract_defined | producer_checked |
+| implementation | bounded_runtime | implemented | independently_validated |
+
+三目标形式（区分测试支持和实际运行）：
+
+| id | minimum_coverage_state | minimum_lifecycle_state | required_validation_posture |
+| --- | --- | --- | --- |
+| contract | design_only | contract_defined | producer_checked |
+| implementation | test_bound | implemented | independently_validated |
+| runtime | bounded_runtime | implemented | independently_validated |
+
+不能只把implementation改成test_bound而省略runtime；不能把contract的coverage改成schema_validator/test_bound，也不能互换coverage、lifecycle和validation字段。收到“Profile contract/implementation goal ... 无效”时，逐字段对照所选整组表，先确认是否遗漏或错配，不枚举配置求通过。完整shape见已安装包`kym_tco/schemas/tco_model_v4.schema.json`的`$defs.profile`；表中的额外配对规则来自现有CLI合同，schema只验证枚举和形状不足以代替它。
+
+这些是工具已有目标轴格式，不创造用户业务要求或当前达成事实。Profile身份/描述/requirements继续来自实际KYM Target，TP与M保持多对多，共享M不复制；每条业务要求的源支持阈值与覆盖映射分别保留。若业务目标与工具表示能力存在差异，应明确说明限制，不能为填格式抬高/降低用户要求。当前进展另写Coverage/ECQ；缺证据保留未知/未评估，不能把目标阈值当已经达到，也不能因尚未实现而降低目标。
 
 Conservative rollup:
 

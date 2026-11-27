@@ -55,8 +55,15 @@ subprocess.run([str(scripts / "kym"), "--workspace", str(work), "init",
 config = load_config(work / ".kym-tco" / "ci-smoke")
 if config["product_id"] != "ci-smoke":
     raise RuntimeError("installed CLI/schema smoke failed")
+skill_root = Path(sysconfig.get_path("data")) / "share/bm-kym-tco/codex/skills"
+# 可选ECQ路径使用CLI已有jsonschema；检查真实安装payload及入口，不借源码或私有fixture。
+from jsonschema import Draft202012Validator
+ecq_skill = skill_root / "build-tco-coverage"
+Draft202012Validator.check_schema(json.loads((ecq_skill / "references/ecq-assessment.schema.json").read_text(encoding="utf-8")))
+subprocess.run([sys.executable, "-I", str(ecq_skill / "scripts/ecq.py"), "--help"],
+               cwd=work, check=True, stdout=subprocess.DEVNULL)
 print(json.dumps({"version": distribution.version,
-                  "skill_root": str(Path(sysconfig.get_path("data")) / "share/bm-kym-tco/codex/skills")}))
+                  "skill_root": str(skill_root)}))
 '''
 
 

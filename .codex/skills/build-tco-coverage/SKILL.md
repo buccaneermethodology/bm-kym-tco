@@ -1,6 +1,6 @@
 ---
 name: build-tco-coverage
-description: Build or revise candidate-only TCO models, Target Profiles, Coverage proposals, verification evidence, comparisons, and tco-preview.html from KYM/Target inputs. Use for M/TSP/Coverage review or migration. Do not create accepted state.
+description: Build or revise candidate TCO models, Target Profiles and Coverage from KYM/Target inputs, including per-M Session effort, functional implementation estimates, quality, gaps and offline readers. Use for TCO M/TSP, coverage or progress review and migration. Do not create accepted state.
 ---
 
 # Build TCO Coverage
@@ -9,9 +9,13 @@ The agent performs semantic decomposition; `tco` validates candidate data.
 
 先读 [引导与用途](references/guided-generation.md)，复用KYM阶段答案；关键未知先交流，用户可选择直接一稿。默认按 [固定详细reader](references/reader-workflow.md) 交付TP→Mc→M、详细TSP/流程/IPO及逐行为证据判断表；用户示例见 [prompts](references/prompt-examples.md)。
 
+## 默认完整阅读
+
+每次正式生成/更新按[阅读合同](references/reader-workflow.md)盘点全部实际TSP与步骤，细述对象、边界、目的及逐步输入/动作/结果，用树表和传统SVG交付。短prompt同样完整。正式reader声明`full_detail.v1`并在validate/render传`--require-full`；具体未知单列，旧稿标legacy。
+
 ## Preconditions
 
-1. Run `tco --help`. Missing: fill `references/doctor-cli-missing-report.json` and print stdout; no semantic verdict. Available: run `tco --workspace <workspace> doctor --product-id <id> --skill-dir <skill-dir> --expected-cli-version 0.4.7`. `ready` means environment only.
+1. Run `tco --help`. Missing: fill `references/doctor-cli-missing-report.json` and print stdout; no semantic verdict. Available: run `tco --workspace <workspace> doctor --product-id <id> --skill-dir <skill-dir> --expected-cli-version 0.4.9`. `ready` means environment only.
 2. Require explicit candidate KYM revision/profile inputs and source boundaries.
 3. Read [references/tco-contract.md](references/tco-contract.md) when drafting model, Coverage, or project config.
 4. Read [references/tco-modeling-guide.md](references/tco-modeling-guide.md) completely when decomposing M/TSP, preserving Profiles, assigning Coverage, or reviewing gaps. It guides analysis; the contract/CLI remain authoritative.
@@ -23,6 +27,10 @@ The agent performs semantic decomposition; `tco` validates candidate data.
 Use the installed CLI in external business workspaces. Read [references/external-workspace.md](references/external-workspace.md) for exact source-ledger build and source-ledger verify, selection-record, host-preflight, external-run and external-consume-check calls. Business repositories need no tool source or internal registry. The pipeline is explicit; arbitrary platforms do not automatically invoke it. Project Skill selection takes precedence; broken/incompatible project copies block rather than fall back. An operator_confirmed selection is an operator assertion, not host resolver attestation. The CLI bundle_ref names the validation evidence bundle, not a candidate package; consumable=true only binds passing deterministic evidence to candidate_not_approved bytes.
 
 Source Skills remain unreleased; released CLI/Skill identities must match. Progress/reader companions do not bypass external-run checks.
+
+### 每M的努力、实现覆盖与质量
+
+每次生成或更新详细TCO阅读页都展示每M的E／C／Q；先读 [E／C／Q合同](references/ecq-assessment.md)，盘点本次可用的执行、实现、验证与问题来源。有资料的部分应建立可追溯评估，缺失类别明确未接入，不能整页用未知跳过已有证据。E展示有证据的Session与具体贡献；C主值为功能实现覆盖估计，保留原始业务要求分母与未知；Q另报当前版本的验证、问题及证据边界。原Coverage与TP目标用简明真实字段表继续提供，完整机器数据另存；主阅读保留E/C/Q摘要、实际努力与下一步，不展示逐条件/逐要求/前后完整指标技术对照。一个Session影响多个M时全局去重；不从Session done、任务partial或测试数量推导功能百分比。没有接入的资料显示未知，先核已有证据适用性，再建议最小动作或共享候选Session。KYM/需求本身不足以建立实现或质量结论。
 
 ### Task contributions and stage progress
 

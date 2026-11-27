@@ -5,6 +5,7 @@ import json
 import errno
 import base64
 import importlib.metadata
+from importlib.util import source_from_cache
 import os
 import subprocess
 import sys
@@ -42,25 +43,25 @@ PROFILE_ID = "codex_repo_local_skill_workflow_v1"
 EXTERNAL_PROFILE_ID = "installed_cli_external_workspace_v1"
 EXTERNAL_SKILL_DISTRIBUTIONS = {
     "build-kym": {
-        "distribution_version": "v0.4.7",
+        "distribution_version": "v0.4.9",
         "release_status": "released",
-        "skill_byte_digest": "sha256:bb9eb35ae7cd1a8a5b039d133747a31913e98884a617a5eb29f6234a707c21f2",
-        "skill_tree_digest": "sha256:9540b352d2d21e5e373bed683fae16c13dad9f29ebbbf59c64e9458f12d08afd",
-        "distribution_manifest_digest": "sha256:67ea83e495df0f49eccb49cc3b38ad12241f534f4533d3b9f8426173fcd03fce",
+        "skill_byte_digest": "sha256:fb4a89ddb16705e4243844be0778e494aae2f81933722eafd57d2eb6c035dd61",
+        "skill_tree_digest": "sha256:e559b70341d0a4fea15c75d404317f6a3b46af38a683507754730b3f657ae16e",
+        "distribution_manifest_digest": "sha256:b604697b3c609505a940d4625e34056640aaee215360a7a5f3d57533ff442b18",
     },
     "build-tco-coverage": {
-        "distribution_version": "v0.4.7",
+        "distribution_version": "v0.4.9",
         "release_status": "released",
-        "skill_byte_digest": "sha256:cb5ca1b98a7a8d05d255a9f577641a1afcf740fb378b78b5c9a3b228cfcfb253",
-        "skill_tree_digest": "sha256:b22a98d2ac2e7a74ce3607fd61af5cd190c98291092907a54305e653f88487c7",
-        "distribution_manifest_digest": "sha256:3022ebce0a37c169c34293167c5bf8891a3a597a5c736c38f2622c9c98bdedec",
+        "skill_byte_digest": "sha256:019ba1b397b756e9cb941dde47a4679052c2e103d77d979dc6a1902fa2e4347b",
+        "skill_tree_digest": "sha256:7bda557d0e72c6cf40a2b05cd6140a43f781af4e4acffb9022a93cc51618c764",
+        "distribution_manifest_digest": "sha256:48b8eb2b357c8fbf5e0116fc3931e950637a77aaa20c3e0ef180243aad115bec",
     },
 }
 
 PRODUCTION_ENTRY = "kym_tco.supported_host:materialize_and_validate"
 PROTOCOL = "skill_materialization_pipeline_v1"
 EXPECTED_REGISTRY_DIGEST_V1 = "sha256:40c863309f18428450b0b7540f5e62ce0e6cf0f2fdd380a2c252bcc843d24db0"
-EXPECTED_REGISTRY_DIGEST_V2 = "sha256:9e6c782280524f6aa685e530aab7ea73dfec7f6806f398203bed7280701d2047"
+EXPECTED_REGISTRY_DIGEST_V2 = "sha256:687488dda8790e9301fedeb3104e20c4d58b405f76f304b2999394550e597af6"
 EXPECTED_REGISTRY_DIGEST = EXPECTED_REGISTRY_DIGEST_V2
 REQUIRED_CAPABILITIES = {
     "workspace_bytes_read", "candidate_materialize", "repo_local_cli_invoke",
@@ -108,6 +109,27 @@ def _archive_manifest_digest(document: dict[str, Any]) -> str:
     })
 
 
+def _skill_source_tree(directory: Path) -> list[dict[str, str]]:
+    """盘点发行源；仅分离同树真实源码对应的标准缓存，不认证字节码。"""
+    paths = sorted(directory.rglob("*"))
+    if directory.is_symlink() or any(path.is_symlink() for path in paths):
+        raise ContractError("skill_path_symlink")
+    tree_files = []
+    for path in paths:
+        if not path.is_file() or path == directory / "distribution.json":
+            continue
+        if path.parent.name == "__pycache__" and path.suffix == ".pyc":
+            try:
+                source = Path(source_from_cache(str(path)))
+                source.relative_to(directory)
+                if source.suffix == ".py" and source.is_file() and not source.is_symlink():
+                    continue
+            except (ValueError, NotImplementedError):
+                pass
+        tree_files.append({"ref": path.relative_to(directory).as_posix(), "byte_digest": digest_bytes(path.read_bytes())})
+    return tree_files
+
+
 def validate_skill_distribution(document: dict[str, Any], workspace: Path) -> dict[str, Any]:
     expected_fields = {
         "schema", "skill_id", "distribution_version", "release_status", "source_revision",
@@ -130,16 +152,15 @@ def validate_skill_distribution(document: dict[str, Any], workspace: Path) -> di
     if document["skill_ref"] != expected_ref:
         raise ContractError("Skill distribution skill_ref 与 skill_id 不匹配")
     ensure_relative_path(document["skill_ref"], "Skill ref")
+    declared_skill = workspace / document["skill_ref"]
+    if declared_skill.is_symlink() or declared_skill.parent.is_symlink():
+        raise ContractError("skill_path_symlink")
     skill_path = resolved_within(workspace, document["skill_ref"], "Skill ref")
+    skill_dir = skill_path.parent
+    tree_files = _skill_source_tree(skill_dir)
     if not skill_path.is_file() or digest_bytes(skill_path.read_bytes()) != document["skill_byte_digest"]:
         raise ContractError("Skill distribution SKILL.md byte digest 不匹配")
-    skill_dir = skill_path.parent
-    tree_files = [
-        {"ref": item.relative_to(skill_dir).as_posix(), "byte_digest": digest_bytes(item.read_bytes())}
-        for item in sorted(skill_dir.rglob("*"))
-        if item.is_file() and item.name != "distribution.json" and not item.is_symlink()
-    ]
-    if any(item.is_symlink() for item in skill_dir.rglob("*")) or document["distribution_tree_digest"] != digest_value(tree_files):
+    if document["distribution_tree_digest"] != digest_value(tree_files):
         raise ContractError("Skill distribution tree digest 不匹配")
     if document["archive_manifest_digest"] != _archive_manifest_digest(document):
         raise ContractError("Skill distribution archive manifest digest 不匹配")
@@ -348,19 +369,13 @@ def resolve_selected_skill(
     skill_file = directory / "SKILL.md"
     if not skill_file.is_file():
         raise ContractError("skill_unreadable")
+    tree_files = _skill_source_tree(directory)
     actual = digest_bytes(skill_file.read_bytes())
     registered = EXTERNAL_SKILL_DISTRIBUTIONS[skill_id]
     if expected_digest and expected_digest != registered["skill_byte_digest"]:
         raise ContractError("skill_expectation_unregistered")
     if actual != registered["skill_byte_digest"]:
         raise ContractError("skill_digest_mismatch")
-    tree_files = []
-    for path in sorted(directory.rglob("*")):
-        if path.is_symlink():
-            raise ContractError("skill_path_symlink")
-        if path.is_file():
-            if path.name != "distribution.json":
-                tree_files.append({"ref": path.relative_to(directory).as_posix(), "byte_digest": digest_bytes(path.read_bytes())})
     if digest_value(tree_files) != registered["skill_tree_digest"]:
         raise ContractError("skill_tree_digest_mismatch")
     distribution_path = directory / "distribution.json"

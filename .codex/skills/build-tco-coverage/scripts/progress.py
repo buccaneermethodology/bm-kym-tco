@@ -217,11 +217,14 @@ def validate(workspace, path, explicit_base=None, chain=None):
                 actual.add((kind, key))
     need(set(changes) == actual, 'model/Profile 变化未逐项处置或 changes 有多余条目')
     for rid, req in requirements.items():
-        need(set(req['m1_ids']) <= m1_ids, '要求 M1 不存在: ' + rid)
+        previous = base['requirements'].get(rid) if base else None
+        # Only this object's associations in the fully validated direct base
+        # survive retirement. An ancestor-wide ID set would grant new links.
+        inherited_m1 = set(previous['m1_ids']) if previous else set()
+        need(set(req['m1_ids']) <= m1_ids | inherited_m1, '要求 M1 不存在: ' + rid)
         evidence(workspace, req['evidence_refs'], required=req['disposition'] != 'retained')
         if req['disposition'] != 'retained':
             need(req['reason'].strip(), '要求处置缺少理由: ' + rid)
-        previous = base['requirements'].get(rid) if base else None
         if previous:
             changed = any(req[k] != previous[k] for k in ('text', 'm1_ids'))
             need(not changed or req['disposition'] == 'revised', '要求文本/归属变化必须 revised: ' + rid)
@@ -230,13 +233,14 @@ def validate(workspace, path, explicit_base=None, chain=None):
             need(req['disposition'] == 'retained', '初始要求必须 retained')
     new_events = []
     for iid, item in items.items():
-        need(set(item['m1_ids']) <= m1_ids, '推进项 M1 不存在: ' + iid)
+        previous = base['items'].get(iid) if base else None
+        inherited_m1 = set(previous['m1_ids']) if previous else set()
+        need(set(item['m1_ids']) <= m1_ids | inherited_m1, '推进项 M1 不存在: ' + iid)
         need(set(item['requirement_ids']) <= set(requirements), '推进项关联不存在原子要求: ' + iid)
         linked_m1 = set()
         for rid in item['requirement_ids']:
             linked_m1.update(requirements[rid]['m1_ids'])
         need(set(item['m1_ids']) <= linked_m1, '共享推进项缺少匹配的要求关联: ' + iid)
-        previous = base['items'].get(iid) if base else None
         prefix = len(previous['events']) if previous else 0
         if previous:
             need(all(item[k] == previous[k] for k in ('m1_ids', 'requirement_ids', 'title', 'acceptance')), '推进项关联语义被改写: ' + iid)
@@ -263,6 +267,11 @@ def validate(workspace, path, explicit_base=None, chain=None):
     need(set(doc['tasks']) == {event['task_id'] for event in new_events}, '本次 task 缺贡献事件；无推进须写 no_change 解释')
     return {'doc': doc, 'before': before, 'after': after, 'items': items, 'requirements': requirements,
             'new_events': new_events, 'snapshot_ids': (base['snapshot_ids'] if base else []) + [doc['snapshot_id']],
+            'baseline_chain': (base['baseline_chain'] + [base['source']]) if base else [],
+            'source': {'snapshot_id': doc['snapshot_id'], 'path': path.relative_to(workspace).as_posix(),
+                       'sha256': digest(path.read_bytes())},
+            'historical_m1_ids': sorted({mid for row in list(items.values()) + list(requirements.values())
+                                         for mid in row['m1_ids']} - m1_ids),
             'progress_sha256': digest(path.read_bytes())}
 
 
@@ -341,6 +350,15 @@ def rendering(result, workspace, output):
         if report:
             parts.append('<details><summary>展开绑定的原 CLI 报告字段</summary><pre>' + esc(json.dumps(report, ensure_ascii=False, indent=2)) + '</pre></details>')
         sections.append(''.join(parts))
+    if result['historical_m1_ids'] or result['baseline_chain']:
+        historical = ', '.join(result['historical_m1_ids']) or '无当前集合之外的引用'
+        notice = '历史能力：' + historical + '；仅随原对象保留，不计当前能力分母，不提升 Coverage。'
+        markdown += ['## 历史能力与基线来源', '', notice, '']
+        sources = []
+        for source in result['baseline_chain']:
+            markdown.append('- ' + md(source['snapshot_id']) + '：' + link(source, 'md') + ' SHA256 ' + source['sha256'])
+            sources.append('<li>' + esc(source['snapshot_id']) + '：' + link(source) + ' SHA256 ' + esc(source['sha256']) + '</li>')
+        sections.append('<h2>历史能力与基线来源</h2><p>' + esc(notice) + '</p><ul>' + ''.join(sources) + '</ul>')
     markdown += ['## 推进项、阻塞与下一步', '', '| ID | 标题 | M1 | 验收 | 状态 | owner | 下一步 |', '|---|---|---|---|---|---|---|']
     cards = []
     history_markdown = []
@@ -390,8 +408,8 @@ def rendering(result, workspace, output):
     sections.insert(0, '<p>筛选说明：推进项按全部历史事件匹配任务和阶段；本次贡献仅显示新增事件。任务与阶段组合须命中同一事件，历史命中不计为本次新增贡献。</p>')
     filters = []
     all_tasks = sorted(set(doc['tasks']) | {e['task_id'] for item in doc['items'] for e in item['events']})
-    for key, label, values in [('m1', 'M1', sorted(result['before']['m1_ids'] | result['after']['m1_ids'])), ('task', '任务（含历史）', all_tasks), ('stage', '阶段', doc['included_stages'])]:
-        filters.append('<label>' + label + ' <select id="filter-' + key + '"><option value="">全部</option>' + ''.join('<option value="' + esc(v) + '">' + esc(v) + '</option>' for v in values) + '</select></label>')
+    for key, label, values in [('m1', 'M1（含历史）', sorted(result['before']['m1_ids'] | result['after']['m1_ids'] | set(result['historical_m1_ids']))), ('task', '任务（含历史）', all_tasks), ('stage', '阶段', doc['included_stages'])]:
+        filters.append('<label>' + label + ' <select id="filter-' + key + '"><option value="">全部</option>' + ''.join('<option value="' + esc(v) + '">' + esc(v + '（仅历史）' if key == 'm1' and v in result['historical_m1_ids'] else v) + '</option>' for v in values) + '</select></label>')
     javascript = '''function applyFilters(){
 const m1=document.getElementById('filter-m1').value;
 const task=document.getElementById('filter-task').value;
@@ -429,6 +447,7 @@ def main(argv=None):
                  'product_id': result['doc']['product_id'], 'snapshot_id': result['doc']['snapshot_id'],
                  'progress': {'path': args.progress, 'sha256': result['progress_sha256']},
                  'snapshot_ids': result['snapshot_ids'], 'before': result['doc']['before'], 'after': result['doc']['after'],
+                 'baseline_chain': result['baseline_chain'], 'historical_m1_ids': result['historical_m1_ids'],
                  'item_count': len(result['items']), 'new_event_count': len(result['new_events']),
                  'task_ids': result['doc']['tasks'], 'new_events': result['new_events']}
         audit['task_contributions'] = {task: {'event_count': sum(e['task_id'] == task for e in result['new_events']), 'item_ids': sorted({e['item_id'] for e in result['new_events'] if e['task_id'] == task})} for task in result['doc']['tasks']}

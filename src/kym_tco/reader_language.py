@@ -63,11 +63,12 @@ def audit_reader_language(model: dict[str, Any]) -> dict[str, Any]:
         boundary = node.get("scope", {}).get("boundary", {})
         for side, cue_re, expected in (
             ("included", INCLUDED_CUE_RE, "这项能力会替用户处理什么"),
-            ("excluded", EXCLUDED_CUE_RE, "这项能力不会替用户做什么或仍需什么独立判断"),
+            ("excluded", EXCLUDED_CUE_RE, "来源明确排除、这项能力不会替用户处理的事项"),
         ):
             values = boundary.get(side, [])
-            if not values:
-                findings.append(_finding("TCO_M1_READER_SCOPE_ITEM_MISSING", node_id, f"/nodes/{node_id}/scope/boundary/{side}", f"Scope {side} 至少需要一条人类可读边界。", ""))
+            if not values and not (side == "excluded" and isinstance(values, list) and side in boundary):
+                message = "Scope included 至少需要一条人类可读边界。" if side == "included" else "Scope excluded 必须显式提供数组；没有来源明确排除时可为空。"
+                findings.append(_finding("TCO_M1_READER_SCOPE_ITEM_MISSING", node_id, f"/nodes/{node_id}/scope/boundary/{side}", message, ""))
             for index, raw in enumerate(values):
                 value = str(raw)
                 path = f"/nodes/{node_id}/scope/boundary/{side}/{index}"

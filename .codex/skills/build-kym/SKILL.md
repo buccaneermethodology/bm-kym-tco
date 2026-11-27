@@ -9,9 +9,13 @@ Create source-traceable KYM. JSON is truth; CLI validates/stores, not semantics.
 
 先读 [引导与用途](references/guided-generation.md)：复用上下文，询问关键未知；用户可选择直接一稿。每次生成按 [固定reader与逐行为质量](references/reader-workflow.md) 交付Markdown/HTML，用户示例见 [prompts](references/prompt-examples.md)。
 
+## 默认完整阅读
+
+每次正式生成/更新按[阅读合同](references/reader-workflow.md)盘点全部实际TSP与步骤，细述对象、边界、目的及逐步输入/动作/结果，用树表和传统SVG交付。短prompt同样完整。正式reader声明`full_detail.v1`并在validate/render传`--require-full`；具体未知单列，旧稿标legacy。
+
 ## Preconditions
 
-1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.7 [--output <report.json>]`. `ready` is not semantics or approval.
+1. Run `kym --help`. If missing, fill placeholders in `references/doctor-cli-missing-report.json` and print the complete JSON to stdout only; this is environment diagnosis. Otherwise run `kym --workspace <workspace> doctor --product-id <product-id> --skill-dir <this-skill-dir> --expected-cli-version 0.4.9 [--output <report.json>]`. `ready` is not semantics or approval.
 2. Choose a stable lowercase `product-id` and workspace.
 3. Read [references/kym-contract.md](references/kym-contract.md) completely before drafting or validating JSON.
 4. Read [references/kym-analysis-guide.md](references/kym-analysis-guide.md) completely for multi-actor, ambiguous, conflicting, inferred, or long-source analysis.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bm-kym-tco"
-version = "0.4.7"
+version = "0.4.9"
 description = "Deterministic KYM revision, approval, TCO coverage, and verification tooling"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -62,6 +62,7 @@ testpaths = ["tests"]
 ]
 "share/bm-kym-tco/codex/skills/build-kym/scripts" = [
   ".codex/skills/build-kym/scripts/reader.py",
+  ".codex/skills/build-kym/scripts/reader_full.py",
   ".codex/skills/build-kym/scripts/audit_reader_quality.py",
   ".codex/skills/build-kym/scripts/audit_candidate.py",
 ]
@@ -84,13 +85,17 @@ testpaths = ["tests"]
   ".codex/skills/build-tco-coverage/references/external-workspace.md",
   ".codex/skills/build-tco-coverage/references/tco-progress.md",
   ".codex/skills/build-tco-coverage/references/tco-progress.schema.json",
+  ".codex/skills/build-tco-coverage/references/ecq-assessment.schema.json",
+  ".codex/skills/build-tco-coverage/references/ecq-assessment.md",
 ]
 "share/bm-kym-tco/codex/skills/build-tco-coverage/scripts" = [
   ".codex/skills/build-tco-coverage/scripts/reader.py",
+  ".codex/skills/build-tco-coverage/scripts/reader_full.py",
   ".codex/skills/build-tco-coverage/scripts/audit_reader_quality.py",
   ".codex/skills/build-tco-coverage/scripts/audit_candidate.py",
   ".codex/skills/build-tco-coverage/scripts/audit_reader_language.py",
   ".codex/skills/build-tco-coverage/scripts/progress.py",
+  ".codex/skills/build-tco-coverage/scripts/ecq.py",
 ]
 
 "share/bm-kym-tco/codex/skills/build-kym/assets" = [

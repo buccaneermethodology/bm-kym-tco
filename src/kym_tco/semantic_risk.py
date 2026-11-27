@@ -296,6 +296,152 @@ def _source_corpus(document: dict[str, Any], root: Path) -> str:
     return "\n".join(_source_documents(document, root))
 
 
+# 发现范围比授权语法宽：未支持／带限定的集体头也必须隔离旧关键词路径。
+COLLECTIVE_TARGET_KIND = r"(?:目标\s*Profiles?|Target\s+Profiles?|目标画像|目标档案|目标配置)"
+COLLECTIVE_TARGET_INTRO_RE = re.compile(
+    r"(?P<intro>[^。.!?！？\n:：]{0,80}" + COLLECTIVE_TARGET_KIND + r"[^。.!?！？\n:：]{0,32})\s*[:：]",
+    re.IGNORECASE,
+)
+COLLECTIVE_TARGET_AFFIRMATIVE_RE = re.compile(
+    r"\s*(?:当前|现在)?(?:已|现已)?(?:正式)?(?:确认|采用|设定|划分)\s*"
+    r"(?:以下|上述|这些)?\s*(?:两个|多个|[二两2]个)?\s*" + COLLECTIVE_TARGET_KIND + r"\s*",
+    re.IGNORECASE,
+)
+COLLECTIVE_TARGET_ITEM_RE = re.compile(
+    r"^\s*(?P<prefix>[^，,;；:：]{0,16}?)(?P<id>TP-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)(?![A-Za-z0-9_-])(?P<tail>.*)$",
+    re.IGNORECASE,
+)
+COLLECTIVE_GROUP_SUBJECT_RE = re.compile(
+    r"(?:以上|上述|这些)(?:目标|TPs?|Target\s+Profiles?)(?:均|都|全部)?\s*",
+    re.IGNORECASE,
+)
+TARGET_STANCE_MODIFIER = r"(?:当前|目前|现在|本次|此次|这次|本轮|现阶段|暂时|正式|最终|完全|继续|立即|已经|已|仍|再)"
+TARGET_STANCE_SUBJECT = r"(?:(?:该|本|此)(?:目标|TP)|这个目标|(?:当前|本次|此次|本轮)目标)"
+TARGET_STANCE_PREFIX = (
+    r"(?:(?:但|不过|然而|均|都|全部|也)|" + TARGET_STANCE_SUBJECT + r"|" + TARGET_STANCE_MODIFIER + r")\s*"
+)
+TARGET_STANCE_NEGATIVE = r"(?:(?:暂|尚|仍|还|并)*(?:不|未|待)|无需|无须|未经|没有|并非|不是|非|建议|考虑|是否|能否|要不要)"
+# 时间／范围修饰与批准助词可组合，不按完整短句枚举；所有作用域复用同一语法。
+TARGET_STANCE_AUXILIARY = r"(?:予以|被|予|是|获|获得|得到|取得|经过|能|可|宜)"
+TARGET_STANCE_VERB_PREFIX = r"(?:(?:" + TARGET_STANCE_MODIFIER + r"|" + TARGET_STANCE_AUXILIARY + r")\s*)*"
+TARGET_STANCE_NON_TARGET_PREDICATE = r"(?:作为|用作|视为|列为|列入|认定为|算作|当作|属于|纳入|构成)"
+TARGET_STANCE_OBJECT = (
+    r"(?:(?:" + TARGET_STANCE_MODIFIER + r"|的)\s*)*"
+    r"(?:目标(?:\s*Profiles?)?|Target\s+Profiles?|TPs?)"
+    r"(?:之一|范围)?"
+    r"(?=$|[\s，,；;。.!?！？（()）\[\]【】])"
+)
+TARGET_UNSETTLED_STANCE_RE = re.compile(
+    r"^(?:" + TARGET_STANCE_PREFIX + r")*" + TARGET_STANCE_NEGATIVE + r"\s*" + TARGET_STANCE_VERB_PREFIX
+    + r"(?:采用|确认|确定|决定|批准|设定|划分|"
+    # 非目标谓词必须带真实目标宾语，不能将“不作为默认值”判为目标撤回。
+    + r"(?:" + TARGET_STANCE_NON_TARGET_PREDICATE + r"\s*)?" + TARGET_STANCE_OBJECT + r")",
+    re.IGNORECASE,
+)
+TARGET_UNRESOLVED_STANCE_RE = re.compile(
+    r"^(?:" + TARGET_STANCE_PREFIX + r")*" + TARGET_STANCE_NEGATIVE
+    + r"\s*" + TARGET_STANCE_VERB_PREFIX
+    # 只接受批准立场中的授权方／明确性修饰，不越过业务动词或普通宾语搜词。
+    + r"(?:(?:负责人|责任人|管理者|用户|人类|明确|书面|正式|最终)(?:的)?\s*)+批准"
+    + r"(?=$|[\s，,；;。.!?！？（()）\[\]【】])",
+    re.IGNORECASE,
+)
+
+
+def _target_stance_unsettled(text: str) -> bool:
+    """仅检查目标立场子句或附注；功能正文的“不／是否”不构成目标立场。"""
+    # 括号附注如“目标乙（待确认）”有独立立场边界；不扫描正文任意位置。
+    # 批准立场可含授权方修饰；普通业务宾语中的“批准／决定”不能撤回目标。
+    return any(TARGET_UNSETTLED_STANCE_RE.match(clause.strip())
+               or TARGET_UNRESOLVED_STANCE_RE.match(clause.strip())
+               for clause in re.split(r"[，,；;（()）\[\]【】]", text))
+
+
+def _collective_group_unsettled(text: str) -> bool:
+    for subject in COLLECTIVE_GROUP_SUBJECT_RE.finditer(text):
+        # 同一有限立场语法处理“以上目标均待批准”和“不采用上述目标”。
+        clause_start = max(text.rfind(mark, 0, subject.start()) for mark in "，,；;。\n") + 1
+        before = text[clause_start:subject.start()]
+        after = text[subject.end():]
+        if _target_stance_unsettled(after) or _target_stance_unsettled(before + after):
+            return True
+    return False
+
+
+def _collective_followup_limits(text: str, heads: list[re.Match[str] | None]) -> tuple[bool, set[str]]:
+    """只消费紧接的明确全组／精确TP-ID限定；不跨无关句借或撤回authority。"""
+    blocked: set[str] = set()
+    ids = [head.group("id") for head in heads if head is not None]
+    for statement in re.split(r"[。.!?！？\n]", text):
+        statement = statement.strip()
+        if not statement:
+            continue
+        group = COLLECTIVE_GROUP_SUBJECT_RE.search(statement)
+        if group:
+            if _collective_group_unsettled(statement):
+                return True, blocked
+            break
+        addressed = False
+        for target_id in ids:
+            subject = re.match(r"^" + re.escape(target_id) + r"(?![A-Za-z0-9_-])\s*[:：，,]?\s*(.*)$", statement, re.IGNORECASE)
+            if subject:
+                addressed = True
+                if _target_stance_unsettled(subject.group(1)):
+                    blocked.add(target_id.lower())
+        if not addressed:
+            # 兼容反向组级立场“不采用上述目标”。
+            return _collective_group_unsettled(statement), blocked
+    return False, blocked
+
+
+def _collective_target_declarations(text: str) -> tuple[set[str], str]:
+    """返回本来源已肯定的精确项头，以及供原单目标路径读取的剩余文本。"""
+    labels: set[str] = set()
+    spans: list[tuple[int, int]] = []
+    for match in COLLECTIVE_TARGET_INTRO_RE.finditer(text):
+        if spans and match.start() < spans[-1][1]:
+            continue
+        stop = re.search(r"[。.!?！？\n]", text[match.end():])
+        end = match.end() + stop.start() if stop else len(text)
+        terminal = text[end:end + 1]
+        body = text[match.end():end]
+        items = [item.strip() for item in re.split(r"[；;]", body) if item.strip()]
+        heads = [COLLECTIVE_TARGET_ITEM_RE.fullmatch(item) for item in items]
+        intro = match.group("intro")
+        count = sum(head is not None for head in heads)
+        collective = re.search(r"两个|多个|这些|以下|上述|[二两2]个", intro)
+        plural_with_items = count > 0 and re.search(r"Profiles\b", intro, re.IGNORECASE)
+        if not collective and not plural_with_items and count < 2:
+            continue
+        # 即使该组不被授权也从旧关键词路径隔离，避免Target Profiles子串绕过。
+        spans.append((match.start(), end + bool(terminal)))
+        # 当前组须自身符合有限正向语法；前文确认、条件、计划均不能代授。
+        if not COLLECTIVE_TARGET_AFFIRMATIVE_RE.fullmatch(intro):
+            continue
+        group_blocked, blocked_ids = _collective_followup_limits(text[end + bool(terminal):], heads)
+        if _collective_group_unsettled(body) or group_blocked:
+            continue
+        item_question = re.compile(r"(?:是否|能否|要不要)(?:采用|确认|设定|划分)\s*$")
+        # 组尾普通问号质疑整组；最后项有显式自身疑问时只拒绝该项。
+        if terminal in ("?", "？") and not (items and item_question.search(items[-1])):
+            continue
+        for item, head in zip(items, heads):
+            if head is None or head.group("prefix").strip():
+                continue
+            # 名称只读本项头部，不能从objective或另一项正文补齐。
+            name = re.split(r"[，,:：]", head.group("tail"), maxsplit=1)[0].strip(' \t\"\'“”「」（）()[]')
+            if not name or item_question.search(item) or head.group("id").lower() in blocked_ids:
+                continue
+            if _target_stance_unsettled(item):
+                continue
+            labels.add(_normalize_text(name))
+            labels.add(_normalize_text(head.group("id") + " " + name))
+    remainder = text
+    for start, end in reversed(spans):
+        remainder = remainder[:start] + " " + remainder[end:]
+    return labels, remainder
+
+
 def _target_authority_units(text: str) -> list[str]:
     # 保留“采用TP-A，待确认”为一个语境；遇到下一条TP声明才在逗号处拆分。
     units = [unit.strip() for unit in re.split(
@@ -332,7 +478,10 @@ def _profile_source_authority(profile: dict[str, Any], sources: list[str]) -> bo
     objective = _normalize_text(str(profile.get("objective", "")))
     if not label:
         return False
-    units = [unit for source in sources for unit in _target_authority_units(source)]
+    collective = [_collective_target_declarations(source) for source in sources]
+    if any(label in declared for declared, _ in collective):
+        return True
+    units = [unit for _, remainder in collective for unit in _target_authority_units(remainder)]
     # 逐声明判断；不能用TP-A的肯定替代TP-B。既有疑问随后获得自己的明确
     # 确认时仍可生成候选；来源冲突与最终有效性仍须原冲突流程和独立语义审查。
     if any(_profile_label_declared(unit, label)
@@ -356,7 +505,11 @@ def _profile_source_authority(profile: dict[str, Any], sources: list[str]) -> bo
                     break
                 end += 1
             block_lines = lines[index + 1:end]
-            block = _normalize_text("\n".join(block_lines))
+            block_text = "\n".join(block_lines)
+            _, remainder = _collective_target_declarations(block_text)
+            if remainder != block_text:
+                continue  # 集体声明不能借通用标题块绕过逐项极性和精确名称。
+            block = _normalize_text(block_text)
             if label in block and objective and objective in block and not any(pending.fullmatch(row) for row in block_lines) \
                     and not any(NEGATED_TARGET_AUTHORITY_RE.search(unit) for unit in _target_authority_units("\n".join(block_lines))):
                 return True

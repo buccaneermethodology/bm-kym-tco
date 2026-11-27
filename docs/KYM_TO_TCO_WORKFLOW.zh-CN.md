@@ -261,3 +261,13 @@ v0.4.4 候选版将两个 Skill 的发布身份放入单独的确定性 overlay�
 每个Skill自包含 `references/guided-generation.md`、`reader-workflow.md`、`prompt-examples.md` 和 `reader-detail.schema.json`。先用原CLI完成candidate包，再依workflow建立绑定字节的detail，执行 `scripts/audit_reader_quality.py`、`scripts/reader.py validate` 和 `render`。统一输出reader.md/reader.html及来源快照，旧CLI preview和状态不改写。生成器支持Python3.9标准库，随发行固定模板，无CDN；搬移时保留整个输出目录。
 
 简单提示词示例：“用这份KYM生成TCO，先问关键未知；按目标切片查看能力、证据和最小下一步。没有证据则未评估。”明确“不先提问”时直接生成并标假设。
+
+## 每M的进展判断（v0.4.9）
+
+生成详细TCO时默认展示E／C／Q。先固定原始业务要求和当前TP／范围、版本、截止点，再盘点Session、实现、验证与问题来源；缺失类别明确未接入，有资料的部分照常整理。Agent负责可追溯评估，用户无需在prompt里重写字段合同。
+
+推荐提示词：“基于这个版本的TCO和实际Session、代码、验证及问题记录，告诉我每M做过哪些工作、功能实现到多少、质量如何、下一步最小动作是什么。C按功能实现覆盖估计，TP运行目标另列；未知不填0，同Session全局去重。”
+
+E是实际努力，C是功能实现估计，Q是当前适用的验证与问题；三者不互相代替。先核对已有观察与当前实现／依赖是否匹配，确有缺口再建议最小补验。共享候选Session只保存一份，计划不进入E。原始技术字段和来源在固定reader详情中保留。
+
+执行步骤及可选ECQ绑定见随build-tco-coverage发布的references/reader-workflow.md；主入口是统一reader.html，原CLI preview作为技术追溯入口保留。原CLI/schema、候选authority及显式安装流程不变，不自动覆盖其他项目的Skill。

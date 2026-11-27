@@ -46,3 +46,6 @@ Only an unchanged validated-base Profile is preserved. New or changed Profiles n
 Reader Markdown is deterministic output, never free-form model prose. Canonical form uses bare ATX headings, ASCII spaces, two-space list indentation, and byte-identical rerender; NBSP, Tab, bold-wrapped headings, noncanonical indentation, trailing double spaces, or byte drift block packaging.
 
 `kym lint` is read-only/model-free. It preserves finding fields and adds `confidence`, `resolution_required`, `current_node_ids`, `suggested_node_ids`. Exit `0` clean, `1` deterministic error or strict high-confidence risk, `2` input/contract error. No lint/Markdown/test result creates accepted state.
+
+
+明确集体目标来源：同一来源、同一句同一行中，用户肯定确认/采用/设定/划分的目标列表，可以逐项支持各自明确TP-ID与名称；名称可含TP-ID或仅业务名称。必须匹配各项声明头，不能从另项正文、下一句/行或另一来源借authority。集体否定/疑问/提议、组尾明确全组待确认不得放行；单项待确认只约束该项。label、objective与每条要求仍分别核原文支持，候选输出不自授权。不要求用户为迎合工具改写已有原文；失败时保留完整目标与原始来源并说明阻断。
